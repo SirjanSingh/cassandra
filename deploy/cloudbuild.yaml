@@ -1,0 +1,33 @@
+# Builds the shared image and deploys Patient + Dashboard to Cloud Run.
+# Cassandra itself deploys to Vertex AI Agent Engine via deploy/agent_engine.py
+# (Cloud Run is the documented fallback for Cassandra, risk R2).
+substitutions:
+  _REGION: us-central1
+  _REPO: cassandra
+
+steps:
+  - name: gcr.io/cloud-builders/docker
+    args: ["build", "-f", "deploy/cloudrun.Dockerfile",
+           "-t", "${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/app:$SHORT_SHA", "."]
+
+  - name: gcr.io/cloud-builders/docker
+    args: ["push", "${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/app:$SHORT_SHA"]
+
+  - name: gcr.io/google.com/cloudsdktool/cloud-sdk
+    entrypoint: gcloud
+    args: ["run", "deploy", "patient",
+           "--image", "${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/app:$SHORT_SHA",
+           "--region", "${_REGION}", "--set-env-vars", "SERVICE=patient",
+           "--update-secrets", "PHOENIX_API_KEY=phoenix-api-key:latest",
+           "--allow-unauthenticated"]
+
+  - name: gcr.io/google.com/cloudsdktool/cloud-sdk
+    entrypoint: gcloud
+    args: ["run", "deploy", "dashboard",
+           "--image", "${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/app:$SHORT_SHA",
+           "--region", "${_REGION}", "--set-env-vars", "SERVICE=dashboard",
+           "--update-secrets", "PHOENIX_API_KEY=phoenix-api-key:latest",
+           "--allow-unauthenticated"]
+
+images:
+  - "${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/app:$SHORT_SHA"
