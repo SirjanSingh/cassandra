@@ -12,6 +12,7 @@ from .diagnostician import Diagnostician
 from .evaluator import Evaluator
 from .models import Incident
 from .patcher import Patcher
+from .redteam import RedTeam
 from .replay import TraceReplay
 from .rootcause import RootCauseAnalyst
 from .state import get_state
@@ -32,6 +33,7 @@ class SupervisionPipeline:
         self.evaluator = Evaluator()
         self.patcher = Patcher()
         self.replay = TraceReplay()
+        self.redteam = RedTeam()
         self.state = get_state()
 
     async def run_once(self) -> Incident | None:
@@ -49,6 +51,7 @@ class SupervisionPipeline:
             inc = await self.patcher.propose(inc)             # prompt fixing
             inc = await self.evaluator.run_candidate(inc)
             inc = await self.replay.replay(inc)               # live trace replay
+            inc = await self.redteam.attack(inc)              # adversarial testing
             return inc  # yield after one full cycle (demo-deterministic)
         return None
 
