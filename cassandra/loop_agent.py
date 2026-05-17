@@ -12,6 +12,7 @@ from .diagnostician import Diagnostician
 from .evaluator import Evaluator
 from .models import Incident
 from .patcher import Patcher
+from .rootcause import RootCauseAnalyst
 from .state import get_state
 from .synthesizer import Synthesizer
 from .watcher import Watcher
@@ -25,6 +26,7 @@ class SupervisionPipeline:
     def __init__(self) -> None:
         self.watcher = Watcher()
         self.diagnostician = Diagnostician()
+        self.rootcause = RootCauseAnalyst()
         self.synthesizer = Synthesizer()
         self.evaluator = Evaluator()
         self.patcher = Patcher()
@@ -39,9 +41,10 @@ class SupervisionPipeline:
             if inc.verdict is None or not inc.verdict.is_failure:
                 continue
 
-            inc = await self.synthesizer.synthesize(inc)
+            inc = await self.rootcause.analyze(inc)          # why it broke
+            inc = await self.synthesizer.synthesize(inc)      # eval generation
             inc = await self.evaluator.run_baseline(inc, FRAGILE_SYSTEM_PROMPT)
-            inc = await self.patcher.propose(inc)
+            inc = await self.patcher.propose(inc)             # prompt fixing
             inc = await self.evaluator.run_candidate(inc)
             return inc  # yield after one full cycle (demo-deterministic)
         return None

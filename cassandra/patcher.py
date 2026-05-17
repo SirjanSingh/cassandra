@@ -35,13 +35,22 @@ class Patcher:
 
     async def propose(self, inc: Incident) -> Incident:
         assert inc.verdict is not None
+        rc = inc.root_cause
+        rc_block = (
+            f"ROOT CAUSE: {rc.summary}\n"
+            f"CULPRIT: {rc.culprit}\n"
+            f"PRESCRIBED FIX STRATEGY: {rc.fix_strategy}\n\n"
+            if rc
+            else ""
+        )
         prompt = (
             f"CURRENT SYSTEM PROMPT:\n{FRAGILE_SYSTEM_PROMPT}\n\n"
             f"OBSERVED FAILURE ({inc.verdict.failure_class.value}): "
             f"{inc.verdict.rationale}\n"
+            f"{rc_block}"
             f"TRIGGERING INPUT: {inc.span.input_text}\n"
             f"BAD OUTPUT: {inc.span.output_text}\n\n"
-            "Return the revised prompt JSON."
+            "Apply the prescribed fix strategy. Return the revised prompt JSON."
         )
         patch: _Patch = await llm.structured(prompt, _Patch, system=_SYSTEM)
         inc.candidate_prompt = patch.revised_prompt
