@@ -39,6 +39,30 @@
     font-size:12px; white-space:pre-wrap; }
   .stage { font-size:10px; text-transform:uppercase; letter-spacing:1px;
     color:var(--mut); }
+  .card.root_caused { border-left-color:#d29922; }
+  .card.replayed { border-left-color:#a371f7; }
+  .card.red_teamed { border-left-color:#db61a2; }
+  /* colored prompt diff viewer */
+  .diff { margin-top:8px; border:1px solid var(--line); border-radius:6px;
+    overflow:hidden; font-size:12px; }
+  .diff div { padding:1px 10px; white-space:pre-wrap; }
+  .diff .add { background:rgba(63,185,80,.14); color:#56d364; }
+  .diff .del { background:rgba(248,81,73,.14); color:#f85149; }
+  .diff .hd  { background:#10213a; color:#58a6ff; }
+  .chain { margin:8px 0 0; padding-left:18px; color:var(--mut); font-size:12px; }
+  .chain li::marker { color:var(--acc); }
+  .ba { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:8px; }
+  .ba div { padding:10px; border:1px solid var(--line); border-radius:6px;
+    background:#0d1117; font-size:12px; white-space:pre-wrap; }
+  .ba .b { border-left:3px solid var(--bad); }
+  .ba .a { border-left:3px solid var(--ok); }
+  .badge { display:inline-block; padding:2px 8px; border-radius:10px;
+    font-size:10px; font-weight:700; letter-spacing:1px; }
+  .badge.ok { background:rgba(63,185,80,.2); color:#56d364; }
+  .badge.bad { background:rgba(248,81,73,.2); color:#f85149; }
+  table.rt { width:100%; border-collapse:collapse; margin-top:8px; font-size:12px; }
+  table.rt td,table.rt th { border:1px solid var(--line); padding:4px 8px;
+    text-align:left; }
   @keyframes in { from{opacity:0;transform:translateY(6px)} to{opacity:1} }
   @keyframes flash { 0%{background:#3b1416} 100%{background:var(--panel)} }
 </style>
@@ -66,6 +90,40 @@ async function ask() {
   const j = await r.json();
   document.getElementById('reply').textContent = j.reply || JSON.stringify(j);
 }
+const esc = s => (s||'').replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]));
+
+function diffView(text){
+  const rows = esc(text).split('\n').map(l => {
+    let cls = '';
+    if (l.startsWith('+') && !l.startsWith('+++')) cls = 'add';
+    else if (l.startsWith('-') && !l.startsWith('---')) cls = 'del';
+    else if (l.startsWith('@@') || l.startsWith('+++') || l.startsWith('---')) cls = 'hd';
+    return `<div class="${cls}">${l || ' '}</div>`;
+  }).join('');
+  return `<div class="diff">${rows}</div>`;
+}
+
+function extra(ev){
+  const p = ev.payload || {};
+  if (ev.stage === 'patched' && p.diff) return diffView(p.diff);
+  if (ev.stage === 'root_caused'){
+    const chain = (p.causal_chain||[]).map(s=>`<li>${esc(s)}</li>`).join('');
+    return `<ul class="chain">${chain}</ul>` +
+      (p.fix_strategy?`<div class="meta">Fix strategy: ${esc(p.fix_strategy)}</div>`:'');
+  }
+  if (ev.stage === 'replayed'){
+    const b = `<span class="badge ${p.fixed?'ok':'bad'}">${p.fixed?'FIXED':'STILL BROKEN'}</span>`;
+    return `${b}<div class="ba"><div class="b">BEFORE\n\n${esc(p.before)}</div>`+
+      `<div class="a">AFTER\n\n${esc(p.after)}</div></div>`;
+  }
+  if (ev.stage === 'red_teamed'){
+    const r = (p.rows||[]).map(x=>`<tr><td>${esc(x.attack)}</td>`+
+      `<td>${x.before_pass?'PASS':'FAIL'}</td><td>${x.after_pass?'PASS':'FAIL'}</td></tr>`).join('');
+    return `<table class="rt"><tr><th>attack</th><th>current</th><th>patched</th></tr>${r}</table>`;
+  }
+  return '';
+}
+
 const es = new EventSource('/events');
 es.addEventListener('pipeline', e => {
   const ev = JSON.parse(e.data);
@@ -73,10 +131,8 @@ es.addEventListener('pipeline', e => {
   c.className = 'card ' + ev.stage + (ev.stage === 'diagnosed' ? ' alert' : '');
   const link = ev.phoenix_url
     ? `<div><a href="${ev.phoenix_url}" target="_blank">open in Phoenix &rarr;</a></div>` : '';
-  const diff = ev.payload && ev.payload.diff
-    ? `<pre>${ev.payload.diff.replace(/</g,'&lt;')}</pre>` : '';
   c.innerHTML = `<div class="stage">${ev.stage} &middot; ${ev.incident_id}</div>
-    <h3>${ev.title}</h3><div class="meta">${ev.detail||''}</div>${link}${diff}`;
+    <h3>${esc(ev.title)}</h3><div class="meta">${esc(ev.detail)}</div>${link}${extra(ev)}`;
   feed.prepend(c);
 });
 </script>
