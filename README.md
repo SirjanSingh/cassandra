@@ -70,9 +70,78 @@ See [docs/WINNING_STRATEGY.md](docs/WINNING_STRATEGY.md) for the full judging-cr
 - **Secrets:** Secret Manager
 - **Optional:** BigQuery (long-term span analytics)
 
+## Repository Layout
+
+```
+cassandra/
+├── patient/              # C1 — the fragile "ShopBot" victim agent
+│   ├── agent.py          #   Gemini-3 agent + FastAPI /chat + OpenInference spans
+│   ├── tools.py          #   intentionally flaky get_refund_policy / lookup_order
+│   └── instrumentation.py#   OTLP exporter → Phoenix patient-prod
+├── cassandra/            # C3 — the meta-agent
+│   ├── models.py         #   Incident object threaded through the pipeline
+│   ├── phoenix_mcp.py    #   the single Phoenix MCP gateway (NFR-10)
+│   ├── llm.py            #   Gemini 3 structured/text helper
+│   ├── watcher.py        #   FR-W: poll spans since durable cursor
+│   ├── diagnostician.py  #   FR-D: LLM-as-judge → annotate Phoenix span
+│   ├── synthesizer.py    #   FR-S: adversarial dataset → Phoenix dataset
+│   ├── evaluator.py      #   FR-E: baseline vs candidate Phoenix experiment
+│   ├── patcher.py        #   FR-PA: prompt patch → Phoenix prompt version
+│   ├── loop_agent.py     #   pipeline + thin ADK LoopAgent shell
+│   ├── state.py          #   durable cursor + dedupe (Firestore/local)
+│   └── events.py         #   in-process bus → dashboard SSE
+├── dashboard/            # C4 — Cloud Run SSE dashboard + live UI
+├── functions/trace_poller/  # scheduled Cloud Function (drives one cycle)
+├── scripts/
+│   ├── seed_incident.py  #   C5 — deterministic demo trap + labeled set
+│   └── spike_enumerate_mcp.py  # Day-1 Phoenix MCP enumeration (de-risk R1)
+├── deploy/               # cloudrun.Dockerfile, cloudbuild.yaml, agent_engine.py
+├── tests/                # offline unit tests (LLM + MCP mocked)
+└── docs/                 # PRD, requirements, architecture, plan, demo, strategy
+```
+
+## Run Locally
+
+```bash
+pip install -e ".[dev]"
+cp .env.example .env            # fill GCP project + Phoenix key
+
+# 0. (once) confirm the live Phoenix MCP tool surface, then reconcile phoenix_mcp.py
+python -m scripts.spike_enumerate_mcp
+
+# 1. the Patient
+uvicorn patient.agent:app --port 8081
+# 2. the dashboard
+uvicorn dashboard.main:app --port 8080      # open http://localhost:8080
+# 3. drive one supervision cycle
+python -m scripts.seed_incident             # make the Patient hallucinate
+python -c "import asyncio;from cassandra.loop_agent import SupervisionPipeline;\
+asyncio.run(SupervisionPipeline().run_once())"
+
+pytest                                       # offline unit tests
+```
+
 ## Status
 
-Greenfield. Day-0 documentation set. See the implementation plan for the build timeline.
+**Codebase scaffolded and committed** (public: https://github.com/SirjanSingh/cassandra).
+All modules byte-compile; offline unit tests cover the MCP helpers, models/state, and the
+Diagnostician decision boundary.
+
+| Area | State |
+|------|-------|
+| Docs (PRD → strategy) | ✅ complete, reconciled with official Devpost page |
+| Patient + incident seeder (C1/C5) | ✅ code complete — not yet run live |
+| Cassandra 5 sub-agents + loop (C3) | ✅ code complete — logic unit-tested offline |
+| Dashboard (C4) | ✅ code complete — SSE + UI |
+| Deploy manifests (Cloud Run / Agent Engine) | ✅ written — not yet deployed |
+| Phoenix MCP surface | ⚠️ assumed; `# SPIKE-RECONCILE` markers pending Day-1 spike |
+| Live end-to-end run on Phoenix Cloud | ⛔ blocked on GCP/Phoenix credentials |
+| Hosted URL + demo video (submission items) | ⛔ pending |
+
+Anything touching the live Phoenix MCP or exact ADK/Vertex APIs is written against the
+documented surface and marked `# SPIKE-RECONCILE`; the enumeration spike confirms real
+tool names before Phase-2 feature work. See [docs/IMPLEMENTATION_PLAN.md](docs/IMPLEMENTATION_PLAN.md)
+for the full timeline.
 
 ## License
 
