@@ -1,0 +1,88 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    color-scheme: dark;
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-ink-0 text-bone font-sans antialiased;
+    overflow-x: hidden;
+  }
+  ::selection {
+    background: rgba(242, 169, 59, 0.3);
+    color: #fff;
+  }
+  ::-webkit-scrollbar {
+    width: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #070707;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(244, 241, 234, 0.14);
+    border-radius: 99px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(244, 241, 234, 0.26);
+  }
+  *:focus-visible {
+    outline: none;
+    box-shadow:
+      0 0 0 2px #070707,
+      0 0 0 4px #f2a93b;
+    border-radius: 4px;
+  }
+}
+
+@layer components {
+  /* Film grain — procedural, kills the flat "vibe-coded gradient" look */
+  .grain::after {
+    content: "";
+    position: absolute;
+    inset: -50%;
+    pointer-events: none;
+    opacity: 0.5;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='0.42'/%3E%3C/svg%3E");
+    mix-blend-mode: overlay;
+  }
+  .hairline {
+    border-color: rgba(244, 241, 234, 0.08);
+  }
+  .eyebrow {
+    @apply font-mono text-[11px] uppercase tracking-wide2 text-signal;
+  }
+  .panel {
+    @apply bg-ink-1 border border-line rounded-xl;
+  }
+  .scanline {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+  .scanline::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 38%;
+    background: linear-gradient(
+      180deg,
+      transparent,
+      rgba(242, 169, 59, 0.05),
+      transparent
+    );
+    @apply animate-sweep;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
