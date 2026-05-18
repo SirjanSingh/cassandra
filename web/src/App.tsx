@@ -22,31 +22,29 @@ export default function App() {
 
   return (
     <>
-      <header className="fixed inset-x-0 top-0 z-50 border-b border-line bg-ink-0/70 backdrop-blur-md">
-        <div className="mx-auto flex max-w-7xl items-center gap-3 px-6 py-3.5">
-          <div className="grid h-8 w-8 place-items-center rounded-lg bg-signal">
-            <span className="font-display text-sm font-bold text-ink-0">C</span>
-          </div>
-          <span className="font-display text-sm font-semibold tracking-tightish">
+      <header className="fixed inset-x-0 top-0 z-50 border-b border-line bg-ink-0/80 backdrop-blur-md">
+        <div className="mx-auto flex h-12 max-w-7xl items-center gap-4 px-6">
+          <span className="font-display text-[13px] font-semibold tracking-tightish">
             Cassandra
           </span>
-          <span className="hidden font-mono text-[11px] text-slate sm:inline">
-            / meta-agent observability
+          <span className="hidden items-center gap-2 font-mono text-[11px] text-slate md:flex">
+            <span className="h-1.5 w-1.5 rounded-full bg-good" />
+            supervising · patient-prod
           </span>
-          <nav className="ml-auto flex items-center gap-6 font-mono text-xs text-ash">
-            <a href="#how" className="transition hover:text-bone">
-              How
+          <nav className="ml-auto flex items-center gap-7 font-mono text-[11px] text-slate">
+            <a href="#how" className="transition-colors hover:text-bone">
+              how
             </a>
-            <a href="#cockpit" className="transition hover:text-bone">
-              Cockpit
+            <a href="#cockpit" className="transition-colors hover:text-bone">
+              cockpit
             </a>
             <a
               href="https://github.com/SirjanSingh/cassandra"
               target="_blank"
               rel="noopener noreferrer"
-              className="rounded-md border border-line2 px-3 py-1.5 transition hover:border-signal hover:text-signal"
+              className="text-ash underline-offset-4 transition-colors hover:text-signal hover:underline"
             >
-              GitHub
+              github ↗
             </a>
           </nav>
         </div>

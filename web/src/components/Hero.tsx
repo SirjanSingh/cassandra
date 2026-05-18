@@ -1,76 +1,102 @@
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
-import { ArrowDown } from "lucide-react";
-import { TraceCanvas } from "./TraceCanvas";
+import { ArrowRight } from "lucide-react";
+import { IncidentTape } from "./IncidentTape";
+
+const SPECS = [
+  ["model", "gemini-3"],
+  ["latency", "<10s"],
+  ["track", "arize · phoenix"],
+  ["license", "apache-2.0"],
+];
 
 export function Hero() {
   const ref = useRef<HTMLElement>(null);
+  const reduce = useReducedMotion();
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ["start start", "end start"],
   });
-  const bgY = useTransform(scrollYProgress, [0, 1], ["0%", "26%"]);
-  const fade = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
-  const lift = useTransform(scrollYProgress, [0, 1], [0, -90]);
+  const artY = useTransform(scrollYProgress, [0, 1], [0, reduce ? 0 : -56]);
 
   return (
     <section
       ref={ref}
-      className="grain relative flex h-screen min-h-[680px] items-center overflow-hidden"
+      className="relative mx-auto grid min-h-screen max-w-7xl items-center gap-14 px-6 pt-28 pb-20 lg:grid-cols-[1.04fr_1fr] lg:gap-10"
     >
-      <motion.div
-        style={{ y: bgY }}
-        className="absolute inset-0 -z-10 bg-cover bg-center"
-      >
-        <img
-          src="/img/hero.jpg"
-          alt=""
-          className="h-full w-full object-cover opacity-[0.22] [filter:grayscale(1)_contrast(1.05)]"
-        />
-        <div className="absolute inset-0 bg-[radial-gradient(120%_90%_at_70%_0%,transparent,#070707_72%)]" />
-      </motion.div>
-      <TraceCanvas />
+      {/* faint blueprint grid — engineering substrate, not particles */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 -z-10 opacity-[0.5]"
+        style={{
+          backgroundImage:
+            "linear-gradient(rgba(244,241,234,0.028) 1px,transparent 1px),linear-gradient(90deg,rgba(244,241,234,0.028) 1px,transparent 1px)",
+          backgroundSize: "64px 64px",
+          maskImage: "radial-gradient(120% 80% at 30% 30%,#000,transparent 78%)",
+        }}
+      />
 
-      <motion.div
-        style={{ opacity: fade, y: lift }}
-        className="relative mx-auto w-full max-w-6xl px-6"
-      >
-        <div className="eyebrow mb-6 flex items-center gap-3">
-          <span className="inline-block h-1.5 w-1.5 rounded-full bg-signal animate-flick" />
-          Arize Phoenix track · Google Cloud Rapid Agent Hackathon
+      <div>
+        <div className="mb-7 flex items-center gap-3 font-mono text-[11px] uppercase tracking-wide2 text-slate">
+          <span className="h-px w-9 bg-signal" />
+          <span className="text-signal">Meta-agent observability</span>
         </div>
-        <h1 className="max-w-4xl font-display text-[clamp(2.6rem,7vw,6rem)] font-bold leading-[0.98] tracking-tightish">
-          Your agents fail
+
+        <h1 className="font-display text-[clamp(2.2rem,4.5vw,3.7rem)] font-bold leading-[1.06] tracking-tightish text-bone">
+          Production agents lie.
           <br />
-          <span className="text-signal">silently.</span> Cassandra
+          Cassandra is the engineer
           <br />
-          doesn&rsquo;t blink.
+          who <span className="text-signal">catches it</span> — at 3am,
+          <br />
+          without you.
         </h1>
-        <p className="mt-7 max-w-xl text-lg leading-relaxed text-ash">
-          A meta-agent that watches your production agents through Arize Phoenix —
-          catching hallucinations, proving the fix with a real experiment, and shipping
-          an A/B-ready prompt patch. Autonomously. In seconds.
+
+        <p className="mt-7 max-w-md text-[15px] leading-relaxed text-ash">
+          A meta-agent that supervises your agents through Arize Phoenix: it
+          diagnoses the failure, proves a fix with a real experiment, and ships an
+          A/B-ready prompt patch — on its own.
         </p>
-        <div className="mt-10 flex flex-wrap items-center gap-4">
+
+        <div className="mt-9 flex items-center gap-6">
           <a
             href="#cockpit"
-            className="group inline-flex items-center gap-2 rounded-lg bg-signal px-6 py-3.5 font-mono text-sm font-semibold text-ink-0 transition hover:bg-signal-deep"
+            className="group inline-flex items-center gap-2.5 border-b-2 border-signal pb-1 font-mono text-sm font-semibold text-bone transition-colors hover:text-signal"
           >
-            Enter the cockpit
-            <ArrowDown className="h-4 w-4 transition group-hover:translate-y-0.5" />
+            See it catch a lie
+            <ArrowRight className="h-4 w-4 text-signal transition-transform duration-200 group-hover:translate-x-1" />
           </a>
           <a
             href="#how"
-            className="rounded-lg border border-line2 px-6 py-3.5 font-mono text-sm text-bone transition hover:border-signal hover:text-signal"
+            className="font-mono text-sm text-slate underline-offset-4 transition-colors hover:text-ash hover:underline"
           >
-            How it works
+            how it works
           </a>
         </div>
-      </motion.div>
 
-      <div className="absolute bottom-7 left-1/2 -translate-x-1/2 text-slate">
-        <ArrowDown className="h-5 w-5 animate-bounce" />
+        <dl className="mt-14 grid max-w-md grid-cols-2 gap-px overflow-hidden rounded-md border border-line bg-line sm:grid-cols-4">
+          {SPECS.map(([k, v]) => (
+            <div key={k} className="bg-ink-0 px-3 py-3">
+              <dt className="font-mono text-[10px] uppercase tracking-wide2 text-slate">
+                {k}
+              </dt>
+              <dd className="mt-1 font-mono text-[12px] text-bone">{v}</dd>
+            </div>
+          ))}
+        </dl>
       </div>
+
+      <motion.div
+        style={{ y: artY }}
+        initial={reduce ? false : { opacity: 0, y: 24 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.7, ease: [0.22, 0.61, 0.36, 1] }}
+      >
+        <IncidentTape />
+        <div className="mt-3 text-right font-mono text-[10.5px] text-slate">
+          live dramatisation · the cockpit below is the real thing ↓
+        </div>
+      </motion.div>
     </section>
   );
 }
