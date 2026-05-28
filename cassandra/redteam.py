@@ -36,7 +36,7 @@ class RedTeam:
         self.s = get_settings()
 
     async def _ask(self, client: httpx.AsyncClient, msg: str, override: str | None) -> str:
-        body: dict = {"message": msg}
+        body: dict = {"message": msg, "session_id": "test"}
         if override:
             body["system_override"] = override
         r = await client.post(self.s.patient_endpoint, json=body)

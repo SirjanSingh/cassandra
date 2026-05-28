@@ -36,6 +36,7 @@ class SpanRecord(BaseModel):
     started_at: datetime
     input_text: str = ""
     output_text: str = ""
+    session_id: str = "demo"
     tool_calls: list[dict] = Field(default_factory=list)
     raw: dict = Field(default_factory=dict)
 

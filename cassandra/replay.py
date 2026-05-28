@@ -38,7 +38,11 @@ class TraceReplay:
         async with httpx.AsyncClient(timeout=60) as c:
             r = await c.post(
                 self.s.patient_endpoint,
-                json={"message": original_input, "system_override": inc.candidate_prompt},
+                json={
+                    "message": original_input,
+                    "system_override": inc.candidate_prompt,
+                    "session_id": "test",
+                },
             )
             r.raise_for_status()
             after_output = r.json().get("reply", "")

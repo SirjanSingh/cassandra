@@ -33,6 +33,8 @@ class Watcher:
         for span in spans:
             if not span.span_id or self.state.seen(span.span_id):
                 continue
+            if span.session_id == "test":
+                continue
             if not (span.input_text and span.output_text):
                 continue  # FR-W3: only candidate LLM/tool trees
             inc = Incident.from_span(span)

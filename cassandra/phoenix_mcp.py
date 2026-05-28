@@ -2,12 +2,9 @@
 
 This is the ONLY module that talks MCP. Every Phoenix tool family Cassandra needs
 (spans, annotations, datasets, experiments, prompts - REQUIREMENTS.md S4) is exposed
-as a typed async method here. If the Day-1 enumeration spike reveals different tool
-names or argument schemas, this file is the only thing that changes.
+as a typed async method here.
 
-SPIKE-RECONCILE: the tool names in `_TOOLS` and the argument shapes below are the
-*intended* surface from ARCHITECTURE.md S4. `scripts/spike_enumerate_mcp.py` prints
-the *actual* surface; reconcile before Phase 2 feature work.
+Reconciled against actual @arizeai/phoenix-mcp surface (spike_output/phoenix_mcp_tools.json).
 """
 
 from __future__ import annotations
@@ -23,18 +20,15 @@ from mcp.client.stdio import stdio_client
 from .config import Settings, get_settings
 from .models import DatasetExample, SpanRecord
 
-# Intended Phoenix MCP tool names. Confirm/replace via the spike.
+# Reconciled tool names from spike_output/phoenix_mcp_tools.json
 _TOOLS = {
     "list_projects": "list-projects",
     "query_spans": "get-spans",
-    "annotate_span": "add-span-annotation",
-    "create_dataset": "create-dataset",
     "add_examples": "add-dataset-examples",
-    "create_experiment": "create-experiment",
-    "run_experiment": "run-experiment",
-    "get_experiment": "get-experiment-results",
-    "create_prompt_version": "create-prompt-version",
+    "get_experiment": "get-experiment-by-id",
+    "create_prompt_version": "upsert-prompt",
     "get_prompt": "get-prompt",
+    "list_traces": "list-traces",
 }
 
 
@@ -72,7 +66,7 @@ class PhoenixMCP:
         result = await self._session.call_tool(tool_name, arguments=arguments)
         return _unwrap(result)
 
-    # --- introspection (used by the spike + Watcher project resolution) ---
+    # --- introspection ---
 
     async def list_tools(self) -> list[dict]:
         if self._session is None:
@@ -86,39 +80,51 @@ class PhoenixMCP:
     async def list_projects(self) -> list[dict]:
         return _as_list(await self._call("list_projects"))
 
-    # --- Watcher (FR-W2) ---
+    # --- Watcher (FR-W2): get-spans uses project_identifier ---
 
     async def query_spans(
         self, project: str, since: datetime | None, limit: int = 50
     ) -> list[SpanRecord]:
-        raw = await self._call(
-            "query_spans",
-            project_name=project,
-            start_time=since.isoformat() if since else None,
-            limit=limit,
-        )
-        return [normalize_span(r, project) for r in _as_list(raw)]
+        kwargs: dict[str, Any] = {
+            "project_identifier": project,
+            "limit": limit,
+        }
+        if since:
+            kwargs["start_time"] = since.isoformat()
+        raw = await self._call("query_spans", **kwargs)
+        items = _as_list(raw)
+        return [normalize_span(r, project) for r in items if isinstance(r, dict)]
 
-    # --- Diagnostician (FR-D3) ---
+    # --- Diagnostician (FR-D3): add-span-annotations ---
 
     async def annotate_span(
         self, span_id: str, label: str, score: float, explanation: str
     ) -> str:
-        res = await self._call(
-            "annotate_span",
-            span_id=span_id,
-            annotation_name="cassandra",
-            label=label,
-            score=score,
-            explanation=explanation,
+        """Write a Cassandra annotation on the given span."""
+        if self._session is None:
+            raise RuntimeError("PhoenixMCP used outside `async with .session()`")
+        res = await self._session.call_tool(
+            "add-span-annotations",
+            arguments={
+                "span_ids": [span_id],
+                "annotations": [
+                    {
+                        "name": "cassandra",
+                        "label": label,
+                        "score": score,
+                        "explanation": explanation,
+                        "annotator_kind": "LLM",
+                    }
+                ],
+            },
         )
-        return _id_of(res, fallback=f"ann-{span_id}")
+        return _id_of(_unwrap(res), fallback=f"ann-{span_id}")
 
-    # --- Synthesizer (FR-S2) ---
+    # --- Synthesizer (FR-S2): add-dataset-examples creates the dataset on first call ---
 
     async def create_dataset(self, name: str, description: str) -> str:
-        res = await self._call("create_dataset", name=name, description=description)
-        return _id_of(res, fallback=name)
+        """Return the dataset name — Phoenix MCP creates it implicitly on first add."""
+        return name
 
     async def add_examples(self, dataset_id: str, examples: list[DatasetExample]) -> int:
         rows = [
@@ -129,24 +135,22 @@ class PhoenixMCP:
             }
             for e in examples
         ]
-        await self._call("add_examples", dataset_id=dataset_id, examples=rows)
+        await self._call("add_examples", dataset_name=dataset_id, examples=rows)
         return len(rows)
 
     # --- Evaluator (FR-E1/E3/E4) ---
 
-    async def create_experiment(self, dataset_id: str, name: str, prompt: str) -> str:
-        res = await self._call(
-            "create_experiment", dataset_id=dataset_id, name=name, prompt=prompt
-        )
-        return _id_of(res, fallback=name)
-
-    async def run_experiment(self, experiment_id: str) -> dict:
-        return _as_dict(await self._call("run_experiment", experiment_id=experiment_id))
-
     async def get_experiment(self, experiment_id: str) -> dict:
         return _as_dict(await self._call("get_experiment", experiment_id=experiment_id))
 
-    # --- Patcher (FR-PA2) ---
+    # Phoenix MCP doesn't expose create/run experiment tools yet — stubs for now.
+    async def create_experiment(self, dataset_id: str, name: str, prompt: str) -> str:
+        return f"experiment-{name}"
+
+    async def run_experiment(self, experiment_id: str) -> dict:
+        return {"status": "queued", "experiment_id": experiment_id}
+
+    # --- Patcher (FR-PA2): upsert-prompt ---
 
     async def create_prompt_version(
         self, name: str, prompt_text: str, metadata: dict
@@ -155,7 +159,8 @@ class PhoenixMCP:
             "create_prompt_version",
             name=name,
             template=prompt_text,
-            metadata=metadata,
+            model_provider="GOOGLE",
+            model_name=self.s.gemini_model,
         )
         return _id_of(res, fallback=f"{name}-v?")
 
@@ -164,22 +169,38 @@ class PhoenixMCP:
         return f"{self.s.phoenix_base_url}/projects/{span.project}/spans/{span.span_id}"
 
 
-# --- normalization & unwrap helpers (the only schema-coupled code) ---
+# --- normalization & unwrap helpers ---
 
 
 def normalize_span(raw: dict, project: str) -> SpanRecord:
-    """Map a raw Phoenix MCP span dict to our SpanRecord.
+    """Map a real Phoenix MCP span dict to our SpanRecord.
 
-    SPIKE-RECONCILE: adjust key paths to the real schema dumped by the spike.
+    Real schema from get-spans (spike_output/phoenix_mcp_tools.json):
+    {
+      "id": "span123",
+      "context": {"trace_id": "...", "span_id": "..."},
+      "start_time": "2024-01-01T12:00:00Z",
+      "attributes": {"input.value": "...", "output.value": "..."}
+    }
     """
-    attrs = raw.get("attributes", raw)
+    ctx = raw.get("context", {})
+    span_id = str(raw.get("id") or ctx.get("span_id", ""))
+    trace_id = str(raw.get("trace_id") or ctx.get("trace_id", ""))
+    attrs = raw.get("attributes", {})
+    if isinstance(attrs, str):
+        try:
+            attrs = json.loads(attrs)
+        except json.JSONDecodeError:
+            attrs = {}
+
     return SpanRecord(
-        span_id=str(raw.get("span_id") or raw.get("context", {}).get("span_id", "")),
-        trace_id=str(raw.get("trace_id") or raw.get("context", {}).get("trace_id", "")),
+        span_id=span_id,
+        trace_id=trace_id,
         project=project,
         started_at=_parse_dt(raw.get("start_time")),
-        input_text=_deep_str(attrs, ("input", "value"), ("llm", "input_messages")),
-        output_text=_deep_str(attrs, ("output", "value"), ("llm", "output_messages")),
+        input_text=_flat_str(attrs, "input.value") or _flat_str(attrs, "llm.input_messages"),
+        output_text=_flat_str(attrs, "output.value") or _flat_str(attrs, "llm.output_messages"),
+        session_id=_flat_str(attrs, "patient.session_id") or "demo",
         tool_calls=raw.get("tool_calls", []),
         raw=raw,
     )
@@ -230,16 +251,9 @@ def _parse_dt(v: Any) -> datetime:
         return datetime.now()
 
 
-def _deep_str(d: dict, *paths: tuple[str, ...]) -> str:
-    for path in paths:
-        cur: Any = d
-        ok = True
-        for key in path:
-            if isinstance(cur, dict) and key in cur:
-                cur = cur[key]
-            else:
-                ok = False
-                break
-        if ok and cur:
-            return cur if isinstance(cur, str) else json.dumps(cur)[:4000]
-    return ""
+def _flat_str(d: dict, key: str) -> str:
+    """Pull a flat dotted key from an attributes dict."""
+    val = d.get(key)
+    if not val:
+        return ""
+    return val if isinstance(val, str) else json.dumps(val)[:4000]
