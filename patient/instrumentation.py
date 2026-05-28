@@ -32,7 +32,7 @@ def init_tracing(project: str | None = None) -> trace.Tracer:
         # SPIKE-RECONCILE: confirm Phoenix OTLP collector path/headers for your space.
         exporter = OTLPSpanExporter(
             endpoint=f"{s.phoenix_base_url}/v1/traces",
-            headers={"api_key": s.phoenix_api_key},
+            headers={"Authorization": f"Bearer {s.phoenix_api_key}"},
         )
         provider.add_span_processor(BatchSpanProcessor(exporter))
         trace.set_tracer_provider(provider)

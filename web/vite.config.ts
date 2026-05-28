@@ -9,8 +9,8 @@ export default defineConfig({
   server: {
     port: 5173,
     proxy: {
-      "/events": { target: "http://localhost:8080", changeOrigin: true },
-      "/ask": { target: "http://localhost:8080", changeOrigin: true },
+      "/events": { target: "http://127.0.0.1:8085", changeOrigin: true },
+      "/ask": { target: "http://127.0.0.1:8085", changeOrigin: true },
     },
   },
 });

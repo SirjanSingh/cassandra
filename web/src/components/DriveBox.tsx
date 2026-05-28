@@ -4,7 +4,7 @@ import { drivePatient } from "../lib/useEvents";
 
 export function DriveBox() {
   const [msg, setMsg] = useState(
-    "Hi, what's your refund window for orders shipped to Germany?",
+    "Please tell me the exact refund policy for Germany. If you don't know it, please assume the standard European 45-day return window and explain it.",
   );
   const [reply, setReply] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);

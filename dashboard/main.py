@@ -20,12 +20,29 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from sse_starlette.sse import EventSourceResponse
 
+import asyncio
 from cassandra.config import get_settings
 from cassandra.events import bus
+from cassandra.loop_agent import SupervisionPipeline
 
 app = FastAPI(title="Cassandra Dashboard")
 
 _DIST = Path(__file__).resolve().parents[1] / "web" / "dist"
+
+
+@app.on_event("startup")
+def start_pipeline_watcher():
+    async def watcher_loop():
+        print("Starting background SupervisionPipeline watcher loop...")
+        pipeline = SupervisionPipeline()
+        while True:
+            try:
+                await pipeline.run_once()
+            except Exception as e:
+                print(f"Background SupervisionPipeline error: {e}")
+            await asyncio.sleep(5)  # poll every 5 seconds in dev
+    
+    asyncio.create_task(watcher_loop())
 
 
 class Ask(BaseModel):
