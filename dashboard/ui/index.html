@@ -372,6 +372,21 @@ function diffView(text){
 }
 function extra(ev){
   const p=ev.payload||{};
+  if(ev.stage==='diagnosed'&&p.severity){
+    const sc={critical:'--bad',high:'--warn',medium:'--amber',low:'--tx-3'}[p.severity]||'--tx-3';
+    return `<div style="margin-top:9px"><span class="mono" style="font-size:11px;
+      padding:3px 9px;border-radius:999px;background:var(${sc});color:#08101e;font-weight:600">
+      ${esc(p.severity.toUpperCase())} severity</span></div>`;
+  }
+  if(ev.stage==='evaluated'&&(p.token_delta_pct!=null||p.latency_delta_pct!=null)){
+    const fmt=v=>v==null?'—':(v>=0?'+':'')+Math.round(v*100)+'%';
+    const col=v=>v==null?'--tx-3':(v<=0?'--ok':'--bad');
+    return `<div class="ba" style="margin-top:10px">
+      <div class="col"><div class="ch">tokens vs baseline</div>
+        <div class="bd mono" style="color:var(${col(p.token_delta_pct)})">${fmt(p.token_delta_pct)}</div></div>
+      <div class="col"><div class="ch">latency vs baseline</div>
+        <div class="bd mono" style="color:var(${col(p.latency_delta_pct)})">${fmt(p.latency_delta_pct)}</div></div></div>`;
+  }
   if(ev.stage==='patched'&&p.diff) return diffView(p.diff);
   if(ev.stage==='root_caused'){
     const ch=(p.causal_chain||[]).map((s,i)=>

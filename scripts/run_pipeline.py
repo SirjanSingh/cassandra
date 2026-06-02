@@ -8,7 +8,11 @@ from cassandra.config import get_settings
 
 async def main():
     s = get_settings()
-    
+
+    # 0. Trace Cassandra's own reasoning into the cassandra-meta Phoenix project
+    from cassandra.instrumentation import init_self_tracing
+    init_self_tracing()
+
     # 1. Reset local cursor state
     print("[1/4] Resetting local cursor state...")
     cursor_file = Path(".cursor_state.json")
@@ -60,6 +64,8 @@ async def main():
             if inc.verdict:
                 print(f"Verdict: {inc.verdict.failure_class.value} "
                       f"(confidence {inc.verdict.confidence:.2f})")
+                if inc.severity:
+                    print(f"Severity: {inc.severity.value.upper()}")
                 print(f"Verdict Reason: {inc.verdict.rationale}")
             if inc.root_cause:
                 print(f"Root Cause: {inc.root_cause.culprit} - {inc.root_cause.summary}")
@@ -75,6 +81,16 @@ async def main():
                 if exp.candidate_pass_rate is not None:
                     print(f"  - candidate: {exp.candidate_pass_rate:.0%} pass "
                           f"(delta {exp.delta:+.0%})")
+            if inc.efficiency:
+                eff = inc.efficiency
+                tp, lp = eff.token_delta_pct, eff.latency_delta_pct
+                print("\nEfficiency (candidate vs baseline):")
+                print(f"  - tokens:  {eff.candidate_avg_tokens:.0f} avg "
+                      f"({tp:+.0%})" if tp is not None else
+                      f"  - tokens:  {eff.candidate_avg_tokens:.0f} avg")
+                print(f"  - latency: {eff.candidate_avg_latency_ms:.0f}ms avg "
+                      f"({lp:+.0%})" if lp is not None else
+                      f"  - latency: {eff.candidate_avg_latency_ms:.0f}ms avg")
             if inc.replay:
                 print(f"\nLive replay on the patched prompt: "
                       f"{'FIXED' if inc.replay.fixed else 'STILL BROKEN'}")

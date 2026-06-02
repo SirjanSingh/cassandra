@@ -37,6 +37,10 @@ class Settings(BaseSettings):
     diagnosis_confidence_threshold: float = 0.7
     synth_dataset_size: int = 12
 
+    # Introspection / on-product depth
+    self_trace_enabled: bool = True       # trace Cassandra's own reasoning into META_PROJECT
+    phoenix_experiments_enabled: bool = False  # also register A/B as a real Phoenix experiment
+
     # State backend
     state_backend: str = "firestore"  # firestore | gcs | local
     firestore_collection: str = "cassandra_state"

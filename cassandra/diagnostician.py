@@ -9,7 +9,7 @@ from __future__ import annotations
 from . import llm
 from .config import get_settings
 from .events import bus
-from .models import Incident, PipelineEvent, Stage, Verdict
+from .models import Incident, PipelineEvent, Stage, Verdict, compute_severity
 from .phoenix_mcp import PhoenixMCP
 
 _SYSTEM = """You are Cassandra's Diagnostician: a strict LLM-as-judge that audits the
@@ -54,6 +54,7 @@ class Diagnostician:
             span.input_text, span.output_text, span.tool_calls or span.raw.get("tool.calls")
         )
         inc.verdict = verdict
+        inc.severity = compute_severity(verdict)
         inc.stage = Stage.DIAGNOSED
 
         if verdict.is_failure and verdict.confidence >= self.s.diagnosis_confidence_threshold:
@@ -72,7 +73,10 @@ class Diagnostician:
                 title=f"Verdict: {verdict.failure_class.value} ({verdict.confidence:.2f})",
                 detail=verdict.rationale,
                 phoenix_url=self.mcp.span_url(span),
-                payload={"annotated": inc.annotation_id is not None},
+                payload={
+                    "annotated": inc.annotation_id is not None,
+                    "severity": inc.severity.value if inc.severity else None,
+                },
             )
         )
         return inc

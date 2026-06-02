@@ -29,6 +29,10 @@ _UI = Path(__file__).resolve().parent / "ui"
 
 @app.on_event("startup")
 def start_pipeline_watcher():
+    from cassandra.instrumentation import init_self_tracing
+
+    init_self_tracing()  # trace Cassandra's own reasoning into the cassandra-meta project
+
     async def watcher_loop():
         print("Starting background SupervisionPipeline watcher loop...")
         pipeline = SupervisionPipeline()

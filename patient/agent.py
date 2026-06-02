@@ -44,6 +44,8 @@ class ChatRequest(BaseModel):
 class ChatResponse(BaseModel):
     reply: str
     trace_id: str | None = None
+    total_tokens: int = 0
+    latency_ms: int = 0
 
 
 def _gemini_tools() -> list[types.Tool]:
@@ -64,8 +66,11 @@ def _gemini_tools() -> list[types.Tool]:
 
 @app.post("/chat", response_model=ChatResponse)
 async def chat(req: ChatRequest) -> ChatResponse:
+    import time
+
     s = get_settings()
-    
+    _t0 = time.perf_counter()
+
     if s.is_openai or s.is_openrouter:
         if s.is_openai:
             client = AsyncOpenAI(api_key=s.openai_api_key)
@@ -110,6 +115,7 @@ async def chat(req: ChatRequest) -> ChatResponse:
                 {"role": "user", "content": req.message},
             ]
             tool_log: list[dict] = []
+            total_tokens = 0
 
             for _ in range(4):
                 resp = await client.chat.completions.create(
@@ -118,6 +124,8 @@ async def chat(req: ChatRequest) -> ChatResponse:
                     tools=tools,  # type: ignore[arg-type]
                     temperature=0.4,
                 )
+                if resp.usage:
+                    total_tokens += resp.usage.total_tokens or 0
                 message = resp.choices[0].message
                 tool_calls = message.tool_calls
 
@@ -145,12 +153,18 @@ async def chat(req: ChatRequest) -> ChatResponse:
                 reply = "Sorry, I'm having trouble with that right now."
 
             span.set_attribute("output.value", reply)
+            span.set_attribute("llm.token_count.total", total_tokens)
             if tool_log:
                 span.set_attribute("tool.calls", json.dumps(tool_log))
             ctx = span.get_span_context()
             trace_id = format(ctx.trace_id, "032x") if ctx and ctx.trace_id else None
 
-        return ChatResponse(reply=reply, trace_id=trace_id)
+        return ChatResponse(
+            reply=reply,
+            trace_id=trace_id,
+            total_tokens=total_tokens,
+            latency_ms=int((time.perf_counter() - _t0) * 1000),
+        )
 
     if s.google_genai_use_vertexai:
         g_client = genai.Client(
@@ -178,6 +192,7 @@ async def chat(req: ChatRequest) -> ChatResponse:
             types.Content(role="user", parts=[types.Part(text=req.message)])
         ]
         tool_log = []
+        total_tokens = 0
 
         for _ in range(4):  # bounded tool loop
             resp = await g_client.aio.models.generate_content(
@@ -189,6 +204,8 @@ async def chat(req: ChatRequest) -> ChatResponse:
                     temperature=0.4,
                 ),
             )
+            if getattr(resp, "usage_metadata", None):
+                total_tokens += getattr(resp.usage_metadata, "total_token_count", 0) or 0
             calls = [
                 p.function_call
                 for p in (resp.candidates[0].content.parts or [])
@@ -221,12 +238,18 @@ async def chat(req: ChatRequest) -> ChatResponse:
             reply = "Sorry, I'm having trouble with that right now."
 
         span.set_attribute("output.value", reply)
+        span.set_attribute("llm.token_count.total", total_tokens)
         if tool_log:
             span.set_attribute("tool.calls", json.dumps(tool_log))
         ctx = span.get_span_context()
         trace_id = format(ctx.trace_id, "032x") if ctx and ctx.trace_id else None
 
-    return ChatResponse(reply=reply, trace_id=trace_id)
+    return ChatResponse(
+        reply=reply,
+        trace_id=trace_id,
+        total_tokens=total_tokens,
+        latency_ms=int((time.perf_counter() - _t0) * 1000),
+    )
 
 
 @app.get("/healthz")

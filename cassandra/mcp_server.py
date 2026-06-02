@@ -164,6 +164,13 @@ def _report(inc: Incident) -> dict[str, Any]:
             "confidence": inc.verdict.confidence,
             "rationale": inc.verdict.rationale,
         }
+    if inc.severity:
+        r["severity"] = inc.severity.value
+    if inc.efficiency:
+        r["efficiency"] = {
+            "token_delta_pct": inc.efficiency.token_delta_pct,
+            "latency_delta_pct": inc.efficiency.latency_delta_pct,
+        }
     if inc.root_cause:
         r["root_cause"] = {
             "culprit": inc.root_cause.culprit,

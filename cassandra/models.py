@@ -108,6 +108,53 @@ class RedTeamResult(BaseModel):
     examples: list[dict] = Field(default_factory=list)
 
 
+class Severity(str, Enum):
+    CRITICAL = "critical"
+    HIGH = "high"
+    MEDIUM = "medium"
+    LOW = "low"
+
+
+def compute_severity(verdict: "Verdict") -> Severity:
+    """Triage an incident from its failure class + confidence (FR-D / impact)."""
+    if not verdict.is_failure:
+        return Severity.LOW
+    c = verdict.confidence
+    if c >= 0.85:
+        return Severity.CRITICAL
+    if c >= 0.7:
+        return Severity.HIGH
+    if c >= 0.5:
+        return Severity.MEDIUM
+    return Severity.LOW
+
+
+class EfficiencyReport(BaseModel):
+    """Cost/latency of the candidate prompt vs the baseline (business impact).
+
+    Tokens/latency are averaged per evaluated case under each prompt variant.
+    """
+
+    baseline_avg_tokens: float = 0.0
+    candidate_avg_tokens: float = 0.0
+    baseline_avg_latency_ms: float = 0.0
+    candidate_avg_latency_ms: float = 0.0
+
+    @staticmethod
+    def _pct(base: float, cand: float) -> float | None:
+        if not base:
+            return None
+        return round((cand - base) / base, 4)
+
+    @property
+    def token_delta_pct(self) -> float | None:
+        return self._pct(self.baseline_avg_tokens, self.candidate_avg_tokens)
+
+    @property
+    def latency_delta_pct(self) -> float | None:
+        return self._pct(self.baseline_avg_latency_ms, self.candidate_avg_latency_ms)
+
+
 class ScorecardCase(BaseModel):
     """One graded case in Cassandra's self-evaluation."""
 
@@ -156,7 +203,9 @@ class Incident(BaseModel):
     stage: Stage = Stage.WATCHED
 
     verdict: Verdict | None = None
+    severity: Severity | None = None
     root_cause: RootCause | None = None
+    efficiency: EfficiencyReport | None = None
     annotation_id: str | None = None
     dataset_id: str | None = None
     dataset_examples: list[DatasetExample] = Field(default_factory=list)

@@ -117,12 +117,20 @@ production trace"* and Cassandra answers — the meta-agent, distributed.
 ## Self-evaluation (introspection loop)
 
 The Arize track awards bonus points to agents that *"use their own observability data to
-improve over time."* Cassandra closes that loop on itself: `cassandra/selfeval.py` runs a
-hand-labeled ground-truth trap library (`cassandra/traps.py`) through the live Patient and
-its own Diagnostician, then **scores its own verdicts against ground truth** — a
-diagnostic-accuracy scorecard (overall + per failure class). Run it from the dashboard
-("Grade my own diagnoses"), the `POST /selfeval` endpoint, or the `self_evaluate` MCP tool.
-The watcher, watching itself.
+improve over time."* Cassandra closes that loop on itself two ways:
+
+- **Self-tracing** (`cassandra/instrumentation.py`): Cassandra's own LLM reasoning is
+  instrumented with OpenInference and shipped to the **`cassandra-meta`** Phoenix project —
+  so the meta-agent is as observable as the agents it supervises.
+- **Self-evaluation** (`cassandra/selfeval.py`): it runs a hand-labeled ground-truth trap
+  library (`cassandra/traps.py`) through the live Patient and its own Diagnostician, then
+  **scores its own verdicts against ground truth** — a diagnostic-accuracy scorecard
+  (overall + per failure class). Run it from the dashboard ("Grade my own diagnoses"), the
+  `POST /selfeval` endpoint, or the `self_evaluate` MCP tool.
+
+The watcher, watching itself. Each incident also carries a **severity** (failure class ×
+confidence) and a **cost/latency delta** of the candidate prompt vs the baseline, and — when
+`PHOENIX_EXPERIMENTS_ENABLED=true` — the A/B is also registered as a real Phoenix experiment.
 
 ## Repository Layout
 
@@ -193,7 +201,11 @@ All modules byte-compile and live end-to-end integration runs succeed.
 | Cassandra 8-stage pipeline (C3) | ✅ diagnose→root-cause→synthesize→eval→patch→replay→red-team |
 | Evaluation | ✅ real baseline-vs-candidate scoring (no stubbed experiments) |
 | Dashboard (C4) | ✅ single self-contained cockpit (no build step) — SSE + UI |
-| Custom `cassandra-mcp` server | ✅ 4 tools, registered + unit-tested |
+| Custom `cassandra-mcp` server | ✅ 5 tools (incl. self_evaluate), registered + unit-tested |
+| Self-evaluation scorecard | ✅ grades its own diagnostic accuracy vs labeled ground truth |
+| Self-tracing | ✅ Cassandra's own reasoning traced into the `cassandra-meta` Phoenix project |
+| Cost/latency + severity | ✅ candidate-vs-baseline efficiency delta + incident severity |
+| Real Phoenix experiments | ✅ optional on-product A/B (`PHOENIX_EXPERIMENTS_ENABLED`, needs live Phoenix) |
 | ADK orchestration shell | ✅ real `LoopAgent`+`BaseAgent`, builds against google-adk 2.1.0 |
 | Deploy manifests (Cloud Run / Agent Engine) | ✅ written |
 | Phoenix MCP surface | ✅ fully integrated and verified via live `@arizeai/phoenix-mcp` |
