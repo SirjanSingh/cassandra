@@ -140,24 +140,29 @@ cassandra/
 │   ├── agent.py          #   Gemini-3 / OpenAI agent + FastAPI /chat + OpenInference spans
 │   ├── tools.py          #   intentionally flaky get_refund_policy / lookup_order
 │   └── instrumentation.py#   OTLP exporter → Phoenix patient-prod
-├── cassandra/            # C3 — the meta-agent
-│   ├── models.py         #   Incident object threaded through the pipeline
+├── cassandra/            # C3 — the meta-agent (8-stage pipeline)
+│   ├── models.py         #   Incident (threaded through), Verdict, Severity, Scorecard, …
 │   ├── phoenix_mcp.py    #   the single Phoenix MCP gateway (NFR-10)
-│   ├── llm.py            #   Gemini 3 / OpenAI structured/text helper
-│   ├── watcher.py        #   FR-W: poll spans since durable cursor
-│   ├── diagnostician.py  #   FR-D: LLM-as-judge → annotate Phoenix span
+│   ├── llm.py            #   Gemini 3 / OpenAI / OpenRouter structured/text helper
+│   ├── watcher.py        #   FR-W: poll spans since durable cursor (skips session=test)
+│   ├── diagnostician.py  #   FR-D: LLM-as-judge → annotate Phoenix span + severity
+│   ├── rootcause.py      #   FR-RC: culprit + causal chain + fix strategy
 │   ├── synthesizer.py    #   FR-S: adversarial dataset → Phoenix dataset
-│   ├── evaluator.py      #   FR-E: baseline vs candidate Phoenix experiment
-│   ├── patcher.py        #   FR-PA: prompt patch → Phoenix prompt version
+│   ├── evaluator.py      #   FR-E: live baseline vs candidate scoring + efficiency
+│   ├── patcher.py        #   FR-PA: prompt patch → Phoenix prompt version + diff
+│   ├── replay.py         #   FR-RP: re-run the original failing input on the patch
+│   ├── redteam.py        #   FR-RT: adversarial probes at the live agent
+│   ├── selfeval.py       #   FR-SE: grade its own diagnoses vs traps.py ground truth
+│   ├── traps.py          #   shared hand-labeled ground-truth trap library
+│   ├── instrumentation.py#   self-tracing into cassandra-meta (OpenInference)
+│   ├── phoenix_experiments.py # optional on-product Phoenix experiments (flagged)
 │   ├── loop_agent.py     #   pipeline + real ADK LoopAgent/BaseAgent shell
-│   ├── mcp_server.py     #   cassandra-mcp: publishes supervision as MCP tools
+│   ├── mcp_server.py     #   cassandra-mcp: publishes supervision as MCP tools (5)
 │   ├── state.py          #   durable cursor + dedupe (Firestore/local)
 │   └── events.py         #   in-process bus → dashboard SSE
-├── dashboard/            # C4 — FastAPI: serves ui/index.html + SSE /events + /ask
+├── dashboard/            # C4 — FastAPI: serves ui/index.html + SSE /events + /ask + /selfeval
 │   └── ui/index.html     #   self-contained OLED cockpit (no build step)
-├── web/                  # React + Vite + Tailwind + Framer Motion cockpit
-│   ├── src/components/   #   Hero, Manifesto, Cockpit, EventCard, views, …
-│   └── public/img/       #   license-clear photography (Picsum/Unsplash)
+├── web/                  # legacy React/Vite cockpit — no longer wired in
 ├── scripts/
 │   ├── run_pipeline.py   #   runs one complete end-to-end supervision cycle locally
 │   ├── seed_incident.py  #   C5 — deterministic demo trap + labeled set

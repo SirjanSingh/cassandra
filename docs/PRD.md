@@ -1,8 +1,14 @@
 # Cassandra — Product Requirements Document (PRD)
 
-**Version:** 1.0 (Day-0) · **Owner:** Solo builder · **Last updated:** 2026-05-17
-**Status:** Approved for build · **Deadline:** 2026-06-12 02:30 IST (= 2026-06-11 14:00
-PDT, verified on official Devpost page 2026-05-17) · **Target ship:** 2026-06-11 (buffer)
+**Version:** 1.1 · **Owner:** Solo builder · **Last updated:** 2026-06-02
+**Status:** Built & verified offline (19 tests) — remaining: Vertex run, Cloud Run deploy,
+demo video · **Deadline:** 2026-06-12 02:30 IST (= 2026-06-11 14:00 PDT, verified on
+official Devpost page 2026-05-17) · **Target ship:** 2026-06-11 (buffer)
+
+> **v1.1 note:** v1 shipped and then went deeper. The loop now also does root-cause
+> analysis, live replay of the failing input, and adversarial red-team; evaluation runs
+> live (Phoenix MCP has no run-experiment tool); Cassandra **traces and grades itself** and
+> **publishes its own MCP server**. Reasoning core is Gemini 3 / OpenAI / OpenRouter.
 
 ---
 
@@ -47,6 +53,9 @@ count or traffic, has high latency to detection, and misses the long tail entire
   candidate prompt).
 - G5 — Propose a versioned, A/B-ready prompt patch via Phoenix prompt management.
 - G6 — Present the entire loop on a live dashboard suitable for a 3-minute demo.
+- G7 — Close the loop on itself: trace Cassandra's own reasoning into Phoenix and grade its
+  own diagnostic accuracy (the Arize track's explicit self-improvement bonus criterion).
+- G8 — Publish Cassandra's supervision as an MCP server callable by any external agent/IDE.
 
 ### Non-Goals (explicitly out of scope for v1)
 
@@ -84,21 +93,28 @@ support agent is inventing policies.
 
 ## 6. Functional Scope (summary — full detail in REQUIREMENTS.md)
 
-| Capability | In v1 |
-|------------|-------|
+| Capability | Status |
+|------------|--------|
 | Scheduled trace ingestion from Phoenix via MCP | ✅ |
-| Gemini-3 LLM-as-judge classification of spans | ✅ |
+| LLM-as-judge classification of spans (Gemini / OpenAI / OpenRouter) | ✅ |
+| Incident severity (class × confidence) | ✅ |
 | Write-back annotations to Phoenix | ✅ |
+| Root-cause analysis (culprit + causal chain + fix strategy) | ✅ |
 | Adversarial dataset synthesis + upload to Phoenix | ✅ |
-| Phoenix experiment (current vs candidate) | ✅ |
-| Prompt patch proposal + Phoenix prompt versioning | ✅ |
-| A/B experiment queued (not auto-promoted) | ✅ |
-| Live dashboard (alert feed → span → dataset → patch diff → experiment link) | ✅ |
-| "The Patient" — a deliberately fragile demo victim agent | ✅ |
-| Deterministic incident seeder for reliable demo capture | ✅ |
-| BigQuery long-term span analytics | ⚠️ stretch only |
-| Slack/email alerting | ❌ out of scope |
-| Auto-promotion of winning prompt | ❌ NG1 |
+| Live baseline-vs-candidate evaluation (real numbers, not stubbed) | ✅ |
+| Cost/latency efficiency delta | ✅ |
+| Prompt patch proposal + Phoenix prompt versioning + unified diff | ✅ |
+| Live replay of the original failing input (before/after FIXED) | ✅ |
+| Adversarial red-team against the live agent | ✅ |
+| A/B queued (not auto-promoted) | ✅ NG1 |
+| Live single-file dashboard (full cascade + Phoenix deep links) | ✅ |
+| "The Patient" fragile victim + deterministic seeder | ✅ |
+| Self-evaluation scorecard (grades its own diagnoses) | ✅ |
+| Self-tracing into `cassandra-meta` | ✅ |
+| Published `cassandra-mcp` server (supervision-as-tools) | ✅ |
+| On-product Phoenix experiments via Phoenix client | ✅ optional (flag) |
+| Vertex Agent Engine run · Cloud Run hosted URL · demo video | ⛔ pending (env-gated) |
+| BigQuery analytics · Slack/email alerting · auto-promotion | ❌ out of scope |
 
 ## 7. Success Metrics
 

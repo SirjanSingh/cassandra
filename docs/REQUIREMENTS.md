@@ -1,7 +1,14 @@
 # Cassandra — Detailed Requirements
 
-**Version:** 1.0 · Companion to [PRD.md](PRD.md) and [ARCHITECTURE.md](ARCHITECTURE.md)
-Requirement IDs are stable references for the implementation plan and test matrix.
+**Version:** 1.1 (updated 2026-06-02 to reflect the as-built system) · Companion to
+[PRD.md](PRD.md) and [ARCHITECTURE.md](ARCHITECTURE.md). Requirement IDs are stable
+references for the implementation plan and test matrix.
+
+> **v1.1 additions:** the pipeline grew to 8 stages — RootCause (FR-RC*), TraceReplay
+> (FR-RP*), RedTeam (FR-RT*) — plus severity (FR-D5), cost/latency (FR-E5), a published
+> MCP server (C6 / FR-MCP*), and self-evaluation (FR-SE*). Evaluation now runs **live**
+> (the Phoenix MCP has no run-experiment tool). The reasoning core is Gemini 3 **or**
+> OpenAI **or** OpenRouter (selected at runtime).
 
 ---
 
@@ -10,10 +17,11 @@ Requirement IDs are stable references for the implementation plan and test matri
 | ID | Component | One-line role |
 |----|-----------|---------------|
 | C1 | **The Patient** | Deliberately fragile e-commerce support agent — the on-camera victim |
-| C2 | **Phoenix + MCP** | Trace store + eval/experiment/dataset/prompt backend + the required partner MCP server |
-| C3 | **Cassandra** | The meta-agent (LoopAgent of 5 specialists) |
-| C4 | **Dashboard** | Cloud Run UI — the demo surface |
+| C2 | **Phoenix + MCP** | Trace store + eval/dataset/prompt backend + the required partner MCP server (consumed) |
+| C3 | **Cassandra** | The meta-agent — an 8-stage supervision pipeline in an ADK LoopAgent |
+| C4 | **Dashboard** | Cloud Run UI (single self-contained HTML) — the demo surface |
 | C5 | **Incident Seeder** | Deterministic script that forces a reproducible failure |
+| C6 | **cassandra-mcp** | Cassandra's own published MCP server (supervision-as-tools) |
 
 ---
 
@@ -38,9 +46,13 @@ Requirement IDs are stable references for the implementation plan and test matri
 
 ### 2.2 C3 — Cassandra meta-agent
 
-Cassandra is an ADK `LoopAgent` wrapping a `SequentialAgent` of five sub-agents. Every
-Phoenix interaction MUST go through the Phoenix **MCP server** (not a direct SDK call) so
-the MCP integration is genuine and the surface coverage is maximal.
+Cassandra is an ADK `LoopAgent` wrapping a custom `BaseAgent` that runs an 8-stage
+`SupervisionPipeline` (Watcher → Diagnostician → RootCause → Synthesizer → Evaluator(base)
+→ Patcher → Evaluator(candidate) → Replay → RedTeam). Pipeline *logic* is plain,
+unit-tested Python; ADK is the runtime envelope. Reasoning core is Gemini 3 / OpenAI /
+OpenRouter, selected at runtime behind `llm.py`. All Phoenix reads/writes go through the
+Phoenix **MCP server** wrapper (NFR-10); live agent evaluation is direct HTTP to the
+Patient because the MCP exposes no run-experiment tool.
 
 #### Sub-agent: Watcher (FR-W*)
 
@@ -66,6 +78,16 @@ the MCP integration is genuine and the surface coverage is maximal.
 - **FR-D4** The Diagnostician SHALL emit a structured `Incident` object (span id, trace id,
   class, rationale, offending input, observed output, expected behavior) to the dashboard
   event stream and to the next sub-agent.
+- **FR-D5** The Diagnostician SHALL assign each incident a **severity** (`critical` / `high`
+  / `medium` / `low`) derived from failure class × confidence, exposed on the dashboard.
+
+#### Sub-agent: RootCauseAnalyst (FR-RC*)
+
+- **FR-RC1** After a confirmed failure, the RootCauseAnalyst SHALL use the LLM to produce a
+  structured causal analysis: the single culprit, an ordered causal chain from trigger to
+  bad output, contributing factors, and a concrete `fix_strategy` consumed by the Patcher.
+- **FR-RC2** The causal analysis SHALL be appended to the same Phoenix span annotation
+  thread (via MCP) so the "why" lives next to the "what" in the customer's own tool.
 
 #### Sub-agent: Synthesizer (FR-S*)
 
@@ -79,14 +101,18 @@ the MCP integration is genuine and the surface coverage is maximal.
 
 #### Sub-agent: Evaluator (FR-E*)
 
-- **FR-E1** The Evaluator SHALL create a **Phoenix experiment** (via MCP) running the
-  synthesized dataset against the current Patient prompt as baseline.
-- **FR-E2** Scoring SHALL use an LLM-as-judge eval (Gemini 3) returning pass/fail per
-  example with rationale.
-- **FR-E3** After the Patcher proposes a candidate, the Evaluator SHALL run the same
-  dataset against the candidate prompt as a second experiment run/variant.
+- **FR-E1** The Evaluator SHALL score the **current** Patient prompt as baseline by running
+  each synthesized probe through the live Patient (`session_id="test"`) and judging it.
+  *(The Phoenix MCP exposes no run-experiment tool, so the experiment runs live against the
+  agent — the numbers are real, never stubbed.)*
+- **FR-E2** Scoring SHALL use an LLM-as-judge returning pass/fail per example.
+- **FR-E3** After the Patcher proposes a candidate, the Evaluator SHALL score the candidate
+  prompt over the same probes.
 - **FR-E4** The Evaluator SHALL compute and expose `baseline_pass_rate`,
   `candidate_pass_rate`, and `delta`.
+- **FR-E5** The Evaluator SHALL compute a candidate-vs-baseline **EfficiencyReport** (avg
+  tokens + latency, with deltas). When `PHOENIX_EXPERIMENTS_ENABLED`, it SHALL also register
+  the A/B as a real Phoenix experiment via the Phoenix client (guarded; degrades to no-op).
 
 #### Sub-agent: Patcher (FR-PA*)
 
@@ -100,6 +126,18 @@ the MCP integration is genuine and the surface coverage is maximal.
   SHALL NOT auto-promote the candidate to live traffic (enforces PRD NG1).
 - **FR-PA4** The Patcher SHALL emit a human-readable unified diff of old vs new prompt to
   the dashboard.
+
+#### Sub-agent: TraceReplay (FR-RP*)
+
+- **FR-RP1** The TraceReplay SHALL re-run the **exact original failing input** against the
+  live Patient under the candidate prompt (`system_override`, `session_id="test"`) and use
+  an LLM judge to decide whether this specific case is now FIXED, emitting before/after.
+
+#### Sub-agent: RedTeam (FR-RT*)
+
+- **FR-RT1** The RedTeam SHALL fire the synthesized adversarial probes (capped for latency)
+  at the live Patient under both the current and candidate prompts and report how many
+  survive the patch (current pass-count → candidate pass-count).
 
 #### Loop control (FR-L*)
 
@@ -123,13 +161,34 @@ the MCP integration is genuine and the surface coverage is maximal.
   new tab (proves the work landed in the real product).
 - **FR-DB5** First meaningful paint and the alert animation SHALL be visually striking
   within the first 10 seconds of an incident (demo requirement).
+- **FR-DB6** The dashboard SHALL render, per incident, the **severity** chip, the
+  candidate-vs-baseline **efficiency delta** (tokens/latency), the **replay** before/after
+  with a FIXED/STILL-BROKEN verdict, and the **red-team** survivor table; and SHALL provide
+  a "Grade my own diagnoses" control that calls `POST /selfeval` and shows the scorecard.
 
 ### 2.4 C5 — Incident Seeder
 
 - **FR-IS1** A script SHALL send a fixed customer message that deterministically triggers
   the `get_refund_policy` tool failure path and the resulting hallucination, every run.
-- **FR-IS2** The seeder SHALL support a small library (~20) of hand-labeled trap inputs
-  used for the diagnostic-precision metric.
+- **FR-IS2** A shared hand-labeled trap library (`cassandra/traps.py`, single source of
+  truth) SHALL cover all failure classes (hallucination, tool_failure, prompt_drift, ok)
+  and back the diagnostic-precision metric (FR-SE*).
+
+### 2.5 C6 — cassandra-mcp (published MCP server, FR-MCP*)
+
+- **FR-MCP1** Cassandra SHALL publish an MCP server (`cassandra/mcp_server.py`, FastMCP)
+  over stdio via the `cassandra-mcp` console entry point.
+- **FR-MCP2** It SHALL expose at least: `diagnose`, `synthesize_evals`, `propose_patch`
+  (composable, no Phoenix), `supervise_latest` (full Phoenix-deep loop), and
+  `self_evaluate`. Tools SHALL reuse the same sub-agent code as the in-process pipeline.
+
+### 2.6 Self-evaluation (introspection, FR-SE*)
+
+- **FR-SE1** A `SelfEvaluator` SHALL run the shared trap library through the live Patient
+  and Cassandra's own Diagnostician, scoring verdicts against ground truth, and return a
+  `Scorecard` (overall accuracy + per-failure-class breakdown).
+- **FR-SE2** Cassandra SHALL trace its **own** reasoning into the `cassandra-meta` Phoenix
+  project (`init_self_tracing`, OpenInference), gated by `SELF_TRACE_ENABLED` and guarded.
 
 ---
 
@@ -147,6 +206,8 @@ the MCP integration is genuine and the surface coverage is maximal.
 | NFR-8 | Submission compliance | Public GitHub repo; Apache-2.0 `LICENSE` at repository root, detectable by Devpost; hosted working URL; ≤3-min video. |
 | NFR-9 | Code quality | Typed Python, modular per sub-agent, unit tests for classification and synthesis prompt contracts. |
 | NFR-10 | Maintainability | Phoenix MCP access isolated behind one wrapper module so a tool-signature change is a one-file fix. |
+| NFR-11 | Composability | Cassandra SHALL publish its supervision as an MCP server (C6) callable by any external agent/IDE, reusing the in-process sub-agent code. |
+| NFR-12 | Robustness | Optional integrations (self-tracing, on-product Phoenix experiments) SHALL be flag-gated and guarded so any failure degrades to a no-op without breaking the loop. |
 
 ---
 
@@ -155,14 +216,19 @@ the MCP integration is genuine and the surface coverage is maximal.
 Cassandra MUST exercise, at minimum, these Phoenix MCP tool families end-to-end. Coverage
 breadth is a direct Technological-Implementation differentiator in an Arize-judged bucket.
 
-| MCP family | Used by | Requirement |
-|------------|---------|-------------|
-| Projects / list | Watcher | discover `patient-prod` |
-| Spans / traces query | Watcher | FR-W2 |
-| Span annotations (write) | Diagnostician | FR-D3 |
-| Datasets (create + add examples) | Synthesizer | FR-S2 |
-| Experiments (create + run + read results) | Evaluator | FR-E1, FR-E3, FR-E4 |
-| Prompt management (version + retrieve) | Patcher | FR-PA2 |
+| MCP tool | Used by | Requirement |
+|----------|---------|-------------|
+| `list-projects` | Watcher | discover `patient-prod` |
+| `get-spans` | Watcher | FR-W2 |
+| `add-span-annotations` (write) | Diagnostician / RootCause | FR-D3, FR-RC2 |
+| `add-dataset-examples` | Synthesizer | FR-S2 |
+| `upsert-prompt` (version) | Patcher | FR-PA2 |
+| `get-experiment-by-id` (read) | Evaluator | FR-E (read-back) |
+
+> The Phoenix MCP has **no run-experiment tool**, so baseline/candidate scoring runs live
+> against the agent (FR-E1/3); the optional on-product experiment (FR-E5) uses the Phoenix
+> **Python client**, not MCP. Beyond consuming the partner MCP, Cassandra also **publishes**
+> its own MCP server (C6 / FR-MCP*) — depth on *both* sides of MCP.
 
 ---
 
@@ -171,9 +237,10 @@ breadth is a direct Technological-Implementation differentiator in an Arize-judg
 - **AC-1** From a clean deploy, running the Incident Seeder once produces an annotated
   span in Phoenix `patient-prod` within 10 s (NFR-1, FR-D3).
 - **AC-2** That same incident yields a Phoenix dataset of ≥ 12 diverse examples (FR-S1/2).
-- **AC-3** A Phoenix experiment exists with baseline and candidate runs; candidate
-  pass-rate − baseline pass-rate ≥ a clearly visible positive delta (target baseline ≤4/12,
-  candidate ≥10/12) (FR-E4).
+- **AC-3** A live baseline-vs-candidate evaluation over the synthesized dataset shows a
+  clearly visible positive delta (candidate pass-rate − baseline pass-rate); the live
+  **replay** of the original input reports FIXED (FR-E4, FR-RP1). When
+  `PHOENIX_EXPERIMENTS_ENABLED`, a real Phoenix experiment also exists (FR-E5).
 - **AC-4** A new prompt version exists in Phoenix prompt management linked to the incident,
   with an A/B experiment queued and the candidate NOT live (FR-PA2/3, NG1).
 - **AC-5** The dashboard shows the full chain for that incident with working deep links

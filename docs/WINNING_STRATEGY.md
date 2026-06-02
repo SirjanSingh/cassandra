@@ -49,6 +49,24 @@ George Keller, Merlin Yamssi). Implications:
 Cassandra is engineered for exactly this audience: it is the Phoenix product loop, made
 autonomous, shown working on real traces.
 
+### 2.5 What the Arize track explicitly rewards (confirmed from Devpost, 2026-06-02)
+
+Re-read of the official Arize track resources page surfaced three decisive specifics:
+
+1. **Required runtime:** a *code-owned* agent runtime (Gemini CLI, Gemini Enterprise Agent
+   SDK, Google ADK, Agent Runtime, or Cloud Run) with **direct OpenInference
+   instrumentation** — Visual Agent Builder alone does **not** qualify. ✅ Cassandra uses
+   ADK + Cloud Run + hand-wired OpenInference on both the Patient and itself.
+2. **Recommended path:** OpenInference → Phoenix traces → **Phoenix MCP for runtime
+   introspection** → LLM-as-judge evals. ✅ Hit end-to-end.
+3. **Bonus points (and an explicit judging emphasis on "the caliber of self-improvement
+   mechanisms"):** *agents that "use their own observability data to improve over time."*
+   ✅ This is **literally what Cassandra is** — and we now double down with **self-tracing**
+   into `cassandra-meta` and a **self-evaluation scorecard** that grades its own diagnoses.
+
+The strategic consequence: lead the pitch with the self-improvement loop, because it is the
+single criterion the track calls out by name and almost no other entry will satisfy.
+
 ## 3. Judging Criteria Map (each ~25%)
 
 ### Quality of the Idea — 25%
@@ -56,18 +74,23 @@ autonomous, shown working on real traces.
 - A recursive, memorable thesis: **an agent whose job is supervising other agents.**
 - Nearly every one of ~6,200 entries will *be* an agent. Almost none will be an agent
   *about* agents. Differentiation is structural, not cosmetic.
-- Reinforced by the self-observability flourish (Cassandra is itself traced in Phoenix).
-- Avoids every "overdone" category (no RAG chatbot, no support bot, no travel planner, no
-  World Cup stats bot).
+- Reinforced now by **two** recursive mechanisms: Cassandra **traces its own reasoning** into
+  `cassandra-meta` and **grades its own diagnostic accuracy** — the explicit bonus criterion.
+- Distributable: Cassandra also **publishes its own MCP server** (`cassandra-mcp`), so the
+  meta-agent drops into any Claude/Cursor session.
+- Avoids every "overdone" category (no RAG chatbot, no support bot, no travel planner).
 
 ### Technological Implementation — 25%
 
-- Exercises ≥5 Phoenix MCP tool families end-to-end: spans, annotations, datasets,
-  experiments, prompt management (REQUIREMENTS §4, AC-6). Breadth + depth is precisely
-  what partner-engineer judges score.
-- Mandatory stack used genuinely: Gemini 3 reasoning over span trees, ADK LoopAgent
-  pipeline, Vertex AI Agent Engine runtime, real MCP (not SDK shortcut).
-- All Phoenix access isolated behind one wrapper — clean, reviewable software, not glue.
+- Exercises the Phoenix MCP surface end-to-end (spans, annotations, datasets, prompt
+  versions, experiment read-back) **and publishes its own MCP server** — depth on *both*
+  sides of MCP, exactly what MCP-savvy partner engineers score.
+- Mandatory stack used genuinely: Gemini 3 (or OpenAI/OpenRouter) reasoning over span
+  trees, a real ADK `LoopAgent` + custom `BaseAgent`, Vertex AI Agent Engine runtime.
+- Evaluation is **live and honest** — the Phoenix MCP has no run-experiment tool, so scoring
+  runs against the real agent rather than a stub; replay re-runs the actual failing input.
+- All Phoenix access isolated behind one wrapper; optional integrations are flag-gated and
+  guarded — clean, reviewable software, not glue.
 
 ### Potential Impact — 25%
 
@@ -80,10 +103,13 @@ autonomous, shown working on real traces.
 ### Design — 25%
 
 - The dashboard is engineered as a *demo instrument*: a live, append-only feed where one
-  customer message visibly cascades into annotation → dataset → experiment → patch diff
-  within the 10-second latency budget (NFR-1, FR-DB5).
-- Deep links into the real Phoenix UI prove the work is real, not mocked.
-- The video script front-loads a striking, hard-to-fake wow in the first 30 seconds.
+  customer message visibly cascades into severity → annotation → root cause → dataset →
+  eval → patch diff → **live replay (before/after FIXED)** → red-team, within the latency
+  budget (NFR-1, FR-DB5/6).
+- The **replay before/after** is the hard-to-fake money shot: the *exact* failing input,
+  re-run on the patched prompt, now refusing instead of fabricating.
+- Deep links into the real Phoenix UI (spans, dataset, prompt versions, `cassandra-meta`)
+  prove the work is real, not mocked.
 
 ## 4. Strategic Principles (baked into the build)
 
@@ -114,6 +140,8 @@ autonomous, shown working on real traces.
 ## 6. One-Sentence Pitch (for the Devpost form)
 
 > *Cassandra is an autonomous meta-agent that watches your production agents through
-> Arize Phoenix, catches hallucinations and tool failures in seconds, turns each failure
-> into a reproducible eval dataset, proves a fix with a Phoenix experiment, and hands you
-> an A/B-ready prompt patch — the human you don't have to hire to babysit your agents.*
+> Arize Phoenix, catches hallucinations and tool failures in seconds, finds the root cause,
+> turns each failure into a reproducible eval dataset, proves the fix by re-running the very
+> input that broke, and hands you an A/B-ready prompt patch — then traces and grades its own
+> reasoning in Phoenix, and ships as an MCP server any agent can call. The human you don't
+> have to hire to babysit your agents.*

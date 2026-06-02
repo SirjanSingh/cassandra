@@ -6,6 +6,26 @@ Ship target: 2026-06-10 (1-day buffer). Requirement IDs reference
 
 ---
 
+## Current Status (updated 2026-06-02)
+
+The full pipeline is **built and verified offline (19 tests pass)**; the codebase is well
+ahead of the original Day-0 plan below. Done:
+
+- ✅ Phases 0–5 in code: Patient, Watcher, Diagnostician, Synthesizer, Evaluator, Patcher,
+  dashboard, deploy manifests, MCP enumeration spike.
+- ✅ **Beyond the original plan (this session):** RootCause + TraceReplay + RedTeam stages;
+  real **live** evaluation (Phoenix MCP has no run-experiment tool); single self-contained
+  dashboard; published **cassandra-mcp** server (5 tools); real ADK `LoopAgent`+`BaseAgent`;
+  **self-evaluation** scorecard; **self-tracing** into `cassandra-meta`; optional on-product
+  Phoenix experiments; **cost/latency** + **severity**. Triple backend (Gemini/OpenAI/OpenRouter).
+
+**Remaining (all gated on a live GCP/Phoenix-Cloud environment):**
+1. One real **Vertex AI Agent Engine** run (`python -m deploy.agent_engine`).
+2. **Cloud Run** deploy → public hosted URL (Dockerfile is now build-step-free).
+3. **≤3-min demo video** ([DEMO_SCRIPT.md](DEMO_SCRIPT.md)) + Devpost submission.
+
+---
+
 ## Timeline Overview
 
 | Phase | Days | Theme | Exit gate |
@@ -115,17 +135,22 @@ cassandra/
 ├── .env.example
 ├── docs/                       # this documentation set
 ├── patient/                    # C1 — the victim
-│   ├── agent.py  tools.py  instrumentation.py
+│   ├── agent.py  tools.py  instrumentation.py   # returns tokens+latency
 ├── cassandra/                  # C3 — the meta-agent
-│   ├── loop_agent.py  watcher.py  diagnostician.py
+│   ├── loop_agent.py           #   pipeline + real ADK LoopAgent/BaseAgent
+│   ├── watcher.py  diagnostician.py  rootcause.py
 │   ├── synthesizer.py  evaluator.py  patcher.py
-│   └── phoenix_mcp.py          # single MCP wrapper (NFR-10)
-├── dashboard/                  # C4
-│   ├── main.py  ui/
+│   ├── replay.py  redteam.py   #   live replay + adversarial red-team
+│   ├── selfeval.py  traps.py   #   self-evaluation + ground-truth traps (FR-SE*)
+│   ├── instrumentation.py      #   self-tracing into cassandra-meta (FR-SE2)
+│   ├── phoenix_experiments.py  #   optional on-product Phoenix experiments (FR-E5)
+│   ├── mcp_server.py           #   C6 — published cassandra-mcp server (FR-MCP*)
+│   └── phoenix_mcp.py          #   single MCP wrapper (NFR-10)
+├── dashboard/                  # C4 — main.py + ui/index.html (self-contained, no build)
 ├── functions/trace_poller/     # FR-W1 scheduled function
 ├── deploy/                     # agent_engine.py, cloudrun.Dockerfile, cloudbuild.yaml
-├── scripts/seed_incident.py    # C5 (FR-IS*)
-└── tests/
+├── scripts/                    # seed_incident.py (C5), run_pipeline.py
+└── tests/                      # 19 offline tests (LLM + MCP mocked)
 ```
 
 ---
