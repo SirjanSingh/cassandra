@@ -57,25 +57,44 @@ class SupervisionPipeline:
 
 
 # --- ADK orchestration shell ---------------------------------------------------
-# SPIKE-RECONCILE: confirm google-adk APIs (LoopAgent / SequentialAgent / tool
-# adaptation) for the pinned SDK version, then map each stage to an ADK sub-agent.
-# The pipeline above is the source of truth; ADK is the runtime envelope so the
-# project satisfies the "built with Agent Builder / Agent Engine" requirement.
+# The pipeline above is the source of truth (plain, unit-tested Python). ADK is the
+# runtime envelope so the project satisfies the "built with Agent Builder / ADK +
+# Vertex AI Agent Engine" requirement. `SupervisionAgent` is a real ADK custom
+# BaseAgent (validated against google-adk 2.1.0): it runs one supervision cycle per
+# invocation and reports the handled incident through session state; `LoopAgent`
+# drives the cadence on Agent Engine.
 
-def build_adk_agent():  # pragma: no cover - runtime wiring, validated on deploy
-    from google.adk.agents import LoopAgent, SequentialAgent  # type: ignore
 
-    pipeline = SupervisionPipeline()
+def build_adk_agent():
+    from google.adk.agents import BaseAgent, LoopAgent
+    from google.adk.agents.invocation_context import InvocationContext
+    from google.adk.events import Event, EventActions
 
-    async def _tick(_ctx) -> dict:
-        inc = await pipeline.run_once()
-        return {"handled": inc.incident_id if inc else None}
+    class SupervisionAgent(BaseAgent):
+        """ADK custom agent wrapping one Cassandra supervision cycle."""
 
-    supervision = SequentialAgent(name="supervision_pipeline", sub_agents=[])
+        async def _run_async_impl(self, ctx: InvocationContext):
+            inc = await SupervisionPipeline().run_once()
+            handled = inc.incident_id if inc else None
+            yield Event(
+                author=self.name,
+                actions=EventActions(
+                    state_delta={
+                        "cassandra.handled": handled,
+                        "cassandra.stage": inc.stage.value if inc else None,
+                        "cassandra.failure_class": (
+                            inc.verdict.failure_class.value
+                            if inc and inc.verdict
+                            else None
+                        ),
+                    }
+                ),
+            )
+
     return LoopAgent(
         name="cassandra",
-        sub_agents=[supervision],
-        # one incident per cycle; the scheduler (Cloud Function) drives cadence
+        description="Meta-agent: supervises production agents via Arize Phoenix.",
+        sub_agents=[SupervisionAgent(name="supervision_cycle")],
+        # one incident per cycle; the scheduler (Cloud Function) drives cadence.
         max_iterations=1,
-        before_agent_callback=_tick,
     )

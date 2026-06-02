@@ -27,6 +27,11 @@ dependencies = [
     "httpx>=0.27.0",
 ]
 
+[project.scripts]
+# Cassandra's own MCP server — publishes the supervision tools over stdio so any
+# agent/IDE (Claude Desktop, Cursor) can call them.
+cassandra-mcp = "cassandra.mcp_server:main"
+
 [project.optional-dependencies]
 dev = [
     "pytest>=8.3.0",

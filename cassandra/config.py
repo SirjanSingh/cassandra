@@ -41,9 +41,9 @@ class Settings(BaseSettings):
     state_backend: str = "firestore"  # firestore | gcs | local
     firestore_collection: str = "cassandra_state"
 
-    # Dashboard
-    dashboard_port: int = 8080
-    patient_endpoint: str = "http://localhost:8081/chat"
+    # Dashboard (defaults match the documented local ports; .env overrides)
+    dashboard_port: int = 8085
+    patient_endpoint: str = "http://localhost:8082/chat"
 
     @property
     def phoenix_mcp_arg_list(self) -> list[str]:

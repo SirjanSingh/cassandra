@@ -62,13 +62,56 @@ See [docs/WINNING_STRATEGY.md](docs/WINNING_STRATEGY.md) for the full judging-cr
 
 - **Reasoning core:** Gemini 3 (or direct OpenAI `gpt-4o-mini` / `gpt-4o` integration)
 - **Orchestration:** Google Cloud Agent Builder (the officially named build path) —
-  `LoopAgent` + `SequentialAgent` via ADK/Agent Engine as the underlying runtime
+  ADK `LoopAgent` wrapping a real custom `BaseAgent` supervision cycle (google-adk 2.1.0)
 - **Runtime:** Vertex AI Agent Engine
-- **Partner MCP (required):** Arize Phoenix MCP server (`@arizeai/phoenix-mcp`)
+- **Partner MCP (required):** Arize Phoenix MCP server (`@arizeai/phoenix-mcp`) — consumed
+- **Published MCP:** a custom `cassandra-mcp` server that exposes Cassandra's supervision as
+  callable tools for any agent/IDE (see [Cassandra as an MCP server](#cassandra-as-an-mcp-server))
 - **Scheduling:** Cloud Functions (trace poller)
 - **UI / hosting:** Cloud Run (dashboard)
 - **Secrets:** Secret Manager
 - **Optional:** BigQuery (long-term span analytics)
+
+## Cassandra as an MCP server
+
+Cassandra doesn't just *consume* the partner Phoenix MCP — it *publishes its own*. The
+`cassandra-mcp` server (`cassandra/mcp_server.py`, built on the MCP Python SDK) exposes the
+meta-agent's supervision as tools any other agent or IDE (Claude Desktop, Cursor, …) can call:
+
+| Tool | What it does | Phoenix? |
+|------|--------------|----------|
+| `diagnose(customer_input, agent_output, tool_calls?)` | LLM-as-judge verdict (hallucination / prompt-drift / tool-failure) | no |
+| `synthesize_evals(failure_class, why_it_failed, original_input, bad_output, n?)` | turn one failure into an adversarial eval set | no |
+| `propose_patch(current_prompt, failure_summary, triggering_input, bad_output)` | rewrite a system prompt to close the failure + unified diff | no |
+| `supervise_latest()` | run the **full** loop on the latest production trace: diagnose → root-cause → synthesize → evaluate → patch → replay → red-team, writing annotations/datasets/prompt versions back into Phoenix | yes |
+
+Run it (stdio):
+
+```bash
+pip install -e .
+cassandra-mcp                 # or: python -m cassandra.mcp_server
+```
+
+Register it in Claude Desktop (`claude_desktop_config.json`):
+
+```json
+{
+  "mcpServers": {
+    "cassandra": {
+      "command": "cassandra-mcp",
+      "env": {
+        "OPENAI_API_KEY": "sk-...",
+        "PHOENIX_BASE_URL": "http://localhost:6006",
+        "PHOENIX_API_KEY": "local",
+        "PATIENT_ENDPOINT": "http://localhost:8082/chat"
+      }
+    }
+  }
+}
+```
+
+Now any Claude/Cursor session can say *"diagnose this agent turn"* or *"supervise my latest
+production trace"* and Cassandra answers — the meta-agent, distributed.
 
 ## Repository Layout
 
@@ -87,7 +130,8 @@ cassandra/
 │   ├── synthesizer.py    #   FR-S: adversarial dataset → Phoenix dataset
 │   ├── evaluator.py      #   FR-E: baseline vs candidate Phoenix experiment
 │   ├── patcher.py        #   FR-PA: prompt patch → Phoenix prompt version
-│   ├── loop_agent.py     #   pipeline + thin ADK LoopAgent shell
+│   ├── loop_agent.py     #   pipeline + real ADK LoopAgent/BaseAgent shell
+│   ├── mcp_server.py     #   cassandra-mcp: publishes supervision as MCP tools
 │   ├── state.py          #   durable cursor + dedupe (Firestore/local)
 │   └── events.py         #   in-process bus → dashboard SSE
 ├── dashboard/            # C4 — FastAPI: serves ui/index.html + SSE /events + /ask
@@ -135,12 +179,17 @@ All modules byte-compile and live end-to-end integration runs succeed.
 |------|-------|
 | Docs (PRD → strategy) | ✅ complete, reconciled with official Devpost page |
 | Patient + incident seeder (C1/C5) | ✅ code complete and verified live |
-| Cassandra 5 sub-agents + loop (C3) | ✅ code complete and verified live |
-| Dashboard (C4) | ✅ code complete — SSE + UI |
+| Cassandra 8-stage pipeline (C3) | ✅ diagnose→root-cause→synthesize→eval→patch→replay→red-team |
+| Evaluation | ✅ real baseline-vs-candidate scoring (no stubbed experiments) |
+| Dashboard (C4) | ✅ single self-contained cockpit (no build step) — SSE + UI |
+| Custom `cassandra-mcp` server | ✅ 4 tools, registered + unit-tested |
+| ADK orchestration shell | ✅ real `LoopAgent`+`BaseAgent`, builds against google-adk 2.1.0 |
 | Deploy manifests (Cloud Run / Agent Engine) | ✅ written |
 | Phoenix MCP surface | ✅ fully integrated and verified via live `@arizeai/phoenix-mcp` |
 | Live end-to-end run on Phoenix | ✅ verified live (both Gemini and OpenAI backends) |
 | Feedback loop protection | ✅ verified live (test session filtering prevents infinite loops) |
+| Tests | ✅ 12 passing (offline; LLM + MCP mocked) |
+| Vertex Agent Engine run (needs your GCP creds) | ⛔ pending |
 | Hosted URL + demo video | ⛔ pending |
 
 ## License
