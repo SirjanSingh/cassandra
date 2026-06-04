@@ -12,7 +12,7 @@ from pathlib import Path
 
 import httpx
 from fastapi import FastAPI
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from sse_starlette.sse import EventSourceResponse
@@ -77,8 +77,36 @@ async def selfeval() -> dict:
     """
     from cassandra.selfeval import SelfEvaluator
 
-    card = await SelfEvaluator().evaluate()
+    try:
+        # concurrency=1: low-quota Vertex projects 429 under any burst; the llm-layer
+        # backoff then lets each call self-heal. Slower but reliable.
+        card = await SelfEvaluator().evaluate(concurrency=1)
+    except Exception as exc:  # surface as JSON so the cockpit can render it, not raw HTML 500
+        detail = str(exc)
+        hint = (
+            " (Vertex quota exhausted — enable billing / request more Gemini quota on the project)"
+            if "RESOURCE_EXHAUSTED" in detail or "429" in detail
+            else ""
+        )
+        return JSONResponse(
+            status_code=200,
+            content={"error": f"self-eval failed: {type(exc).__name__}: {detail}{hint}"},
+        )
     return {**card.model_dump(mode="json"), "accuracy": card.accuracy}
+
+
+@app.get("/how", response_class=HTMLResponse)
+@app.get("/how-it-works", response_class=HTMLResponse)
+async def how_it_works() -> str:
+    """Self-contained animated explainer of every Cassandra workflow (FR-DB5).
+
+    A clean alias for dashboard/ui/how-it-works.html (also reachable directly via the
+    StaticFiles mount). No build step — inline SVG/CSS/JS, same theme as the cockpit.
+    """
+    page = _UI / "how-it-works.html"
+    if page.is_file():
+        return page.read_text(encoding="utf-8")
+    return "<h1>how-it-works.html missing</h1>"
 
 
 @app.get("/healthz")
