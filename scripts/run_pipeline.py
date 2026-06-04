@@ -30,8 +30,10 @@ async def main():
             print(f"      Patient Replied: \"{res.get('reply')}\"")
             print(f"      Trace ID: {res.get('trace_id')}")
         except Exception as e:
+            from urllib.parse import urlparse
+            port = urlparse(s.patient_endpoint).port or 8082
             print(f"      Failed to contact Patient agent: {e}")
-            print("      Please make sure uvicorn patient.agent:app --port 8082 is running.")
+            print(f"      Please make sure `uvicorn patient.agent:app --port {port}` is running.")
             return
 
     # Wait a brief moment for OpenTelemetry to flush the span to local Phoenix
