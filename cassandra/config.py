@@ -61,7 +61,37 @@ class Settings(BaseSettings):
     def is_openai(self) -> bool:
         return bool(self.openai_api_key)
 
+    @property
+    def model_provider(self) -> str:
+        """Phoenix `upsert-prompt` model_provider for the ACTIVE backend.
+
+        OpenRouter speaks the OpenAI wire protocol, so it registers as OPENAI too.
+        Falls back to GOOGLE (Vertex/Gemini). Used so prompt versions are tagged with
+        the provider that actually produced them (NFR-10).
+        """
+        if self.is_openai or self.is_openrouter:
+            return "OPENAI"
+        return "GOOGLE"
+
+    @property
+    def model_name(self) -> str:
+        """The model id for the ACTIVE backend (OpenAI vs Gemini/OpenRouter)."""
+        return self.openai_model if self.is_openai else self.gemini_model
+
 
 @lru_cache
 def get_settings() -> Settings:
     return Settings()
+
+
+def reload_settings() -> Settings:
+    """Re-read .env and rebuild the cached Settings.
+
+    `get_settings()` is cached for the process lifetime, and `load_dotenv` only runs at
+    import — so editing `.env` does not take effect until restart (this bit us when adding
+    the OpenAI key). Long-running servers should still be restarted, but this gives scripts
+    and tests a way to pick up a changed `.env` without a fresh process.
+    """
+    get_settings.cache_clear()
+    load_dotenv(override=True)
+    return get_settings()

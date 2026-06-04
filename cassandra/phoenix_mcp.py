@@ -156,8 +156,8 @@ class PhoenixMCP:
             "create_prompt_version",
             name=name,
             template=prompt_text,
-            model_provider="GOOGLE",
-            model_name=self.s.gemini_model,
+            model_provider=self.s.model_provider,
+            model_name=self.s.model_name,
         )
         return _id_of(res, fallback=f"{name}-v?")
 
@@ -249,8 +249,22 @@ def _parse_dt(v: Any) -> datetime:
 
 
 def _flat_str(d: dict, key: str) -> str:
-    """Pull a flat dotted key from an attributes dict."""
+    """Pull a dotted attribute out of a Phoenix span's attributes dict.
+
+    The Patient emits FLAT dotted keys (`{"input.value": "hi"}`), but some Phoenix MCP
+    builds return the attributes NESTED (`{"input": {"value": "hi"}}`). Try the flat key
+    first, then walk the dotted path nested — otherwise real spans get silently skipped by
+    the Watcher (it drops spans with no input/output text).
+    """
     val = d.get(key)
+    if val is None and "." in key:
+        val = d
+        for part in key.split("."):
+            if isinstance(val, dict):
+                val = val.get(part)
+            else:
+                val = None
+                break
     if not val:
         return ""
     return val if isinstance(val, str) else json.dumps(val)[:4000]

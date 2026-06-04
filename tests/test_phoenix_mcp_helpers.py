@@ -30,3 +30,17 @@ def test_normalize_span_maps_core_fields():
     assert s.input_text == "hi"
     assert s.output_text == "there"
     assert s.project == "patient-prod"
+
+
+def test_normalize_span_handles_nested_attributes():
+    # Some Phoenix MCP builds return attributes NESTED rather than flat-dotted.
+    # normalize_span must still extract input/output, else the Watcher silently
+    # drops the span (no input/output text => not a candidate tree).
+    raw = {
+        "context": {"span_id": "s2", "trace_id": "t2"},
+        "start_time": "2026-05-17T00:00:00Z",
+        "attributes": {"input": {"value": "hi"}, "output": {"value": "there"}},
+    }
+    s = normalize_span(raw, "patient-prod")
+    assert s.input_text == "hi"
+    assert s.output_text == "there"
