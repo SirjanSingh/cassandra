@@ -28,17 +28,28 @@ class SelfEvaluator:
         self.s = get_settings()
         self.diag = diagnostician or Diagnostician()
 
-    async def _patient_reply(self, c: httpx.AsyncClient, message: str) -> str:
+    async def _patient_reply(
+        self, c: httpx.AsyncClient, message: str
+    ) -> tuple[str, list]:
         r = await c.post(
             self.s.patient_endpoint,
             json={"message": message, "session_id": "test"},
         )
         r.raise_for_status()
-        return r.json().get("reply", "")
+        data = r.json()
+        # Return the tool log too so the judge can see whether the answer was grounded in
+        # a SUCCESSFUL tool call — without it the judge over-flags grounded replies.
+        return data.get("reply", ""), data.get("tool_calls", [])
 
-    async def _grade(self, c: httpx.AsyncClient, trap: LabeledTrap) -> ScorecardCase:
-        output = await self._patient_reply(c, trap.message)
-        verdict = await self.diag.judge(trap.message, output)
+    async def _grade(
+        self, c: httpx.AsyncClient, trap: LabeledTrap, sem: asyncio.Semaphore
+    ) -> ScorecardCase:
+        # Each grade makes 2 LLM calls (patient reply + judge). Bounding concurrency
+        # keeps the whole trap library from bursting past Vertex's per-minute quota
+        # (otherwise gather() fires 2*N calls at once -> 429 RESOURCE_EXHAUSTED).
+        async with sem:
+            output, tool_calls = await self._patient_reply(c, trap.message)
+            verdict = await self.diag.judge(trap.message, output, tool_calls)
         predicted = verdict.failure_class.value
         return ScorecardCase(
             message=trap.message,
@@ -48,10 +59,13 @@ class SelfEvaluator:
             correct=(predicted == trap.expected_label),
         )
 
-    async def evaluate(self, traps: list[LabeledTrap] | None = None) -> Scorecard:
+    async def evaluate(
+        self, traps: list[LabeledTrap] | None = None, *, concurrency: int = 3
+    ) -> Scorecard:
         traps = traps or LABELED_TRAPS
+        sem = asyncio.Semaphore(concurrency)
         async with httpx.AsyncClient(timeout=60) as c:
-            cases = await asyncio.gather(*(self._grade(c, t) for t in traps))
+            cases = await asyncio.gather(*(self._grade(c, t, sem) for t in traps))
 
         per_class: dict[str, dict] = defaultdict(lambda: {"total": 0, "correct": 0})
         for case in cases:

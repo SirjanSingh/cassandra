@@ -33,8 +33,9 @@ async def test_evaluate_grades_against_ground_truth(monkeypatch):
     ]
 
     # Patient always replies the same; the judge verdict is what we control.
+    # _patient_reply now returns (reply, tool_calls) so the judge can see tool results.
     async def fake_reply(self, c, message):
-        return "some reply"
+        return "some reply", []
 
     # Diagnostician.judge returns: hallucination for the 1st, hallucination for the 2nd
     # (so the 2nd, expected 'ok', is graded WRONG -> accuracy 0.5).
