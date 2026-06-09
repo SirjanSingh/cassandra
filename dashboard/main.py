@@ -38,10 +38,17 @@ def start_pipeline_watcher():
         pipeline = SupervisionPipeline()
         while True:
             try:
-                await pipeline.run_once()
+                result = await pipeline.run_once()
+                if result:
+                    # After a full cycle (diagnose → red-team), wait longer to let
+                    # replay/red-team spans flush and get marked as seen before the
+                    # next poll picks them up as fresh incidents.
+                    await asyncio.sleep(30)
+                else:
+                    await asyncio.sleep(10)  # nothing found, poll again soon
             except Exception as e:
                 print(f"Background SupervisionPipeline error: {e}")
-            await asyncio.sleep(5)  # poll every 5 seconds in dev
+                await asyncio.sleep(15)
     
     asyncio.create_task(watcher_loop())
 
