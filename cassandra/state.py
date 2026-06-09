@@ -71,8 +71,15 @@ class FirestoreState(StateStore):
         self._doc.set({"seen": seen}, merge=True)
 
 
+_STATE_STORE: StateStore | None = None
+
 def get_state() -> StateStore:
+    global _STATE_STORE
+    if _STATE_STORE is not None:
+        return _STATE_STORE
     s = get_settings()
     if s.state_backend == "firestore":
-        return FirestoreState(s.firestore_collection)
-    return LocalState()
+        _STATE_STORE = FirestoreState(s.firestore_collection)
+    else:
+        _STATE_STORE = LocalState()
+    return _STATE_STORE
