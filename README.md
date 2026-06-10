@@ -53,6 +53,7 @@ See [docs/WINNING_STRATEGY.md](docs/WINNING_STRATEGY.md) for the full judging-cr
 |-----|---------|
 | [docs/PITCH.md](docs/PITCH.md) | The pitch — narrative for the website, Devpost page, and demo video |
 | [docs/WORKFLOWS.md](docs/WORKFLOWS.md) | How to actually use Cassandra: IDE copilot, CI prompt gate, live supervision, postmortems |
+| [docs/DISTRIBUTION.md](docs/DISTRIBUTION.md) | Post-hackathon roadmap: distribution channels (VS Code, GitHub Actions, MCP registries) and monetization |
 | [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) | Google Cloud deploy guide: Cloud Run (website + agent) and Vertex AI Agent Engine |
 | [docs/PRD.md](docs/PRD.md) | Product Requirements Document — vision, users, scope, success metrics |
 | [docs/REQUIREMENTS.md](docs/REQUIREMENTS.md) | Detailed functional & non-functional requirements |

@@ -68,6 +68,9 @@ behavior is unchanged (ShopBot remains the zero-config fallback).
 - Decision: the `onboard_agent` auto-discovery MCP tool (scan a workspace for system
   prompts/instrumentation and generate the adapter + env) is deliberately POST-hackathon —
   invisible to judges in the video/demo and risky on deadline day.
+- The full distribution/monetization research (VS Code, GitHub Actions Marketplace,
+  MCP registries, PyPI, open-core "Cassandra Cloud", Chrome-extension rejection, sources)
+  is written up in `docs/DISTRIBUTION.md` — the post-hackathon roadmap.
 
 ## Notes / open items
 
