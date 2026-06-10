@@ -11,12 +11,43 @@ pip install -e .
 cp .env.example .env    # set OPENAI_API_KEY (or Gemini/Vertex), Phoenix URL + key
 ```
 
-The agent being supervised ("the Patient" in this repo) just needs to:
+The bundled ShopBot in `patient/` is only the demo victim. Cassandra supervises **any** agent — see the next section for exactly what yours needs.
 
-1. Export OpenInference spans to a Phoenix project (any OTLP-instrumented agent does).
-2. Expose a `/chat` endpoint accepting `{message, session_id, system_override}` so Cassandra can replay, evaluate, and red-team candidate prompts. Gate `system_override` with `REPLAY_SHARED_SECRET` (see `.env.example`).
+## Bring your own agent
 
-The bundled ShopBot in `patient/` is a reference implementation of both.
+Cassandra has two layers, with different integration costs:
+
+| Capability | What your agent needs |
+| --- | --- |
+| **Passive**: watch traces, diagnose failures, root-cause, synthesize eval datasets, annotate spans | Nothing but OpenInference spans in a Phoenix project. Set `PATIENT_PROJECT` and you're done. |
+| **Active** (the closed loop): score baseline vs candidate prompts live, replay the failing input, red-team the patch | The small HTTP contract below — about 30 lines of wrapper. |
+
+### The active contract
+
+All of Cassandra's live probes go through one module, `cassandra/patient_client.py`, so this is the entire contract:
+
+```
+POST {PATIENT_ENDPOINT}
+  body:    {"message": str, "session_id": "test", "system_override": str?}
+  headers: X-Cassandra-Token: <REPLAY_SHARED_SECRET>   (when configured)
+  reply:   {"reply": str, "total_tokens": int, "latency_ms": int}
+```
+
+Plus two span attributes on the traces your agent exports: `patient.session_id` and `patient.prompt_variant` (`"candidate"` when a `system_override` was applied). They are what keeps Cassandra from supervising its own probe traffic.
+
+**[`examples/adapter_template.py`](../examples/adapter_template.py)** is a ready-to-copy FastAPI wrapper that implements all of this — you fill in one function (`run_my_agent`) that calls your agent.
+
+### Configuration for a non-ShopBot agent
+
+```bash
+PATIENT_PROJECT=my-agent-prod                 # the Phoenix project your agent traces into
+PATIENT_ENDPOINT=http://my-agent:8082/chat    # your adapter endpoint (active layer)
+PATIENT_PROMPT_NAME=my-agent-system           # Phoenix prompt name for patched versions
+BASELINE_PROMPT_FILE=prompts/system_prompt.txt
+REPLAY_SHARED_SECRET=<random>                 # same value on Cassandra and the adapter
+```
+
+`BASELINE_PROMPT_FILE` tells Cassandra what your agent's *current* system prompt is (the thing it diffs patches against). If you skip it, Cassandra tries to extract the system message from the failing trace itself (`llm.input_messages`), and only falls back to the bundled ShopBot prompt in demo mode — the resolution chain lives in `cassandra/baseline.py`.
 
 ## Workflow 1: IDE copilot (zero infrastructure)
 

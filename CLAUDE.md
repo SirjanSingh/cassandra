@@ -67,7 +67,8 @@ Two **separate** agents that communicate *only* through Phoenix telemetry:
 
 - **`patient/`** — the fragile victim agent ("ShopBot"). FastAPI `/chat`, intentionally
   flaky tools (`patient/tools.py`), exports OpenInference spans to Phoenix `patient-prod`.
-  `patient.agent.FRAGILE_SYSTEM_PROMPT` is the baseline prompt Cassandra tries to improve.
+  `patient.agent.FRAGILE_SYSTEM_PROMPT` is the demo baseline prompt Cassandra improves
+  (for non-demo agents the baseline comes from `cassandra/baseline.py`'s resolver chain).
 - **`cassandra/`** — the meta-agent. The pipeline is an 8-stage cycle in
   `loop_agent.py:SupervisionPipeline.run_once()`:
   `Watcher → Diagnostician → RootCauseAnalyst → Synthesizer → Evaluator(baseline) →
@@ -94,6 +95,14 @@ Key conventions to preserve when editing:
 - **Feedback-loop safety:** Cassandra drives the Patient for replay/red-team/eval using
   `session_id="test"`, and the `Watcher` filters out `session_id=="test"` spans so
   Cassandra never supervises its own probes into an infinite loop. Do not remove this filter.
+- **The pipeline is agent-agnostic — never import from `patient/` inside `cassandra/`.**
+  The baseline system prompt is resolved per incident by `cassandra/baseline.py`
+  (`BASELINE_PROMPT_FILE` → the span's `llm.input_messages` system message → bundled
+  ShopBot prompt as demo fallback), and **all live probes to the supervised agent go
+  through `cassandra/patient_client.py:ask_patient()`** — that module documents the HTTP
+  contract a third-party agent implements (template: `examples/adapter_template.py`,
+  guide: "Bring your own agent" in `docs/WORKFLOWS.md`). The Phoenix prompt name is
+  `PATIENT_PROMPT_NAME` (default `patient-shopbot-system`), not a hardcoded string.
 - **ADK is a thin runtime envelope, not the logic.** `build_adk_agent()` wraps
   `SupervisionPipeline` in a real `LoopAgent` + custom `BaseAgent` (google-adk 2.1.0) to
   satisfy the "built with ADK / Agent Engine" requirement. All business logic stays in
