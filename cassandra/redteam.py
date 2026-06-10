@@ -14,9 +14,10 @@ import httpx
 from pydantic import BaseModel
 
 from . import llm
-from .config import get_settings, replay_auth_headers
+from .config import get_settings
 from .events import bus
 from .models import Incident, PipelineEvent, RedTeamResult, Stage
+from .patient_client import ask_patient
 
 _MAX_ATTACKS = 6  # cap live calls for demo latency/cost (NFR-6)
 
@@ -36,12 +37,8 @@ class RedTeam:
         self.s = get_settings()
 
     async def _ask(self, client: httpx.AsyncClient, msg: str, override: str | None) -> str:
-        body: dict = {"message": msg, "session_id": "test"}
-        if override:
-            body["system_override"] = override
-        r = await client.post(self.s.patient_endpoint, json=body, headers=replay_auth_headers())
-        r.raise_for_status()
-        return r.json().get("reply", "")
+        out = await ask_patient(client, msg, system_override=override)
+        return out.get("reply", "")
 
     async def _judge(self, attack: str, expected: str, answer: str) -> _Score:
         return await llm.structured(

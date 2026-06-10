@@ -20,9 +20,10 @@ import httpx
 from pydantic import BaseModel
 
 from . import llm
-from .config import get_settings, replay_auth_headers
+from .config import get_settings
 from .events import bus
 from .models import EfficiencyReport, ExperimentResult, Incident, PipelineEvent, Stage
+from .patient_client import ask_patient
 from .phoenix_experiments import register_experiment
 from .phoenix_mcp import PhoenixMCP
 
@@ -46,14 +47,9 @@ class Evaluator:
         self.mcp = mcp or PhoenixMCP(self.s)
 
     async def _answer(self, c: httpx.AsyncClient, msg: str, prompt: str) -> dict:
-        # session_id="test" => Watcher filters these spans out (no self-supervision loop).
-        r = await c.post(
-            self.s.patient_endpoint,
-            json={"message": msg, "system_override": prompt, "session_id": "test"},
-            headers=replay_auth_headers(),
-        )
-        r.raise_for_status()
-        return r.json()
+        # patient_client speaks the supervised-agent contract (session_id="test"
+        # => Watcher filters these spans out; no self-supervision loop).
+        return await ask_patient(c, msg, system_override=prompt)
 
     async def _judge(self, case_input: str, expected: str, answer: str) -> bool:
         score: _Score = await llm.structured(

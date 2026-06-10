@@ -12,9 +12,10 @@ import httpx
 from pydantic import BaseModel
 
 from . import llm
-from .config import get_settings, replay_auth_headers
+from .config import get_settings
 from .events import bus
 from .models import Incident, PipelineEvent, ReplayResult, Stage
+from .patient_client import ask_patient
 
 _JUDGE = """You are verifying a fix. You see one customer input, the agent's ORIGINAL
 (bad) answer, and its NEW answer after a prompt patch. Return JSON {fixed: bool,
@@ -36,17 +37,8 @@ class TraceReplay:
         original_input = inc.span.input_text
 
         async with httpx.AsyncClient(timeout=60) as c:
-            r = await c.post(
-                self.s.patient_endpoint,
-                json={
-                    "message": original_input,
-                    "system_override": inc.candidate_prompt,
-                    "session_id": "test",
-                },
-                headers=replay_auth_headers(),
-            )
-            r.raise_for_status()
-            after_output = r.json().get("reply", "")
+            out = await ask_patient(c, original_input, system_override=inc.candidate_prompt)
+            after_output = out.get("reply", "")
 
         judged: _Judgement = await llm.structured(
             f"INPUT:\n{original_input}\n\nORIGINAL BAD ANSWER:\n{inc.span.output_text}\n\n"

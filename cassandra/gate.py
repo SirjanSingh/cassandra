@@ -23,9 +23,10 @@ import httpx
 from pydantic import BaseModel, Field, computed_field
 
 from . import llm
-from .config import get_settings, replay_auth_headers
+from .config import get_settings
 from .evaluator import _JUDGE, _Score
 from .models import DatasetExample
+from .patient_client import ask_patient
 
 
 class CaseResult(BaseModel):
@@ -54,13 +55,8 @@ class GateResult(BaseModel):
 
 async def _ask_agent(c: httpx.AsyncClient, endpoint: str, message: str, prompt: str) -> str:
     """Run one case through the live agent under the prompt being gated."""
-    r = await c.post(
-        endpoint,
-        json={"message": message, "system_override": prompt, "session_id": "test"},
-        headers=replay_auth_headers(),
-    )
-    r.raise_for_status()
-    return r.json().get("reply", "")
+    out = await ask_patient(c, message, system_override=prompt, endpoint=endpoint)
+    return out.get("reply", "")
 
 
 async def _judge_case(case: DatasetExample, reply: str) -> _Score:
