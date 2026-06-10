@@ -11,8 +11,12 @@ dependencies = [
     "google-adk>=0.1.0",              # Agent Builder / ADK (LoopAgent, SequentialAgent)
     # Partner MCP (required integration)
     "mcp>=1.2.0",                     # Model Context Protocol client for @arizeai/phoenix-mcp
+    # LLM backends (llm.py precedence: OpenAI/OpenRouter key -> else Vertex Gemini)
+    "openai>=1.50.0",
     # The Patient instrumentation
     "openinference-instrumentation>=0.1.0",
+    # Cassandra's own self-tracing into the cassandra-meta project (instrumentation.py)
+    "openinference-instrumentation-openai>=0.1.0",
     "opentelemetry-sdk>=1.27.0",
     "opentelemetry-exporter-otlp>=1.27.0",
     # Dashboard
