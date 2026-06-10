@@ -8,6 +8,7 @@ tested without a live ADK/Agent Engine runtime.
 
 from __future__ import annotations
 
+from .baseline import resolve_baseline_prompt
 from .diagnostician import Diagnostician
 from .evaluator import Evaluator
 from .models import Incident
@@ -18,7 +19,6 @@ from .rootcause import RootCauseAnalyst
 from .state import get_state
 from .synthesizer import Synthesizer
 from .watcher import Watcher
-from patient.agent import FRAGILE_SYSTEM_PROMPT
 
 
 class SupervisionPipeline:
@@ -47,7 +47,10 @@ class SupervisionPipeline:
 
             inc = await self.rootcause.analyze(inc)          # why it broke
             inc = await self.synthesizer.synthesize(inc)      # eval generation
-            inc = await self.evaluator.run_baseline(inc, FRAGILE_SYSTEM_PROMPT)
+            # Resolve the supervised agent's CURRENT prompt once (file/trace/demo —
+            # cassandra/baseline.py); Evaluator and Patcher both work from it.
+            inc.baseline_prompt = resolve_baseline_prompt(inc.span)
+            inc = await self.evaluator.run_baseline(inc, inc.baseline_prompt)
             inc = await self.patcher.propose(inc)             # prompt fixing
             inc = await self.evaluator.run_candidate(inc)
             inc = await self.replay.replay(inc)               # live trace replay

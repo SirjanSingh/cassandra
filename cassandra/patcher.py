@@ -11,11 +11,11 @@ import difflib
 from pydantic import BaseModel
 
 from . import llm
+from .baseline import resolve_baseline_prompt
 from .config import get_settings
 from .events import bus
 from .models import Incident, PipelineEvent, Stage
 from .phoenix_mcp import PhoenixMCP
-from patient.agent import FRAGILE_SYSTEM_PROMPT
 
 _SYSTEM = """You are Cassandra's Patcher. Rewrite the target agent's system prompt so it
 can no longer commit the observed failure, while preserving its helpful behaviour for
@@ -35,6 +35,8 @@ class Patcher:
 
     async def propose(self, inc: Incident) -> Incident:
         assert inc.verdict is not None
+        # Set by the pipeline; resolved here only when Patcher is driven standalone.
+        baseline = inc.baseline_prompt or resolve_baseline_prompt(inc.span)
         rc = inc.root_cause
         rc_block = (
             f"ROOT CAUSE: {rc.summary}\n"
@@ -44,7 +46,7 @@ class Patcher:
             else ""
         )
         prompt = (
-            f"CURRENT SYSTEM PROMPT:\n{FRAGILE_SYSTEM_PROMPT}\n\n"
+            f"CURRENT SYSTEM PROMPT:\n{baseline}\n\n"
             f"OBSERVED FAILURE ({inc.verdict.failure_class.value}): "
             f"{inc.verdict.rationale}\n"
             f"{rc_block}"
@@ -56,7 +58,7 @@ class Patcher:
         inc.candidate_prompt = patch.revised_prompt
         inc.prompt_diff = "\n".join(
             difflib.unified_diff(
-                FRAGILE_SYSTEM_PROMPT.splitlines(),
+                baseline.splitlines(),
                 patch.revised_prompt.splitlines(),
                 fromfile="current",
                 tofile="candidate",
@@ -66,7 +68,7 @@ class Patcher:
 
         async with self.mcp.session() as phx:
             inc.candidate_prompt_version = await phx.create_prompt_version(
-                name="patient-shopbot-system",
+                name=self.s.patient_prompt_name,
                 prompt_text=patch.revised_prompt,
                 metadata={
                     "incident": inc.incident_id,
@@ -83,7 +85,7 @@ class Patcher:
                 stage=Stage.PATCHED,
                 title="Candidate prompt proposed (A/B queued, not live)",
                 detail=patch.change_summary,
-                phoenix_url=f"{self.s.phoenix_base_url}/prompts/patient-shopbot-system",
+                phoenix_url=f"{self.s.phoenix_base_url}/prompts/{self.s.patient_prompt_name}",
                 payload={"diff": inc.prompt_diff},
             )
         )

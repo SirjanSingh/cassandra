@@ -210,6 +210,9 @@ class Incident(BaseModel):
     dataset_id: str | None = None
     dataset_examples: list[DatasetExample] = Field(default_factory=list)
     experiment: ExperimentResult | None = None
+    # The supervised agent's CURRENT prompt, resolved once per incident
+    # (cassandra/baseline.py) so Evaluator and Patcher diff against the same text.
+    baseline_prompt: str | None = None
     candidate_prompt: str | None = None
     candidate_prompt_version: str | None = None
     prompt_diff: str | None = None

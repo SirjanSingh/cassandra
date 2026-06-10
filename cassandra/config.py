@@ -49,6 +49,13 @@ class Settings(BaseSettings):
     dashboard_port: int = 8085
     patient_endpoint: str = "http://localhost:8082/chat"
 
+    # Supervised-agent ("Patient") integration — generic, NOT ShopBot-specific.
+    # baseline_prompt_file: file holding the supervised agent's CURRENT system prompt
+    # (cassandra/baseline.py resolver; unset = extract from the trace, else demo ShopBot).
+    # patient_prompt_name: the Phoenix prompt name candidate patches are versioned under.
+    baseline_prompt_file: str | None = None
+    patient_prompt_name: str = "patient-shopbot-system"
+
     # Shared secret for the Patient's system_override path (SECURITY). When set, the
     # Patient honors system_override only if the caller also sends it in the
     # X-Cassandra-Token header. Unset = local-dev mode (session_id gate only).
