@@ -52,6 +52,7 @@ See [docs/WINNING_STRATEGY.md](docs/WINNING_STRATEGY.md) for the full judging-cr
 | Doc | Purpose |
 |-----|---------|
 | [docs/PITCH.md](docs/PITCH.md) | The pitch — narrative for the website, Devpost page, and demo video |
+| [docs/WORKFLOWS.md](docs/WORKFLOWS.md) | How to actually use Cassandra: IDE copilot, CI prompt gate, live supervision, postmortems |
 | [docs/PRD.md](docs/PRD.md) | Product Requirements Document — vision, users, scope, success metrics |
 | [docs/REQUIREMENTS.md](docs/REQUIREMENTS.md) | Detailed functional & non-functional requirements |
 | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | System & agent architecture, data flow, MCP surface |
@@ -86,8 +87,18 @@ meta-agent's supervision as tools any other agent or IDE (Claude Desktop, Cursor
 | `diagnose(customer_input, agent_output, tool_calls?)` | LLM-as-judge verdict (hallucination / prompt-drift / tool-failure) | no |
 | `synthesize_evals(failure_class, why_it_failed, original_input, bad_output, n?)` | turn one failure into an adversarial eval set | no |
 | `propose_patch(current_prompt, failure_summary, triggering_input, bad_output)` | rewrite a system prompt to close the failure + unified diff | no |
-| `supervise_latest()` | run the **full** loop on the latest production trace: diagnose → root-cause → synthesize → evaluate → patch → replay → red-team, writing annotations/datasets/prompt versions back into Phoenix | yes |
+| `gate_prompt(prompt, cases, threshold?)` | CI regression gate: score a prompt against eval cases on the live agent; `passed=false` means block the change | no |
+| `supervise_latest()` | run the **full** loop on the latest production trace: diagnose → root-cause → synthesize → evaluate → patch → replay → red-team, writing annotations/datasets/prompt versions back into Phoenix — and return a paste-ready markdown **postmortem** | yes |
 | `self_evaluate()` | grade Cassandra's **own** diagnostic accuracy against a labeled ground-truth set (introspection / self-improvement) | no |
+
+**Concrete use cases** (full recipes in [docs/WORKFLOWS.md](docs/WORKFLOWS.md)):
+
+- *While building an agent* — ask your IDE assistant: "diagnose this turn", "synthesize 10
+  evals for this failure", "propose a patch and show the diff". Zero infrastructure.
+- *In CI* — "gate my new prompt against `evals/cases.json` at 80%", or run the same check
+  headless with the `cassandra-gate` CLI (see below).
+- *On call* — "supervise the latest production trace": one tool call runs the entire loop
+  and hands back a postmortem ready to file as a GitHub issue.
 
 Run it (stdio):
 
@@ -116,6 +127,31 @@ Register it in Claude Desktop (`claude_desktop_config.json`):
 
 Now any Claude/Cursor session can say *"diagnose this agent turn"* or *"supervise my latest
 production trace"* and Cassandra answers — the meta-agent, distributed.
+
+## CI prompt regression gate (`cassandra-gate`)
+
+Prompts are code, so test them like code. `cassandra-gate` scores a system prompt against
+an eval dataset by running every case through your live agent and judging each answer,
+then **fails the build** when the pass rate drops below the threshold:
+
+```bash
+cassandra-gate --prompt-file prompts/system_prompt.txt \
+               --cases evals/cases.json --threshold 0.8
+```
+
+The dataset format is exactly what Cassandra's Synthesizer emits, so every production
+incident Cassandra handles can be committed as a regression suite that guards all future
+prompt changes — failures compound into protection. Ready-to-copy GitHub Actions workflow:
+[`examples/github-actions-prompt-gate.yml`](examples/github-actions-prompt-gate.yml).
+
+## Auto-postmortems
+
+Every completed supervision cycle writes `reports/<incident_id>.md` — a paste-ready
+postmortem with the diagnosis, severity, root-cause chain, baseline-vs-candidate pass
+rates, the prompt diff, before/after replay evidence, and the red-team table. File it as
+a GitHub issue (`gh issue create --body-file reports/inc-<id>.md`), drop it in Slack, or
+attach it to the PR that applies the patch. The `supervise_latest` MCP tool returns the
+same markdown in its `postmortem` field.
 
 ## Self-evaluation (introspection loop)
 
@@ -160,7 +196,9 @@ cassandra/
 │   ├── instrumentation.py#   self-tracing into cassandra-meta (OpenInference)
 │   ├── phoenix_experiments.py # optional on-product Phoenix experiments (flagged)
 │   ├── loop_agent.py     #   pipeline + real ADK LoopAgent/BaseAgent shell
-│   ├── mcp_server.py     #   cassandra-mcp: publishes supervision as MCP tools (5)
+│   ├── mcp_server.py     #   cassandra-mcp: publishes supervision as MCP tools (6)
+│   ├── gate.py           #   cassandra-gate: CI prompt regression gate (CLI + MCP)
+│   ├── report.py         #   auto-postmortem renderer (reports/<incident_id>.md)
 │   ├── state.py          #   durable cursor + dedupe (Firestore/local)
 │   └── events.py         #   in-process bus → dashboard SSE
 ├── dashboard/            # C4 — FastAPI: serves ui/index.html + SSE /events + /ask + /selfeval
@@ -211,7 +249,9 @@ All modules byte-compile and live end-to-end integration runs succeed.
 | Cassandra 8-stage pipeline (C3) | ✅ diagnose→root-cause→synthesize→eval→patch→replay→red-team |
 | Evaluation | ✅ real baseline-vs-candidate scoring (no stubbed experiments) |
 | Dashboard (C4) | ✅ single self-contained cockpit (no build step) — SSE + UI |
-| Custom `cassandra-mcp` server | ✅ 5 tools (incl. self_evaluate), registered + unit-tested |
+| Custom `cassandra-mcp` server | ✅ 6 tools (incl. gate_prompt + self_evaluate), registered + unit-tested |
+| CI prompt regression gate | ✅ `cassandra-gate` CLI + `gate_prompt` MCP tool + GitHub Actions example |
+| Auto-postmortems | ✅ every cycle writes `reports/<incident_id>.md`; returned by `supervise_latest` |
 | Self-evaluation scorecard | ✅ grades its own diagnostic accuracy vs labeled ground truth — **100%** (11/11) on OpenAI |
 | Animated explainer page | ✅ self-contained `/how` — every workflow + MCP call I/O, no build step |
 | `system_override` hardening | ✅ sandboxed `session_id="test"` path + `REPLAY_SHARED_SECRET` token gate for public deploys (unit + live tested) |

@@ -7,13 +7,18 @@ agent or IDE (Claude Desktop, Cursor, …) can call them:
     diagnose          - LLM-as-judge verdict on one agent turn (raw text, no Phoenix)
     synthesize_evals  - turn a failure into an adversarial eval set (raw text)
     propose_patch     - rewrite a system prompt to close a failure, with a unified diff
+    gate_prompt       - CI regression gate: score a prompt vs eval cases, pass/block
     supervise_latest  - run the FULL Phoenix-deep loop on the latest production trace
                         (diagnose -> root-cause -> synthesize -> evaluate -> patch ->
                          replay -> red-team), writing annotations/datasets/prompts back
                          into Phoenix via the partner MCP
 
-The first three are composable and provider-agnostic (no Phoenix required); the last is
-the headline tool that exercises the whole partner-MCP surface.
+    self_evaluate     - grade Cassandra's own diagnostic accuracy vs ground truth
+
+The composable tools are provider-agnostic (no Phoenix required); supervise_latest is
+the headline tool that exercises the whole partner-MCP surface and now also returns a
+paste-ready markdown postmortem. See docs/WORKFLOWS.md for end-to-end recipes (live
+supervision, CI gating, IDE copilot, on-call postmortems).
 
 Run it:  cassandra-mcp           (stdio)  — or  python -m cassandra.mcp_server
 """
