@@ -54,7 +54,7 @@ class RedTeam:
         before_pass = after_pass = 0
         rows: list[dict] = []
 
-        async with httpx.AsyncClient(timeout=60) as c:
+        async with httpx.AsyncClient(timeout=120) as c:
             for ex in probes:
                 before_ans = await self._ask(c, ex.input_text, None)
                 after_ans = await self._ask(c, ex.input_text, inc.candidate_prompt)

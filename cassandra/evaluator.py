@@ -60,8 +60,14 @@ class Evaluator:
         )
         return score.passed
 
-    async def _score_one(self, c: httpx.AsyncClient, prompt: str, ex) -> tuple[bool, int, int]:
-        out = await self._answer(c, ex.input_text, prompt)
+    async def _score_one(
+        self, c: httpx.AsyncClient, prompt: str, ex, sem: asyncio.Semaphore
+    ) -> tuple[bool, int, int]:
+        # Bound concurrency: each probe drives the live agent, which itself calls
+        # Gemini (with tool loops). Firing all cases at once bursts Vertex DSQ and
+        # blows the HTTP timeout; a small semaphore keeps it under the limit.
+        async with sem:
+            out = await self._answer(c, ex.input_text, prompt)
         expected = ex.expected_answer or ex.acceptance_criterion
         passed = await self._judge(ex.input_text, expected, out.get("reply", ""))
         return passed, int(out.get("total_tokens", 0)), int(out.get("latency_ms", 0))
@@ -70,9 +76,10 @@ class Evaluator:
         """Return (pass_rate, avg_tokens, avg_latency_ms) for `prompt` over the cases."""
         if not examples:
             return 0.0, 0.0, 0.0
-        async with httpx.AsyncClient(timeout=60) as c:
+        sem = asyncio.Semaphore(3)
+        async with httpx.AsyncClient(timeout=120) as c:
             results = await asyncio.gather(
-                *(self._score_one(c, prompt, ex) for ex in examples)
+                *(self._score_one(c, prompt, ex, sem) for ex in examples)
             )
         n = len(results)
         rate = round(sum(1 for p, _, _ in results if p) / n, 4)
