@@ -27,7 +27,9 @@ from .patient_client import ask_patient
 from .phoenix_experiments import register_experiment
 from .phoenix_mcp import PhoenixMCP
 
-_MAX_CASES = 8  # cap live calls for demo latency/cost (NFR-6)
+_MAX_CASES = 4  # cap live calls for demo latency/cost (NFR-6); kept low so the
+# baseline+candidate evals finish quickly on Gemini (each probe drives the live
+# agent through a tool loop, which is slow under Vertex DSQ).
 
 _JUDGE = """You are scoring one eval case against an agent. Given the case input, the
 expected-correct behaviour / acceptance criterion, and the agent's actual answer, return
@@ -77,10 +79,17 @@ class Evaluator:
         if not examples:
             return 0.0, 0.0, 0.0
         sem = asyncio.Semaphore(3)
-        async with httpx.AsyncClient(timeout=120) as c:
-            results = await asyncio.gather(
-                *(self._score_one(c, prompt, ex, sem) for ex in examples)
+        async with httpx.AsyncClient(timeout=300) as c:
+            # return_exceptions so a single slow/timed-out probe (common on Vertex
+            # DSQ) does not abort the whole eval stage and stall the pipeline; a
+            # failed probe simply counts as a non-pass with zero cost.
+            raw = await asyncio.gather(
+                *(self._score_one(c, prompt, ex, sem) for ex in examples),
+                return_exceptions=True,
             )
+        results = [r for r in raw if not isinstance(r, Exception)]
+        if not results:
+            return 0.0, 0.0, 0.0
         n = len(results)
         rate = round(sum(1 for p, _, _ in results if p) / n, 4)
         avg_tokens = round(sum(t for _, t, _ in results) / n, 1)

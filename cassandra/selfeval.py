@@ -64,7 +64,7 @@ class SelfEvaluator:
     ) -> Scorecard:
         traps = traps or LABELED_TRAPS
         sem = asyncio.Semaphore(concurrency)
-        async with httpx.AsyncClient(timeout=60) as c:
+        async with httpx.AsyncClient(timeout=300) as c:
             cases = await asyncio.gather(*(self._grade(c, t, sem) for t in traps))
 
         per_class: dict[str, dict] = defaultdict(lambda: {"total": 0, "correct": 0})
