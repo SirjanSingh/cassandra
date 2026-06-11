@@ -9,21 +9,38 @@ Usage:
     python -m deploy.agent_engine
 """
 
-from __future__ import annotations
+import os
 
 from cassandra.config import get_settings
+
+# Agent Engine requires a REGIONAL location (never "global") and a GCS staging
+# bucket. AGENT_ENGINE_* env vars take precedence over the (possibly stale) .env
+# project so the deploy target is unambiguous.
+_PROJECT = os.getenv("AGENT_ENGINE_PROJECT")
+_LOCATION = os.getenv("AGENT_ENGINE_LOCATION", "us-central1")
+_STAGING_BUCKET = os.getenv("AGENT_ENGINE_STAGING_BUCKET")  # gs://... (auto-derived if unset)
 
 
 def main() -> None:
     s = get_settings()
     import vertexai  # type: ignore
     from vertexai import agent_engines  # type: ignore
+    from vertexai.preview.reasoning_engines import AdkApp  # type: ignore
 
     from cassandra.loop_agent import build_adk_agent
 
-    vertexai.init(project=s.google_cloud_project, location=s.google_cloud_location)
+    project = _PROJECT or s.google_cloud_project
+    location = _LOCATION if s.google_cloud_location in ("", "global") else s.google_cloud_location
+    bucket = _STAGING_BUCKET or f"gs://{project}-agent-engine"
+
+    print(f"Deploying to Agent Engine: project={project} location={location} staging={bucket}")
+    vertexai.init(project=project, location=location, staging_bucket=bucket)
+    # Wrap the ADK LoopAgent in AdkApp so the Agent Engine runtime has a servable
+    # query interface (a bare LoopAgent boots with nothing to serve -> "cannot
+    # serve traffic").
+    app = AdkApp(agent=build_adk_agent())
     remote = agent_engines.create(
-        build_adk_agent(),
+        app,
         requirements=[
             "google-genai>=0.3.0",
             "google-adk>=0.1.0",
@@ -32,7 +49,9 @@ def main() -> None:
             "pydantic>=2.9.0",
             "pydantic-settings>=2.6.0",
             "httpx>=0.27.0",
+            "openai>=1.50.0",
         ],
+        extra_packages=["cassandra", "patient"],
         display_name="cassandra-meta-agent",
     )
     print(f"Deployed Cassandra to Agent Engine: {remote.resource_name}")
