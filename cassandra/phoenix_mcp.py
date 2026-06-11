@@ -49,9 +49,19 @@ class PhoenixMCP:
     @asynccontextmanager
     async def session(self):
         """Open a stdio MCP session. Phoenix creds passed via env to the server."""
+        # @arizeai/phoenix-mcp reads --baseUrl/--apiKey CLI flags and silently
+        # defaults to http://localhost:6006 without them (the env vars alone are
+        # not honored) - against a remote Phoenix every tool then returns the
+        # string "fetch failed" and the Watcher sees zero spans. Append the flags
+        # from settings unless the operator already put them in PHOENIX_MCP_ARGS.
+        args = list(self.s.phoenix_mcp_arg_list)
+        if "--baseUrl" not in args:
+            args += ["--baseUrl", self.s.phoenix_base_url]
+        if "--apiKey" not in args and self.s.phoenix_api_key:
+            args += ["--apiKey", self.s.phoenix_api_key]
         params = StdioServerParameters(
             command=self.s.phoenix_mcp_command,
-            args=self.s.phoenix_mcp_arg_list,
+            args=args,
             env={
                 "PHOENIX_API_KEY": self.s.phoenix_api_key,
                 "PHOENIX_BASE_URL": self.s.phoenix_base_url,
