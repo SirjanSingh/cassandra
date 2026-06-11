@@ -262,12 +262,15 @@ cassandra/
 
 ## Status
 
-**Codebase complete and verified end-to-end** (both Gemini and OpenAI backends; 23 offline
-tests passing). The full pipeline — diagnose → root-cause → synthesize → evaluate → patch →
-replay → red-team — runs live against Phoenix, with real baseline-vs-candidate scoring (no
-stubbed experiments), feedback-loop protection, self-tracing into `cassandra-meta`, and a
-100% diagnostic self-score. Deploy manifests for Cloud Run and Vertex AI Agent Engine are
-written; a hosted URL + demo video are the remaining items.
+**Deployed and verified end-to-end in the cloud.** Live demo:
+**<https://elianna-unpolymerized-confidingly.ngrok-free.dev>** — the React cockpit (single-file
+cockpit also at `/cockpit`) + supervised agent run on a Google Compute Engine VM (asia-south1)
+against an **Arize Cloud Phoenix** space. The full pipeline — diagnose → root-cause → synthesize → evaluate → patch →
+replay → red-team — has completed full autonomous cycles on the hosted deployment:
+hallucination caught from live traces, a 12-case adversarial dataset and a candidate
+prompt version written back into Phoenix, the original failing input replayed to a
+**FIXED** verdict, and an auto-postmortem generated. 39 offline tests passing; live
+diagnostic self-score 10/11 (91%). Both Gemini and OpenAI backends supported.
 
 ## License
 
