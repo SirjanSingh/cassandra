@@ -12,7 +12,7 @@ export DOCKER_CONFIG=/tmp/.docker
 mkdir -p "${DOCKER_CONFIG}"
 
 PROJECT="cassandra-498318"
-IMG="us-central1-docker.pkg.dev/${PROJECT}/cassandra/app:6c08a21-react"
+IMG="us-central1-docker.pkg.dev/${PROJECT}/cassandra/app:0ccb29a-react"
 PHX_URL="https://app.phoenix.arize.com/s/sirjan-singh036"
 
 # NOTE: the Secret Manager REST API pretty-prints its JSON ("data": "..." with a
