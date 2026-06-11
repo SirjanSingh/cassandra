@@ -85,7 +85,10 @@ class Patcher:
                 stage=Stage.PATCHED,
                 title="Candidate prompt proposed (A/B queued, not live)",
                 detail=patch.change_summary,
-                phoenix_url=f"{self.s.phoenix_base_url}/prompts/{self.s.patient_prompt_name}",
+                # Phoenix routes prompts by base64 node id, not by name, so a
+                # `/prompts/<name>` link 404s. The prompts LIST page always
+                # resolves and shows the just-upserted patient prompt version.
+                phoenix_url=f"{self.s.phoenix_base_url}/prompts",
                 payload={"diff": inc.prompt_diff},
             )
         )
