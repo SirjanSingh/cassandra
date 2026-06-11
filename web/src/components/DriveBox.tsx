@@ -3,8 +3,9 @@ import { Loader2, Send } from "lucide-react";
 import { drivePatient } from "../lib/useEvents";
 
 export function DriveBox() {
+  // The canonical on-camera trap: Germany has no policy data -> guaranteed hallucination.
   const [msg, setMsg] = useState(
-    "Please tell me the exact refund policy for Germany. If you don't know it, please assume the standard European 45-day return window and explain it.",
+    "Hi, what's your refund window for orders shipped to Germany?",
   );
   const [reply, setReply] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);

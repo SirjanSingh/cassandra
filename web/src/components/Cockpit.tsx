@@ -4,6 +4,7 @@ import { useEvents } from "../lib/useEvents";
 import { DriveBox } from "./DriveBox";
 import { EventCard } from "./EventCard";
 import { PipelineRibbon } from "./PipelineRibbon";
+import { SelfEval } from "./SelfEval";
 
 export function Cockpit() {
   const { events, conn } = useEvents();
@@ -63,6 +64,7 @@ export function Cockpit() {
               <Stat icon={<Radar className="h-3.5 w-3.5" />} n={incidents} l="incidents" />
               <Stat icon={<Activity className="h-3.5 w-3.5" />} n={patched} l="patched" />
             </div>
+            <SelfEval />
           </div>
 
           <div

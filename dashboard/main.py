@@ -25,6 +25,10 @@ from cassandra.loop_agent import SupervisionPipeline
 app = FastAPI(title="Cassandra Dashboard")
 
 _UI = Path(__file__).resolve().parent / "ui"
+# The React/Vite frontend (web/dist, built by the Docker webbuild stage or a local
+# `npm run build`). When present it is the primary UI at "/"; the self-contained
+# cockpit remains available at /cockpit (and is the fallback when dist is absent).
+_WEB_DIST = Path(__file__).resolve().parent.parent / "web" / "dist"
 
 
 @app.on_event("startup")
@@ -119,14 +123,26 @@ async def how_it_works() -> str:
 
 @app.get("/healthz")
 async def healthz() -> dict:
-    return {"ok": True, "service": "dashboard", "ui": (_UI / "index.html").is_file()}
+    return {
+        "ok": True,
+        "service": "dashboard",
+        "ui": (_WEB_DIST / "index.html").is_file() or (_UI / "index.html").is_file(),
+    }
 
 
-# Serve the self-contained cockpit last so /events, /ask, /healthz keep priority.
-# html=True serves dashboard/ui/index.html at "/".
+# Static mounts go last so /events, /ask, /selfeval, /healthz keep priority.
+# React frontend (web/dist) at "/" when built; single-file cockpit at /cockpit
+# always (and at "/" as the fallback when no dist exists).
+_HAS_WEB = (_WEB_DIST / "index.html").is_file()
 if (_UI / "index.html").is_file():
-    app.mount("/", StaticFiles(directory=str(_UI), html=True), name="ui")
-else:
+    app.mount(
+        "/cockpit" if _HAS_WEB else "/",
+        StaticFiles(directory=str(_UI), html=True),
+        name="cockpit",
+    )
+if _HAS_WEB:
+    app.mount("/", StaticFiles(directory=str(_WEB_DIST), html=True), name="ui")
+elif not (_UI / "index.html").is_file():
 
     @app.get("/", response_class=HTMLResponse)
     async def _missing() -> str:
@@ -134,5 +150,6 @@ else:
             "<body style='background:#070707;color:#F4F1EA;font-family:monospace;"
             "padding:48px;line-height:1.6'>"
             "<h1>Cassandra cockpit missing</h1>"
-            "<p>Expected <code>dashboard/ui/index.html</code>.</p></body>"
+            "<p>Expected <code>web/dist/index.html</code> or "
+            "<code>dashboard/ui/index.html</code>.</p></body>"
         )
