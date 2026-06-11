@@ -68,14 +68,14 @@ async def events():
         async for ev in bus.subscribe():
             yield {"event": "pipeline", "data": json.dumps(ev.model_dump(mode="json"))}
 
-    return EventSourceResponse(gen())
+    return EventSourceResponse(gen(), ping=15)
 
 
 @app.post("/ask")
 async def ask(req: Ask) -> dict:
     """Drive the demo: send a customer message to the Patient (FR-DB3)."""
     s = get_settings()
-    async with httpx.AsyncClient(timeout=60) as c:
+    async with httpx.AsyncClient(timeout=300) as c:
         r = await c.post(s.patient_endpoint, json={"message": req.message})
         r.raise_for_status()
         return r.json()

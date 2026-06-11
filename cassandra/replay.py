@@ -36,7 +36,7 @@ class TraceReplay:
         assert inc.candidate_prompt is not None
         original_input = inc.span.input_text
 
-        async with httpx.AsyncClient(timeout=60) as c:
+        async with httpx.AsyncClient(timeout=300) as c:
             out = await ask_patient(c, original_input, system_override=inc.candidate_prompt)
             after_output = out.get("reply", "")
 

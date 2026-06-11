@@ -80,7 +80,7 @@ async def run_gate(
     """Score `prompt` over `cases` against the live agent; sequential to be CI-friendly."""
     endpoint = endpoint or get_settings().patient_endpoint
     results: list[CaseResult] = []
-    async with httpx.AsyncClient(timeout=60) as c:
+    async with httpx.AsyncClient(timeout=300) as c:
         for case in cases:
             reply = await _ask_agent(c, endpoint, case.input_text, prompt)
             score = await _judge_case(case, reply)
