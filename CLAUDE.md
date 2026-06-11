@@ -94,7 +94,13 @@ Key conventions to preserve when editing:
   output, `text()` for free text). Backend is selected at runtime by env, in this
   precedence: `OPENAI_API_KEY` set → OpenAI; else `GEMINI_API_KEY` starting with `sk-or-`
   → OpenRouter; else Vertex Gemini. Gemini calls have built-in 429/503 backoff (Vertex
-  Dynamic Shared Quota) — keep that retry wrapper.
+  Dynamic Shared Quota) — keep that retry wrapper. **The hosted demo runs on Vertex
+  Gemini `gemini-2.5-flash-lite`** (the hackathon requires Gemini; OpenAI is non-compliant).
+  Two Vertex gotchas, both load-bearing: (1) **hold the genai client in a local across the
+  `await`** — a bare `_client().aio...` temporary is GC'd mid-request → "client has been
+  closed"; (2) `gemini-2.5-flash` was DSQ-exhausted on the trial project (sustained 429s) so
+  we use **flash-lite** (looser pool) and the burst stages (evaluator) are concurrency-bounded
+  with a semaphore. Location must be a real region (never `global`).
 - **Feedback-loop safety:** Cassandra drives the Patient for replay/red-team/eval using
   `session_id="test"`, and the `Watcher` filters out `session_id=="test"` spans so
   Cassandra never supervises its own probes into an infinite loop. Do not remove this filter.
