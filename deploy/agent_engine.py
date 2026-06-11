@@ -42,6 +42,12 @@ def main() -> None:
     remote = agent_engines.create(
         app,
         requirements=[
+            # The AdkApp is unpickled in the runtime container, so vertexai +
+            # cloudpickle must be installed there or it crashes with
+            # ModuleNotFoundError: No module named 'vertexai'. Passing an explicit
+            # requirements list replaces the defaults, so list them here.
+            "google-cloud-aiplatform[agent_engines]>=1.95.0",
+            "cloudpickle>=3.0.0",
             "google-genai>=0.3.0",
             "google-adk>=0.1.0",
             "mcp>=1.2.0",
