@@ -173,6 +173,12 @@ the prompt version with `OPENAI` vs `GOOGLE` correctly (previously hardcoded `GO
 > Gemini calls additionally ride a 429/503 backoff (`_gen_with_retry`); classifiers pass
 > `temperature=0` for deterministic verdicts.
 
+> **Honesty caveat (v2, `cassandra-v2`):** "deterministic" applies only to the **Diagnostician**
+> (`temperature=0`); the evaluator / replay / red-team judges use the `0.2` default. And
+> `temperature=0` does **not** make an LLM truly deterministic (Vertex Gemini varies run-to-run).
+> A genuinely deterministic verdict requires the code-based grounding verifier proposed in
+> `EVAL_PLAN.md` (L1), not just a temperature setting. See `EVAL_PLAN.md` §5 (F4).
+
 ---
 
 ## 10. Flaws & status (reconciliation)
@@ -186,7 +192,8 @@ The flaw list that kicked off the 2026-06-05 session was partly stale. Ground-tr
 | 3 | `get_settings()` lru_cache → stale env | **Real** | Added `reload_settings()`; documented the "restart after `.env`" rule (§9, CLAUDE.md). |
 | 4 | Evaluator stubs return `{"status":"queued"}`, pass-rates always 0.0 | **Outdated** — `evaluator.py` already scores live | No stub exists; left as the real live evaluator. |
 | 5 | `create_prompt_version` hardcodes `model_provider="GOOGLE"` | **Real** | Now uses `s.model_provider` / `s.model_name`. |
-| — | Diagnostician accuracy ≈ 18% (prior session's open item) | **Real, biggest item** | Plumbed tool results into the judge, sharpened the taxonomy, made it deterministic → **100%** on the trap suite (18→64→91→100). |
+| — | Diagnostician accuracy ≈ 18% (prior session's open item) | **Real, biggest item** | Plumbed tool results into the judge, sharpened the taxonomy, made it deterministic → **100%** on the trap suite (18→64→91→100). ⚠️ **See F1 below — this number measured the self-eval path only.** |
+| — | **F1: the 100% measured the wrong code path** | **Real (fixed on `cassandra-v2`)** | `normalize_span` read a top-level `tool_calls` key that never existed, so in **production** the Diagnostician judged with **no** tool ledger (the self-eval HTTP path *did* pass tools — hence 100%). Fixed via `_extract_tool_calls` (telemetry oracle / `EVAL_PLAN.md` L0); production path now feeds the ledger to the judge. **Re-run `selfeval` to record the true production-path accuracy as the new baseline.** |
 | — | Patient (gpt-4o-mini) no longer hallucinated → demo broken | **Discovered this session** | Strengthened `FRAGILE_SYSTEM_PROMPT` so the model fabricates on missing data again (the canonical failure). |
 | — | `system_override` was an open prompt-override surface | **Real (security)** | Gated to `session_id=="test"` via `resolve_override` (§11). |
 | — | `LoopAgent` deprecation warning (google-adk) | Cosmetic | Left as-is to avoid churn before ship; migrate to `Workflow` later. |
@@ -248,5 +255,8 @@ pytest                                   # offline suite (LLM + MCP mocked)
 
 - Cockpit: <http://127.0.0.1:8085>  ·  Animated explainer: <http://127.0.0.1:8085/how>
 - Self-eval scorecard: `POST http://127.0.0.1:8085/selfeval` (or the dashboard button).
-- Diagnostic accuracy on the trap suite is currently **100%** (11/11; hallucination 4/4,
-  tool_failure 2/2, prompt_drift 2/2, ok 3/3) on the OpenAI backend.
+- Diagnostic accuracy on the trap suite was reported **100%** (11/11; hallucination 4/4,
+  tool_failure 2/2, prompt_drift 2/2, ok 3/3) on the OpenAI backend — but ⚠️ that number came
+  from the **self-eval HTTP path**, which fed tool results to the judge; the **production** path
+  did not (F1, §10). After the `cassandra-v2` telemetry-oracle fix, **re-run `selfeval` to
+  capture the real production-path accuracy** (expected lower, especially on `tool_failure`/`ok`).

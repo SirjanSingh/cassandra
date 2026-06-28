@@ -248,7 +248,7 @@ def normalize_span(raw: dict, project: str) -> SpanRecord:
         input_text=_flat_str(attrs, "input.value") or _flat_str(attrs, "llm.input_messages"),
         output_text=_flat_str(attrs, "output.value") or _flat_str(attrs, "llm.output_messages"),
         session_id=_flat_str(attrs, "patient.session_id") or "demo",
-        tool_calls=raw.get("tool_calls", []),
+        tool_calls=_extract_tool_calls(attrs),
         raw=raw,
     )
 
@@ -318,3 +318,33 @@ def _flat_str(d: dict, key: str) -> str:
     if not val:
         return ""
     return val if isinstance(val, str) else json.dumps(val)[:4000]
+
+
+def _extract_tool_calls(attrs: dict) -> list[dict]:
+    """Pull the structured tool ledger out of a span's attributes.
+
+    This is the production-path "telemetry oracle": the single most important signal the
+    Diagnostician needs to tell hallucination / tool_failure / ok apart. Without it the
+    judge grades from prose alone and silently over-flags grounded answers.
+
+    The Patient emits the ledger as a JSON STRING under the dotted attribute `tool.calls`
+    (patient/agent.py: `span.set_attribute("tool.calls", json.dumps(tool_log))`), with each
+    entry shaped `{"name", "args", "result"}`. We also accept the already-parsed list form
+    and the nested OpenInference shapes so third-party agents populate the ledger too.
+    Best-effort and total: never raises, always returns a list of dicts.
+    """
+    raw_val: Any = (
+        attrs.get("tool.calls")
+        or attrs.get("llm.tool_calls")
+        or (attrs.get("tool", {}) or {}).get("calls")
+        if isinstance(attrs, dict)
+        else None
+    )
+    if isinstance(raw_val, str):
+        try:
+            raw_val = json.loads(raw_val)
+        except (json.JSONDecodeError, ValueError):
+            return []
+    if not isinstance(raw_val, list):
+        return []
+    return [c for c in raw_val if isinstance(c, dict)]

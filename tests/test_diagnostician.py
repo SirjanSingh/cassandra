@@ -5,10 +5,13 @@ a low-confidence or OK verdict does not. Real classification quality (AC-8, the
 20-case trap set) is a live integration check, not a unit test.
 """
 
+import json
+
 import pytest
 
 from cassandra.diagnostician import Diagnostician
 from cassandra.models import FailureClass, Incident, SpanRecord, Verdict
+from cassandra.phoenix_mcp import normalize_span
 
 
 class _FakePhx:
@@ -73,3 +76,41 @@ async def test_ok_verdict_not_annotated(monkeypatch):
     inc = await Diagnostician(mcp=phx).diagnose(Incident.from_span(_span()))  # type: ignore[arg-type]
     assert inc.annotation_id is None
     assert not phx.annotated
+
+
+@pytest.mark.asyncio
+async def test_production_path_feeds_tool_ledger_to_judge(monkeypatch):
+    """F1 regression: the PRODUCTION path (normalize_span -> diagnose) must reach the judge
+    with the structured tool ledger, not just the self-eval HTTP path. Pre-fix the ledger
+    was dropped and this prompt contained 'TOOL CALLS (...): none'.
+    """
+    ledger = [
+        {"name": "get_refund_policy", "args": {"region": "DE"}, "result": {"found": False}}
+    ]
+    raw = {
+        "context": {"span_id": "s9", "trace_id": "t9"},
+        "start_time": "2026-05-17T00:00:00Z",
+        "attributes": {
+            "input.value": "refund window for Germany?",
+            "output.value": "Germany has a 30-day refund policy.",
+            "tool.calls": json.dumps(ledger),  # the Patient's real shape: nested JSON string
+        },
+    }
+    span = normalize_span(raw, "patient-prod")
+    assert span.tool_calls, "precondition: normalize_span must surface the ledger"
+
+    captured: dict = {}
+
+    async def fake_structured(prompt, schema, system="", temperature=0.2):
+        captured["prompt"] = prompt
+        return Verdict(
+            failure_class=FailureClass.HALLUCINATION, confidence=0.9, rationale="ungrounded"
+        )
+
+    monkeypatch.setattr("cassandra.diagnostician.llm.structured", fake_structured)
+    await Diagnostician(mcp=_FakePhx()).diagnose(Incident.from_span(span))  # type: ignore[arg-type]
+
+    prompt = captured["prompt"]
+    assert "get_refund_policy" in prompt
+    assert "found" in prompt and "false" in prompt.lower()
+    assert "none" not in prompt.split("TOOL CALLS")[1][:40].lower()

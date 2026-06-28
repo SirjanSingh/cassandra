@@ -82,9 +82,9 @@ class Diagnostician:
 
     async def diagnose(self, inc: Incident) -> Incident:
         span = inc.span
-        verdict = await self.judge(
-            span.input_text, span.output_text, span.tool_calls or span.raw.get("tool.calls")
-        )
+        # span.tool_calls is populated by phoenix_mcp._extract_tool_calls (the telemetry
+        # oracle) so the production judge sees the same structured ledger the self-eval does.
+        verdict = await self.judge(span.input_text, span.output_text, span.tool_calls)
         inc.verdict = verdict
         inc.severity = compute_severity(verdict)
         inc.stage = Stage.DIAGNOSED
