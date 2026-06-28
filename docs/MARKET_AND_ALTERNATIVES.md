@@ -269,5 +269,88 @@ spans, so you're not reselling storage like the observability incumbents. (Full 
 - https://1337skills.com/blog/2026-04-17-agent-framework-wars-google-adk-langchain-crewai-comparison/
 - https://www.zenml.io/blog/google-adk-vs-langgraph
 - https://www.requesty.ai/blog/best-ai-agent-sdks-compared-2026-langchain-crewai-openai-anthropic-google
+
+---
+
+## 7. The five decisions explained in plain language (no jargon)
+
+These restate §5's five decisions for a non-specialist reader: what the term means, what the
+project does *today*, and what actually changes if you choose differently.
+
+**Background terms used below:**
+- **Telemetry** = the record of what the supervised agent did (what it was asked, what it
+  answered, which tools it called). A **flight recorder / black box** for the agent. Cassandra
+  reads this to find failures.
+- **Backend** = the database/service where that black-box data is stored.
+- **Adapter** = a small piece of code that lets the project talk to one specific outside
+  service — like a **travel power-plug adapter**: same device, different socket. Building
+  around adapters means you can swap the vendor without rebuilding Cassandra.
+
+### 7.1 Default telemetry backend — Langfuse vs Phoenix
+- **What it is:** which service stores the agent's black-box data by default.
+- **Today:** wired to **Arize Phoenix** (hackathon required it).
+- **Problem:** Phoenix's license (Elastic License 2.0) **legally forbids selling it as a
+  hosted service** — fine for a contest, a wall for a paid hosted product.
+- **The choice:** **Langfuse** is **MIT-licensed** — legally free to build a business on.
+  **OTLP** is just the *universal standard format* for this data (like PDF for documents); if
+  Cassandra speaks OTLP it can plug into almost anything.
+- **What changing it does:** make Cassandra speak the universal standard and treat Phoenix as
+  one swappable plug. ⇒ you can legally sell it, and tell customers "we work with whatever you
+  already use." **Recommended.**
+
+### 7.2 LLM layer — LiteLLM vs hand-rolled router
+- **What it is:** the code that actually calls the AI model. A **router** picks *which* model
+  each request goes to.
+- **Today:** a **hand-rolled router** you wrote (switches Gemini / OpenAI / OpenRouter). Works,
+  but knows few providers and you maintain it.
+- **The choice:** **LiteLLM** is a free off-the-shelf tool already connecting to **140+
+  providers** through one interface.
+- **What changing it does:** *Adopt LiteLLM* → instantly support almost every model + free
+  extras (cost tracking, automatic fallback) but adds an outside dependency. *Keep hand-rolled*
+  → stays lightweight and fully under your control, but you add each new provider yourself. A
+  "convenience vs. lightness" trade; LiteLLM usually wins for a product aiming wide.
+
+### 7.3 Self-hosted-model path — now or later
+- **What it is:** running the AI model **on your/the customer's own computers** instead of
+  calling Google/OpenAI's cloud. Tools: **vLLM** (server-grade), **Ollama** (laptop-grade).
+- **Today:** Cassandra only talks to *cloud* AI (Vertex Gemini); every request leaves the
+  machine.
+- **Why it matters:** regulated buyers (banks, hospitals, government) often **legally can't
+  let data leave their network**. "Runs entirely inside your walls, nothing goes out" unlocks
+  expensive enterprise deals — the **enterprise unlock**.
+- **What changing it does:** *Now* → can pitch enterprise immediately, but it's extra work
+  before you have customers. *Later* → stay focused on the core, add it when a real enterprise
+  lead asks. Purely a *timing* call; "later" is the safe default unless a buyer is knocking.
+
+### 7.4 Wedge — CI-gate-first vs supervision-loop-first
+- **What it is:** the **wedge** = the first, smallest thing you get people to adopt — the foot
+  in the door. Sell one easy win, then expand.
+- **CI-gate-first:** "CI" is the automated check that runs whenever a developer changes code; a
+  "gate" passes/fails it. So: *"add Cassandra to your pipeline and it blocks prompt changes
+  that make your agent worse — spell-check for AI quality before release."* Low effort to try;
+  appeals to engineering/platform teams.
+- **Supervision-loop-first:** lead with the full autonomous system that watches the *live*
+  agent and fixes failures. Higher value, bigger ask, appeals to AI-product teams.
+- **What changing it does:** changes **who you target and what you polish first**. Nothing is
+  deleted — it's sequencing + marketing emphasis. **CI-gate-first recommended** because
+  Braintrust and Opik (closest competitors) won doing exactly that.
+
+### 7.5 Differentiate fast — don't let the eval re-architecture slip
+- **What it is:** "differentiate" = what makes you clearly *not* a copy. "Eval
+  re-architecture" = the rebuild in [`EVAL_PLAN.md`](../EVAL_PLAN.md) that makes Cassandra's
+  core judgment **deterministic** (same input → same provable answer, like a calculator)
+  instead of asking an LLM (which can vary and can't prove it's right). Instead of asking an AI
+  "did the agent lie?", you **check the agent's actual tool records** — facts, not opinions.
+- **The warning:** **Opik** and **DeepEval** are *already* adding deterministic checks, so that
+  one idea alone won't stay unique.
+- **What this means:** the hard-to-copy advantage is the **whole combination**: (1)
+  deterministic verifier + (2) the autonomous fix-and-verify loop + (3) the "flywheel" (every
+  real failure caught becomes a permanent test the customer *owns*) + (4) store-neutrality. No
+  competitor has all four. **"Don't let it slip"** = finish the combination soon; each piece
+  alone is being copied, only the *bundle* is the moat.
+
+**Through-line:** §7.1–7.3 = *stop being locked to what the hackathon forced* (Phoenix, Gemini,
+cloud-only) so Cassandra is flexible and sellable. §7.4–7.5 = *pick your entry point and move
+fast on the one thing that makes you special.*
 </content>
 </invoke>
