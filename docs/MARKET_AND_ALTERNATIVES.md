@@ -210,9 +210,13 @@ spans, so you're not reselling storage like the observability incumbents. (Full 
 
 ## 5. Decisions this research surfaces (for you)
 
-1. **Default telemetry backend** — lead with **Langfuse/OTLP (MIT, vendor-neutral)**, keep
-   Phoenix as an adapter? (Recommended.)
-2. **LLM layer** — adopt **LiteLLM** as the adapter, or keep the hand-rolled router lighter?
+> **Decided 2026-06-28:** #1 → **Langfuse** (Phoenix kept as adapter); #2 → **LiteLLM**.
+> Plain-language rationale for all five is in §7; the open ones (#3 self-hosted, #4 wedge, plus
+> license/brand) have recommendations in [`PROJECT_EXPLAINER.md`](PROJECT_EXPLAINER.md) §7.
+
+1. ✅ **Default telemetry backend** — **Langfuse/OTLP (MIT, vendor-neutral)**, Phoenix kept as
+   an adapter. *(Decided.)*
+2. ✅ **LLM layer** — adopt **LiteLLM** as the adapter. *(Decided.)*
 3. **Self-hosted-model path now or later** — it's the enterprise unlock, but adds scope.
 4. **Wedge** — CI-gate-first (platform/ML-eng buyers) vs supervision-loop-first (AI-product
    teams). Braintrust/Opik success suggests **CI-gate-first**.
