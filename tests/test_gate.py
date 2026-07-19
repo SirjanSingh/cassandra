@@ -5,8 +5,8 @@ import json
 import pytest
 
 import cassandra.gate as gate
-from cassandra.evaluator import _Score
 from cassandra.models import DatasetExample
+from cassandra.oracle import Score
 
 _CASES = [
     DatasetExample(
@@ -23,13 +23,13 @@ _CASES = [
 
 
 def _mock_network(monkeypatch, verdicts: dict[str, bool]):
-    """Patch the live-agent call and the LLM judge with canned answers."""
+    """Patch the live-agent call and the pass/fail oracle with canned answers."""
 
     async def fake_ask(c, endpoint, message, prompt):
-        return f"reply to: {message}"
+        return {"reply": f"reply to: {message}"}
 
-    async def fake_judge(case, reply):
-        return _Score(passed=verdicts[case.input_text], why="mocked")
+    async def fake_judge(case, out):
+        return Score(passed=verdicts[case.input_text], why="mocked")
 
     monkeypatch.setattr(gate, "_ask_agent", fake_ask)
     monkeypatch.setattr(gate, "_judge_case", fake_judge)
@@ -61,6 +61,42 @@ async def test_gate_empty_dataset(monkeypatch):
     _mock_network(monkeypatch, {})
     res = await gate.run_gate("PROMPT", [], threshold=0.8)
     assert res.total == 0 and res.pass_rate == 0.0 and res.passed is False
+
+
+async def test_gate_scores_deterministically_when_ledger_present(monkeypatch):
+    """B2: with a tool ledger in the reply, the gate needs no LLM judge at all."""
+
+    async def boom(*a, **k):
+        raise AssertionError("LLM judge must not be called on the deterministic path")
+
+    monkeypatch.setattr("cassandra.llm.structured", boom)
+
+    ledger = [
+        {
+            "name": "get_refund_policy",
+            "args": {"region": "DE"},
+            "result": {"found": False, "region": "DE", "policy": None},
+        }
+    ]
+
+    async def fake_ask(c, endpoint, message, prompt):
+        if "Germany" in message:
+            return {"reply": "Germany has a 30-day return policy.", "tool_calls": ledger}
+        return {
+            "reply": "In the US we offer 30-day returns with receipt.",
+            "tool_calls": [
+                {
+                    "name": "get_refund_policy",
+                    "args": {"region": "US"},
+                    "result": {"found": True, "region": "US", "policy": "30-day returns"},
+                }
+            ],
+        }
+
+    monkeypatch.setattr(gate, "_ask_agent", fake_ask)
+    res = await gate.run_gate("PROMPT", _CASES, threshold=0.8)
+    assert res.pass_rate == 0.5  # Germany fabrication fails, US grounded answer passes
+    assert not res.cases[0].passed and res.cases[1].passed
 
 
 def test_cli_exit_codes(monkeypatch, tmp_path, capsys):

@@ -30,8 +30,11 @@ All of Cassandra's live probes go through one module, `cassandra/patient_client.
 POST {PATIENT_ENDPOINT}
   body:    {"message": str, "session_id": "test", "system_override": str?}
   headers: X-Cassandra-Token: <REPLAY_SHARED_SECRET>   (when configured)
-  reply:   {"reply": str, "total_tokens": int, "latency_ms": int}
+  reply:   {"reply": str, "total_tokens": int, "latency_ms": int,
+            "tool_calls": [{"name", "args", "result"}, ...]?}
 ```
+
+`tool_calls` is optional but strongly recommended: when your adapter returns the tool ledger, Cassandra scores eval/replay/red-team/gate runs with its **deterministic grounding oracle** (`cassandra/grounding.py`, configured per agent via `GROUNDING_SPEC_FILE`) instead of an LLM judge — reproducible verdicts that cite the exact tool call. Without it, scoring falls back to the LLM judge.
 
 Plus two span attributes on the traces your agent exports: `patient.session_id` and `patient.prompt_variant` (`"candidate"` when a `system_override` was applied). They are what keeps Cassandra from supervising its own probe traffic.
 
@@ -44,6 +47,7 @@ PATIENT_PROJECT=my-agent-prod                 # the Phoenix project your agent t
 PATIENT_ENDPOINT=http://my-agent:8082/chat    # your adapter endpoint (active layer)
 PATIENT_PROMPT_NAME=my-agent-system           # Phoenix prompt name for patched versions
 BASELINE_PROMPT_FILE=prompts/system_prompt.txt
+GROUNDING_SPEC_FILE=grounding_spec.json       # your agent's grounding rules (deterministic oracle)
 REPLAY_SHARED_SECRET=<random>                 # same value on Cassandra and the adapter
 ```
 

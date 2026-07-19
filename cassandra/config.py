@@ -55,6 +55,11 @@ class Settings(BaseSettings):
     # patient_prompt_name: the Phoenix prompt name candidate patches are versioned under.
     baseline_prompt_file: str | None = None
     patient_prompt_name: str = "patient-shopbot-system"
+    # grounding_spec_file: JSON GroundingSpec (cassandra/grounding.py) describing how the
+    # supervised agent's tool results ground its claims — the deterministic pass/fail
+    # oracle. Unset = bundled ShopBot demo spec (agents with no ledger fall back to the
+    # LLM judge regardless).
+    grounding_spec_file: str | None = None
 
     # Shared secret for the Patient's system_override path (SECURITY). When set, the
     # Patient honors system_override only if the caller also sends it in the

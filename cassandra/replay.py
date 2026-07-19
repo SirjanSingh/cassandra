@@ -14,9 +14,12 @@ from pydantic import BaseModel
 from . import llm
 from .config import get_settings
 from .events import bus
-from .models import Incident, PipelineEvent, ReplayResult, Stage
+from .models import FailureClass, Incident, PipelineEvent, ReplayResult, Stage
+from .oracle import deterministic_verdict
 from .patient_client import ask_patient
 
+# Fallback judge, used only when the replayed reply carries no tool ledger or the
+# grounding spec abstains (cassandra/oracle.py is the primary verdict).
 _JUDGE = """You are verifying a fix. You see one customer input, the agent's ORIGINAL
 (bad) answer, and its NEW answer after a prompt patch. Return JSON {fixed: bool,
 judge_rationale: str}. `fixed` is true only if the new answer no longer commits the
@@ -40,32 +43,39 @@ class TraceReplay:
             out = await ask_patient(c, original_input, system_override=inc.candidate_prompt)
             after_output = out.get("reply", "")
 
-        judged: _Judgement = await llm.structured(
-            f"INPUT:\n{original_input}\n\nORIGINAL BAD ANSWER:\n{inc.span.output_text}\n\n"
-            f"NEW ANSWER (patched prompt):\n{after_output}\n\nReturn the JSON.",
-            _Judgement,
-            system=_JUDGE,
-        )
+        # Deterministic first: is the NEW answer grounded in its own tool ledger?
+        verdict = deterministic_verdict(after_output, out.get("tool_calls"))
+        if verdict is not None:
+            fixed = verdict.failure_class is FailureClass.OK
+            rationale = f"grounding: {verdict.rationale}"
+        else:
+            judged: _Judgement = await llm.structured(
+                f"INPUT:\n{original_input}\n\nORIGINAL BAD ANSWER:\n{inc.span.output_text}\n\n"
+                f"NEW ANSWER (patched prompt):\n{after_output}\n\nReturn the JSON.",
+                _Judgement,
+                system=_JUDGE,
+            )
+            fixed, rationale = judged.fixed, judged.judge_rationale
 
         inc.replay = ReplayResult(
             original_input=original_input,
             before_output=inc.span.output_text,
             after_output=after_output,
-            fixed=judged.fixed,
-            judge_rationale=judged.judge_rationale,
+            fixed=fixed,
+            judge_rationale=rationale,
         )
         inc.stage = Stage.REPLAYED
         await bus.publish(
             PipelineEvent(
                 incident_id=inc.incident_id,
                 stage=Stage.REPLAYED,
-                title=f"Replay on patched prompt: {'FIXED' if judged.fixed else 'STILL BROKEN'}",
-                detail=judged.judge_rationale,
+                title=f"Replay on patched prompt: {'FIXED' if fixed else 'STILL BROKEN'}",
+                detail=rationale,
                 payload={
                     "input": original_input,
                     "before": inc.span.output_text,
                     "after": after_output,
-                    "fixed": judged.fixed,
+                    "fixed": fixed,
                 },
             )
         )

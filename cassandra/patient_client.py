@@ -9,7 +9,12 @@ lives in examples/adapter_template.py):
     POST {PATIENT_ENDPOINT}
       body:    {"message": str, "session_id": "test", "system_override": str?}
       headers: X-Cassandra-Token: <REPLAY_SHARED_SECRET>   (when configured)
-      reply:   {"reply": str, "total_tokens": int, "latency_ms": int}
+      reply:   {"reply": str, "total_tokens": int, "latency_ms": int,
+                "tool_calls": [{"name", "args", "result"}, ...]?}
+
+``tool_calls`` is optional but strongly recommended: when present, the active stages
+score answers with the deterministic grounding oracle (cassandra/oracle.py) instead
+of the LLM judge — reproducible pass/fail verdicts that cite the exact tool call.
 
 ``session_id="test"`` marks the traffic so the Watcher's feedback-loop filter
 drops it (Cassandra must never supervise its own probes). ``system_override``
