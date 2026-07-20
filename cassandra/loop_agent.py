@@ -61,7 +61,12 @@ class SupervisionPipeline:
 
     @staticmethod
     def _write_postmortem(inc: Incident) -> None:
-        """Persist the auto-postmortem to reports/<incident_id>.md (best-effort)."""
+        """Persist the cycle to reports/<incident_id>.{md,json} (best-effort).
+
+        The `.md` is the human postmortem; the `.json` is the full serialized Incident
+        so `cassandra pr` can later reconstruct the candidate prompt + diff and open a
+        PR out-of-band (detach "run supervision" from "ship the fix").
+        """
         from pathlib import Path
 
         from .report import render_postmortem
@@ -71,6 +76,9 @@ class SupervisionPipeline:
             out.mkdir(exist_ok=True)
             (out / f"{inc.incident_id}.md").write_text(
                 render_postmortem(inc), encoding="utf-8"
+            )
+            (out / f"{inc.incident_id}.json").write_text(
+                inc.model_dump_json(indent=2), encoding="utf-8"
             )
         except OSError as exc:  # never let report I/O kill the supervision loop
             print(f"postmortem write failed: {exc}")

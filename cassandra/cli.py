@@ -15,10 +15,13 @@ commands:
   dashboard    run the dashboard + SSE cockpit (default port 8085)
   run          drive one full end-to-end supervision cycle
   gate         CI prompt-regression gate (fails when a prompt edit drops the pass rate)
+  pr           open the proven prompt fix for an incident as a GitHub pull request
   mcp          run Cassandra's MCP server over stdio (for Claude Desktop / Cursor)
 
 Run `cassandra <command> --help` for command-specific options.
 """
+
+_SUBCOMMANDS = {"dashboard", "run", "gate", "pr", "mcp"}
 
 
 def main(argv: list[str] | None = None) -> None:
@@ -37,11 +40,21 @@ def main(argv: list[str] | None = None) -> None:
 
     sub.add_parser("run", help="drive one full end-to-end supervision cycle")
     sub.add_parser("gate", help="CI prompt-regression gate (passes args through)", add_help=False)
+    p_pr = sub.add_parser("pr", help="open the proven prompt fix as a GitHub PR")
+    p_pr.add_argument("incident_id", help="incident id (reads reports/<id>.json)")
+    p_pr.add_argument("--prompt-file", default=None,
+                      help="agent's system-prompt file to patch (default: BASELINE_PROMPT_FILE)")
+    p_pr.add_argument("--base", default="main", help="base branch for the PR (default: main)")
+    p_pr.add_argument("--branch", default=None, help="override the PR branch name")
+    p_pr.add_argument("--dry-run", action="store_true",
+                      help="print the PR that would be opened; change nothing")
+    p_pr.add_argument("--push", action="store_true",
+                      help="push the branch and run `gh pr create` (outward-facing)")
     sub.add_parser("mcp", help="run Cassandra's MCP server over stdio")
 
     # No subcommand (or -h/--help / unknown token) → banner + command list.
     # Never touches the heavy stack.
-    if not argv or argv[0] not in {"dashboard", "run", "gate", "mcp"}:
+    if not argv or argv[0] not in _SUBCOMMANDS:
         from cassandra.banner import print_banner
         print_banner()
         parser.print_help()
@@ -80,6 +93,24 @@ def main(argv: list[str] | None = None) -> None:
         print_banner()
         from cassandra.run_once import main as run_main
         run_main()
+        return
+
+    if command == "pr":
+        args = p_pr.parse_args(rest)
+        from cassandra.banner import print_banner
+        print_banner()
+        from cassandra import pr as pr_mod
+        inc = pr_mod.load_incident(args.incident_id)
+        res = pr_mod.open_pr(
+            inc,
+            prompt_file=args.prompt_file,
+            base=args.base,
+            branch=args.branch,
+            dry_run=args.dry_run,
+            push=args.push,
+        )
+        print(f"\n{res.title}\n  branch: {res.branch}")
+        print(res.detail)
         return
 
 

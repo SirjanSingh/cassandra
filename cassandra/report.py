@@ -43,6 +43,14 @@ def render_postmortem(inc: Incident) -> str:
         if inc.verdict.expected_behavior:
             lines.append("")
             lines.append(f"**Expected behavior:** {inc.verdict.expected_behavior}")
+    if inc.jury:
+        j = inc.jury
+        lines.append("")
+        lines.append(
+            f"**Jury:** {j.size} judges, {j.agreement:.0%} agreement "
+            f"(votes: {', '.join(j.votes)})"
+            + ("" if j.unanimous else " — dissent recorded")
+        )
     lines.append("")
 
     if inc.root_cause:

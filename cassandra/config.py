@@ -37,6 +37,14 @@ class Settings(BaseSettings):
     diagnosis_confidence_threshold: float = 0.7
     synth_dataset_size: int = 12
 
+    # Jury (cassandra/jury.py). jury_size = number of independent LLM-as-judge
+    # inferences aggregated by majority vote (1 = single judge, the original
+    # behaviour). >1 convenes a panel spread over temperature up to
+    # jury_max_temperature; agreement calibrates confidence. Costs jury_size LLM
+    # calls per judged turn/case, so raise deliberately. Restart to apply (cached).
+    jury_size: int = 1
+    jury_max_temperature: float = 0.8
+
     # Introspection / on-product depth
     self_trace_enabled: bool = True       # trace Cassandra's own reasoning into META_PROJECT
     phoenix_experiments_enabled: bool = False  # also register A/B as a real Phoenix experiment

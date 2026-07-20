@@ -6,10 +6,10 @@ annotation for confident failures -> emit enriched Incident.
 
 from __future__ import annotations
 
-from . import llm
+from . import jury, llm
 from .config import get_settings
 from .events import bus
-from .models import Incident, PipelineEvent, Stage, Verdict, compute_severity
+from .models import Incident, JuryReport, PipelineEvent, Stage, Verdict, compute_severity
 from .phoenix_mcp import PhoenixMCP
 
 _SYSTEM = """You are Cassandra's Diagnostician: a strict LLM-as-judge that audits the
@@ -63,12 +63,20 @@ class Diagnostician:
         self.mcp = mcp or PhoenixMCP(self.s)
 
     async def judge(
-        self, input_text: str, output_text: str, tool_calls: object = None
+        self,
+        input_text: str,
+        output_text: str,
+        tool_calls: object = None,
+        *,
+        temperature: float = 0.0,
     ) -> Verdict:
         """Pure LLM-as-judge verdict on one agent turn (no Phoenix side effects).
 
         Shared by diagnose() (production spans), the self-evaluator (grading Cassandra's
         own accuracy), and the cassandra-mcp `diagnose` tool — one source of truth.
+
+        `temperature` defaults to 0 so a given turn gets the same verdict every run
+        (deterministic supervision). The jury raises it per juror to spread the panel.
         """
         prompt = (
             f"CUSTOMER INPUT:\n{input_text}\n\n"
@@ -76,16 +84,38 @@ class Diagnostician:
             f"TOOL CALLS (name/args/result):\n{tool_calls or 'none'}\n\n"
             "Return the verdict JSON."
         )
-        # temperature=0: a given agent turn must get the same verdict every run
-        # (deterministic supervision; avoids flip-flopping on borderline cases).
-        return await llm.structured(prompt, Verdict, system=_SYSTEM, temperature=0.0)
+        return await llm.structured(
+            prompt, Verdict, system=_SYSTEM, temperature=temperature
+        )
+
+    async def judge_panel(
+        self, input_text: str, output_text: str, tool_calls: object = None, *, size: int
+    ) -> tuple[Verdict, JuryReport | None]:
+        """Judge one turn with a panel of `size` jurors (majority vote).
+
+        `size <= 1` is the classic single judge (report is None); >1 convenes the jury
+        and returns the aggregated verdict plus its agreement/dissent report.
+        """
+        if size <= 1:
+            return await self.judge(input_text, output_text, tool_calls), None
+        temps = jury.temperatures_for(size, max_temperature=self.s.jury_max_temperature)
+        verdicts = await jury.deliberate(
+            lambda t: self.judge(input_text, output_text, tool_calls, temperature=t),
+            temps,
+        )
+        if not verdicts:  # every juror errored — fall back to a single anchor judge
+            return await self.judge(input_text, output_text, tool_calls), None
+        return jury.aggregate_verdicts(verdicts)
 
     async def diagnose(self, inc: Incident) -> Incident:
         span = inc.span
         # span.tool_calls is populated by phoenix_mcp._extract_tool_calls (the telemetry
         # oracle) so the production judge sees the same structured ledger the self-eval does.
-        verdict = await self.judge(span.input_text, span.output_text, span.tool_calls)
+        verdict, jury_report = await self.judge_panel(
+            span.input_text, span.output_text, span.tool_calls, size=self.s.jury_size
+        )
         inc.verdict = verdict
+        inc.jury = jury_report
         inc.severity = compute_severity(verdict)
         inc.stage = Stage.DIAGNOSED
 
@@ -108,6 +138,8 @@ class Diagnostician:
                 payload={
                     "annotated": inc.annotation_id is not None,
                     "severity": inc.severity.value if inc.severity else None,
+                    "jury_size": jury_report.size if jury_report else 1,
+                    "jury_agreement": jury_report.agreement if jury_report else None,
                 },
             )
         )

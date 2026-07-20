@@ -20,7 +20,7 @@ from pathlib import Path
 
 from pydantic import BaseModel
 
-from . import llm
+from . import jury, llm
 from .config import get_settings
 from .grounding import SHOPBOT_SPEC, GroundingSpec, GroundingVerdict, check_grounding
 from .models import FailureClass
@@ -57,19 +57,49 @@ def deterministic_verdict(answer: str, tool_calls: list | None) -> GroundingVerd
     return None if verdict.abstain else verdict
 
 
+async def _judge_once(
+    case_input: str, expected: str, answer: str, temperature: float
+) -> Score:
+    """One LLM-as-judge inference for a single eval case."""
+    return await llm.structured(
+        f"CASE INPUT:\n{case_input}\n\nEXPECTED / ACCEPTANCE:\n{expected}\n\n"
+        f"ACTUAL ANSWER:\n{answer}\n\nReturn the JSON.",
+        Score,
+        system=_JUDGE,
+        temperature=temperature,
+    )
+
+
+async def _judge_fallback(case_input: str, expected: str, answer: str) -> Score:
+    """LLM-judge fallback for a case: a single judge, or a jury when jury_size > 1.
+
+    The jury runs jury_size independent inferences (spread over temperature) and
+    majority-votes; agreement is reported in `why` as a calibration signal.
+    """
+    s = get_settings()
+    size = s.jury_size
+    if size <= 1:
+        return await _judge_once(case_input, expected, answer, temperature=0.0)
+    temps = jury.temperatures_for(size, max_temperature=s.jury_max_temperature)
+    scores = await jury.deliberate(
+        lambda t: _judge_once(case_input, expected, answer, t), temps
+    )
+    if not scores:  # every juror errored
+        return await _judge_once(case_input, expected, answer, temperature=0.0)
+    passed, agreement = jury.aggregate_bools([sc.passed for sc in scores])
+    majority = [sc for sc in scores if sc.passed is passed]
+    why = (majority[0].why if majority else scores[0].why)
+    return Score(passed=passed, why=f"jury {agreement:.0%} agree: {why}")
+
+
 async def score_case(
     case_input: str, expected: str, answer: str, tool_calls: list | None
 ) -> Score:
-    """Score one probe answer: grounding verdict first, LLM judge only as fallback."""
+    """Score one probe answer: grounding verdict first, LLM judge/jury only as fallback."""
     verdict = deterministic_verdict(answer, tool_calls)
     if verdict is not None:
         return Score(
             passed=verdict.failure_class is FailureClass.OK,
             why=f"grounding: {verdict.rationale}",
         )
-    return await llm.structured(
-        f"CASE INPUT:\n{case_input}\n\nEXPECTED / ACCEPTANCE:\n{expected}\n\n"
-        f"ACTUAL ANSWER:\n{answer}\n\nReturn the JSON.",
-        Score,
-        system=_JUDGE,
-    )
+    return await _judge_fallback(case_input, expected, answer)

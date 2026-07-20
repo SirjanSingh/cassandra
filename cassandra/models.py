@@ -183,6 +183,26 @@ class Scorecard(BaseModel):
         return round(self.correct / self.total, 4) if self.total else 0.0
 
 
+class JuryReport(BaseModel):
+    """Outcome of a multi-judge jury (cassandra/jury.py).
+
+    When jury_size > 1 the LLM-as-judge is convened as a PANEL: K independent
+    inferences (spread over temperature so they don't collapse to one sample) are
+    aggregated by majority vote. `agreement` is the fraction of jurors who backed
+    the winning verdict — a calibration signal we fold into confidence. Not an LLM
+    response schema (safe to evolve), unlike `Verdict`.
+    """
+
+    size: int
+    agreement: float  # fraction of jurors agreeing with the winning verdict [0,1]
+    votes: list[str] = Field(default_factory=list)  # each juror's vote label
+    dissent: list[str] = Field(default_factory=list)  # minority verdict rationales
+
+    @property
+    def unanimous(self) -> bool:
+        return self.agreement >= 1.0
+
+
 class Stage(str, Enum):
     WATCHED = "watched"
     DIAGNOSED = "diagnosed"
@@ -203,6 +223,7 @@ class Incident(BaseModel):
     stage: Stage = Stage.WATCHED
 
     verdict: Verdict | None = None
+    jury: JuryReport | None = None  # set when the diagnosis was decided by a panel
     severity: Severity | None = None
     root_cause: RootCause | None = None
     efficiency: EfficiencyReport | None = None
