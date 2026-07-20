@@ -104,9 +104,49 @@ flowchart TB
     clients -->|"cassandra-mcp tools"| cassandra
 ```
 
+## Quickstart (pip)
+
+Cassandra is on PyPI. `pip install` gives you the unified `cassandra` CLI (banner + the
+`dashboard` / `run` / `gate` / `mcp` subcommands):
+
+```bash
+pip install cassandra-ai        # import package stays `cassandra`
+cassandra                       # banner + command list
+```
+
+**v0.1 is dev-audience, not turnkey** — a fresh install still needs a few things wired up:
+
+- **Python 3.11+**
+- **An LLM key.** Backend is chosen by env (`cassandra/llm.py` precedence): `OPENAI_API_KEY`
+  → OpenAI; else `GEMINI_API_KEY` starting `sk-or-` → OpenRouter; else Vertex Gemini.
+- **A Phoenix instance** — [Phoenix Cloud](https://phoenix.arize.com) or local:
+  `docker run -p 6006:6006 arizephoenix/phoenix` (set `PHOENIX_*` env accordingly).
+- **Node / npx** — the Phoenix MCP surface shells out to `npx @arizeai/phoenix-mcp`.
+- **An agent to supervise.** The bundled demo Patient (ShopBot) is source-only; bring your
+  own via the "Bring your own agent" guide in `docs/WORKFLOWS.md`.
+
+Minimal `.env` (see `.env.example` for all keys):
+
+```bash
+GEMINI_API_KEY=...              # or OPENAI_API_KEY / Vertex config
+PHOENIX_COLLECTOR_ENDPOINT=http://localhost:6006
+```
+
+| Command | What it does |
+|---------|--------------|
+| `cassandra` | Print the banner + list of commands. |
+| `cassandra dashboard [--port N] [--host H]` | Run the dashboard + SSE cockpit (default port 8085). |
+| `cassandra run` | Drive one full end-to-end supervision cycle. |
+| `cassandra gate ...` | CI prompt-regression gate (args pass through to `cassandra-gate`). |
+| `cassandra mcp` | Run Cassandra's MCP server over stdio (Claude Desktop / Cursor). |
+
+> pip users get the self-contained cockpit (`dashboard/ui/index.html`) served at `/cockpit`
+> and at `/` (the React `web/` UI is built only in the Docker image, not shipped in the wheel).
+
 ## See it work
 
-A live cockpit. You type a customer message; the victim agent (**"the Patient"** — a
+The from-source path (clone the repo — gives you the Patient demo + editable code). A live
+cockpit: you type a customer message; the victim agent (**"the Patient"** — a
 deliberately fragile ShopBot) confidently invents a refund policy. Seconds later Cassandra
 catches it in the trace feed and the full pipeline plays out on screen: the diagnosis, the
 causal chain, the synthesized attack set, baseline-vs-candidate pass rates, the prompt diff,

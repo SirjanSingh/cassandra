@@ -1,5 +1,7 @@
 # CLAUDE.md
 
+> **Orientation:** read [docs/CODEBASE_MAP.md](docs/CODEBASE_MAP.md) first — compact map of stack, entry points, flow, and gotchas.
+
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## Session Protocol (READ FIRST — keep the project's memory rich)
@@ -52,7 +54,19 @@ uvicorn dashboard.main:app --port 8085 --reload     # 2. dashboard + SSE cockpit
 python scripts/run_pipeline.py                      # 3. drive ONE full end-to-end supervision cycle
 
 cassandra-mcp                    # run Cassandra's own published MCP server over stdio
+
+# Unified CLI (pip-installed console script — banner + subcommands):
+cassandra                        # banner + command list
+cassandra dashboard [--port N]   # dashboard + SSE cockpit (default 8085)
+cassandra run                    # one full supervision cycle (== python scripts/run_pipeline.py)
+cassandra gate ...               # CI prompt-regression gate (passthrough to cassandra-gate)
+cassandra mcp                    # MCP server over stdio (== cassandra-mcp; emits zero stdout)
 ```
+
+The CLI (`cassandra/cli.py`) lazy-imports per subcommand so `cassandra`/`--help` stay instant;
+`cassandra run` delegates to `cassandra/run_once.py` (the runner lives in the package now so
+it ships in the wheel — `scripts/run_pipeline.py` is a thin wrapper). PyPI dist name is
+`cassandra-ai`; the import package stays `cassandra`.
 
 Note: `.env.example`, `cassandra/config.py` defaults, and the documented run ports all
 agree now (dashboard 8085, patient 8082). `REPLAY_SHARED_SECRET` gates the Patient's
