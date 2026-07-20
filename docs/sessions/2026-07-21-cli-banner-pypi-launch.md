@@ -47,9 +47,18 @@ supervise (documented as prereqs). Import package stays `cassandra`; PyPI name `
       #4 dashboard `/ask`+`/selfeval` unauthenticated (denial-of-wallet on public deploy).
       Re-verified: 73 passed, ruff clean, `twine check` PASSED, wheel+sdist rebuilt.
       PyPI name `cassandra-ai` confirmed AVAILABLE (pypi.org JSON 404).
-- [ ] 8. Publish — **NOT STARTED, gated on Sirjan.** `dist/` artifacts built and checked. Next:
-      verify `cassandra-ai` free on pypi.org → `twine upload --repository testpypi dist/*` →
-      test-install → **PAUSE for Sirjan's explicit OK** → `twine upload dist/*` (irreversible).
+- [x] 8a. **Distribute to testers via GitHub** (chosen over PyPI for the first teammate test).
+      Committed the session's work in 3 commits (docs / feat / fix(security)), pushed
+      **`cassandra-v2`** (main deliberately untouched — frozen), cut GitHub **prerelease
+      `v0.2.0-alpha.1`** targeting `cassandra-v2` with the wheel + sdist attached. Release notes
+      point to `docs/TESTING_GUIDE.md` (teammate onboarding: smoke test + full local demo).
+      Sizes: wheel 101KB, sdist 90KB. Release:
+      https://github.com/SirjanSingh/cassandra/releases/tag/v0.2.0-alpha.1
+- [ ] 8b. **TestPyPI — deferred to next session** (Sirjan's call). Needs a TestPyPI account +
+      token. Flow: `twine upload --repository testpypi dist/*`; testers install with
+      `pip install -i https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/ cassandra-ai`
+      (the extra-index is REQUIRED — deps aren't on TestPyPI). Real PyPI (`cassandra-ai`,
+      confirmed free) is a later, separate, irreversible step gated on Sirjan.
       Tokens via `$env:TWINE_USERNAME=__token__` / `$env:TWINE_PASSWORD` — never echoed/committed.
 
 ## Reality notes (verified against current tree before starting)
