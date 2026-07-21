@@ -24,8 +24,26 @@ Run `cassandra <command> --help` for command-specific options.
 _SUBCOMMANDS = {"dashboard", "run", "gate", "pr", "mcp"}
 
 
+def _make_stdout_safe() -> None:
+    """Stop non-ASCII output from crashing the console on Windows.
+
+    Windows terminals default to cp1252, so printing UTF-8 content we generate
+    (emoji in a PR body, unicode in an agent's reply) raises UnicodeEncodeError and
+    kills the command. Re-encode as UTF-8 and degrade unencodable characters instead
+    of raising. Never called for `mcp` — that path speaks JSON-RPC on stdout.
+    """
+    for stream in (sys.stdout, sys.stderr):
+        try:
+            stream.reconfigure(encoding="utf-8", errors="replace")  # type: ignore[union-attr]
+        except (AttributeError, ValueError):  # not a reconfigurable TextIOWrapper
+            pass
+
+
 def main(argv: list[str] | None = None) -> None:
     argv = sys.argv[1:] if argv is None else argv
+
+    if not argv or argv[0] != "mcp":  # mcp owns stdout for JSON-RPC — leave it alone
+        _make_stdout_safe()
 
     parser = argparse.ArgumentParser(
         prog="cassandra",
