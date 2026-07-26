@@ -105,7 +105,7 @@ class Diagnostician:
         )
         if not verdicts:  # every juror errored — fall back to a single anchor judge
             return await self.judge(input_text, output_text, tool_calls), None
-        return jury.aggregate_verdicts(verdicts)
+        return jury.aggregate_verdicts(verdicts, requested_size=size)
 
     async def diagnose(self, inc: Incident) -> Incident:
         span = inc.span

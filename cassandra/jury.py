@@ -65,11 +65,17 @@ def _tally(labels: list[str]) -> tuple[str, float]:
     return winner, round(top / len(labels), 4)
 
 
-def aggregate_verdicts(verdicts: list[Verdict]) -> tuple[Verdict, JuryReport]:
+def aggregate_verdicts(
+    verdicts: list[Verdict], *, requested_size: int | None = None
+) -> tuple[Verdict, JuryReport]:
     """Majority-vote a panel of Diagnostician verdicts into one verdict + report.
 
-    Confidence is the winning class's mean juror-confidence SCALED by agreement, so a
-    divided panel yields a lower, honest confidence (the calibration signal).
+    Confidence is the winning verdict's OWN mean juror-confidence — it is deliberately
+    NOT scaled by agreement. Agreement (how split the panel was) and confidence (how
+    sure the winners are) measure different things; multiplying them collapses both,
+    and against the 0.7 annotate gate it silently drops every non-unanimous panel (a
+    2-1 split at full confidence caps at 0.67). The two signals are kept orthogonal:
+    confidence gates recording, `agreement` is reported alongside for calibration.
     """
     labels = [v.failure_class.value for v in verdicts]
     winner_label, agreement = _tally(labels)
@@ -78,12 +84,13 @@ def aggregate_verdicts(verdicts: list[Verdict]) -> tuple[Verdict, JuryReport]:
     mean_conf = sum(v.confidence for v in majority) / len(majority)
     verdict = Verdict(
         failure_class=winner_class,
-        confidence=round(agreement * mean_conf, 4),
+        confidence=round(mean_conf, 4),
         rationale=majority[0].rationale,
         expected_behavior=majority[0].expected_behavior,
     )
     report = JuryReport(
         size=len(verdicts),
+        requested_size=requested_size if requested_size is not None else len(verdicts),
         agreement=agreement,
         votes=labels,
         dissent=[

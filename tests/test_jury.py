@@ -43,7 +43,7 @@ def test_aggregate_verdicts_unanimous():
     assert report.dissent == []
 
 
-def test_aggregate_verdicts_split_lowers_confidence():
+def test_aggregate_verdicts_split_keeps_confidence_orthogonal():
     verdicts = [
         _v(FailureClass.HALLUCINATION, 0.9),
         _v(FailureClass.HALLUCINATION, 0.9),
@@ -52,9 +52,20 @@ def test_aggregate_verdicts_split_lowers_confidence():
     verdict, report = jury.aggregate_verdicts(verdicts)
     assert verdict.failure_class is FailureClass.HALLUCINATION
     assert report.agreement == round(2 / 3, 4)
-    # confidence is scaled DOWN by the 2/3 agreement (calibration)
-    assert verdict.confidence == round((2 / 3) * 0.9, 4)
+    # confidence is the winners' OWN mean (0.9), NOT scaled by agreement — otherwise a
+    # 2-1 split could never clear the 0.7 annotate gate (the bug this guards against).
+    assert verdict.confidence == 0.9
     assert any("tool_failure" in d for d in report.dissent)
+
+
+def test_aggregate_verdicts_tracks_degraded_panel():
+    # 1 surviving juror but 3 were requested → degraded, not a clean unanimous vote.
+    verdict, report = jury.aggregate_verdicts(
+        [_v(FailureClass.HALLUCINATION, 0.9)], requested_size=3
+    )
+    assert report.size == 1 and report.requested_size == 3
+    assert report.degraded is True
+    assert report.agreement == 1.0  # among survivors — but degraded flags the caveat
 
 
 def test_aggregate_verdicts_tie_breaks_to_anchor():
@@ -117,11 +128,11 @@ async def test_judge_panel_majority_vote(monkeypatch):
 
 async def test_diagnose_sets_jury_report(monkeypatch):
     _split_judge(monkeypatch)
-    # Avoid Phoenix side effects: confidence below the annotate threshold path is
-    # still fine because annotate uses the mcp session; keep confidence low by the
-    # 2/3 scaling (0.6) < default 0.7 threshold so no annotation call fires.
+    # Confidence is now the winners' mean (0.9), so raise the annotate threshold above
+    # it to keep this test offline (no Phoenix session for annotate_span).
     s = get_settings()
     monkeypatch.setattr(s, "jury_size", 3)
+    monkeypatch.setattr(s, "diagnosis_confidence_threshold", 0.99)
     span = SpanRecord(
         span_id="s1", trace_id="t1", project="patient-prod",
         started_at=datetime.now(timezone.utc), input_text="in", output_text="out",

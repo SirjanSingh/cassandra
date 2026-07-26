@@ -193,14 +193,24 @@ class JuryReport(BaseModel):
     response schema (safe to evolve), unlike `Verdict`.
     """
 
-    size: int
-    agreement: float  # fraction of jurors agreeing with the winning verdict [0,1]
+    size: int  # jurors who actually returned a vote
+    requested_size: int = 0  # jurors requested; > size means some errored (degraded panel)
+    agreement: float  # fraction of RESPONDING jurors agreeing with the winning verdict [0,1]
     votes: list[str] = Field(default_factory=list)  # each juror's vote label
     dissent: list[str] = Field(default_factory=list)  # minority verdict rationales
 
     @property
     def unanimous(self) -> bool:
         return self.agreement >= 1.0
+
+    @property
+    def degraded(self) -> bool:
+        """True when jurors errored out, so `agreement` is over fewer votes than asked.
+
+        A degraded panel must NOT be read as trustworthy just because the survivors
+        agreed — 1 of 3 responding at 100% agreement is weaker than 3 of 3.
+        """
+        return self.requested_size > self.size
 
 
 class Stage(str, Enum):

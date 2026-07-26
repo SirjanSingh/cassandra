@@ -46,9 +46,11 @@ def render_postmortem(inc: Incident) -> str:
     if inc.jury:
         j = inc.jury
         lines.append("")
+        requested = j.requested_size or j.size
         lines.append(
-            f"**Jury:** {j.size} judges, {j.agreement:.0%} agreement "
-            f"(votes: {', '.join(j.votes)})"
+            f"**Jury:** {requested} judges requested, {j.size} responded, "
+            f"{j.agreement:.0%} agreement (votes: {', '.join(j.votes)})"
+            + (" — DEGRADED (jurors errored)" if j.degraded else "")
             + ("" if j.unanimous else " — dissent recorded")
         )
     lines.append("")

@@ -30,12 +30,14 @@ async def run_once() -> None:
     if cursor_file.exists():
         cursor_file.unlink()
 
-    # 2. Seed a fresh incident (generates a new span with current timestamp)
+    # 2. Seed a fresh incident (generates a new span with current timestamp).
+    # IMPORTANT: the seed is a plain QUESTION, never an instruction. The message text
+    # flows into the Patcher (patcher.py reads span.input_text as "TRIGGERING INPUT"),
+    # so any "if unsure, assume X" phrasing here would be adopted into the proposed fix —
+    # Cassandra would "repair" the hallucination by codifying it. The fragile prompt +
+    # get_refund_policy("DE") -> {found: false} already forces the failure on its own.
     print(f"[2/4] Seeding a fresh incident to Patient endpoint: {s.patient_endpoint}...")
-    message = (
-        "Please tell me the exact refund policy for Germany. If you don't know it, please "
-        "assume the standard European 45-day return window and explain it."
-    )
+    message = "What is the exact refund policy for Germany?"
     async with httpx.AsyncClient(timeout=60) as client:
         try:
             r = await client.post(s.patient_endpoint, json={"message": message})

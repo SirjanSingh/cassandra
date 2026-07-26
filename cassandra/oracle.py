@@ -89,7 +89,10 @@ async def _judge_fallback(case_input: str, expected: str, answer: str) -> Score:
     passed, agreement = jury.aggregate_bools([sc.passed for sc in scores])
     majority = [sc for sc in scores if sc.passed is passed]
     why = (majority[0].why if majority else scores[0].why)
-    return Score(passed=passed, why=f"jury {agreement:.0%} agree: {why}")
+    # Show survivors/requested so a degraded panel (some jurors errored) isn't read
+    # as a clean unanimous vote.
+    tag = f"jury {agreement:.0%} agree ({len(scores)}/{size})"
+    return Score(passed=passed, why=f"{tag}: {why}")
 
 
 async def score_case(
