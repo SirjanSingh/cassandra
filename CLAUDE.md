@@ -4,6 +4,41 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## ⚠ Known-broken (audited 2026-08-05 — do not treat these as working)
+
+The project is moving from hackathon demo to product. Two audits found defects that are **still
+open**; read them before trusting any verdict, metric, or deployment claim in this repo.
+
+- **[docs/SECURITY_AUDIT.md](docs/SECURITY_AUDIT.md)** — security + load. 3 CRITICAL, 4 HIGH.
+  Reproduce the load numbers with `python scripts/stress_probe.py` (offline, no LLM spend).
+- **[docs/sessions/2026-08-05-code-audit-and-launch-plan.md](docs/sessions/2026-08-05-code-audit-and-launch-plan.md)**
+  — correctness audit + the launch plan (scope, hours, sequencing).
+
+Load-bearing facts, so no future session re-derives or contradicts them:
+
+1. **The grounding oracle is not trustworthy yet.** It checks that a tool call *happened*, not
+   that the claim *matches* it (`grounding.py:139-141`) — a successful `lookup_order` returning
+   DHL scores an answer of "UPS" as OK. Its extractors also over-fire, and decline markers are
+   unreachable once any claim matches (`grounding.py:85-96`), so honest refusals get flagged.
+   Measured: 3 of 5 verdicts wrong. **Don't cite pass-rates as evidence of anything yet.**
+2. **"Refuse everything" is the degenerate optimum** of the whole pipeline — eval, replay and
+   red-team all reward it and nothing measures regression on normal traffic.
+3. **`system_override` fails open when `REPLAY_SHARED_SECRET` is unset** (`patient/agent.py:67`),
+   and `session_id=="test"` hijacks are invisible to the Watcher. Never relax this gate; the fix
+   is to fail *closed*. (Earlier notes call this "deferred by design" — that is superseded.)
+4. **Never start the supervision loop per web instance.** `dashboard/main.py:34-57` does this
+   today and `cloudbuild.yaml` sets no `--max-instances`. The worker must be split out and run as
+   exactly one leader-elected process.
+5. **State is not concurrency-safe.** `state.py` dedupe is a 500-entry array with
+   non-transactional read-modify-write, and it does blocking I/O from async code. Two instances
+   lose each other's writes (measured).
+6. **The Python import package must be renamed to `cassandra_ai`** before any release —
+   `cassandra` is owned by `cassandra-driver` on PyPI. Dist name `cassandra-ai`, CLI stays
+   `cassandra`. The Cassandra brand is unaffected (it is the *product* name; the company name is
+   a separate, still-open decision).
+
+When you fix one of these, update the audit doc and this list in the same change.
+
 ## Session Protocol (READ FIRST — keep the project's memory rich)
 
 This repo keeps a durable, written memory so every session starts with full context. **You
@@ -145,3 +180,13 @@ grade Cassandra's own diagnostic accuracy against a hand-labeled ground-truth tr
 `deploy/` holds `cloudrun.Dockerfile`, `cloudbuild.yaml`, and `agent_engine.py` (Vertex AI
 Agent Engine entry). Durable state (Watcher cursor + dedupe set) is backed by Firestore /
 GCS / local file, selected by `STATE_BACKEND` (`cassandra/state.py`).
+
+**The current deployment is demo-grade, not production-grade** — see
+[docs/SECURITY_AUDIT.md](docs/SECURITY_AUDIT.md) §4 for the required changes. In short: the live
+demo is a single GCE VM fronted by an **ngrok** tunnel (no WAF/DDoS/TLS you control, SPOF, and
+`vm_startup.sh` pins a **stale image**, so a reboot rolls prod back). `cloudbuild.yaml` deploys
+both services `--allow-unauthenticated` with no instance cap and **no test gate before deploy**,
+and on Cloud Run the background supervision loop is CPU-throttled between requests so it does not
+reliably run at all. `/selfeval` takes no request body and runs the trap library through the LLM —
+it is an open denial-of-wallet endpoint. Don't add features to this path; the P1 fix is to split
+the supervision worker out of the web service.
