@@ -54,11 +54,75 @@ must maintain it** — it is not optional:
 3. **At session end**, make sure that session note is complete (scope, changes, verification,
    open items) and update any docs whose *behavior* changed — `README.md`, `docs/ARCHITECTURE.md`,
    `docs/SYSTEM_DESIGN.md` — plus the auto-memory `MEMORY.md` index when something durable was learned.
+   **Then re-read this file top to bottom and reconcile it with what the session actually did:**
+   - **Repository structure** — any module added, removed, renamed or repurposed? Any new
+     top-level directory? Update the map. This is the one that rots fastest and hurts most.
+   - **Known-broken** — did you fix an item (remove it, and update `docs/SECURITY_AUDIT.md`),
+     or find a new one (add it)? Never leave a fixed defect listed as broken, and never leave a
+     known defect unlisted.
+   - **Commands / Architecture / Deployment** — did a command, convention, seam or deploy fact
+     change? A stale instruction here silently misleads every future session.
+
+   Treat CLAUDE.md as **code that ships with the repo**: it is wrong until proven current, and
+   updating it is part of the task, not an optional epilogue. If nothing changed, say so
+   explicitly in the session note rather than skipping the check.
 4. **`.env` / settings changes don't take effect until the servers restart** — `get_settings()`
    is cached (`reload_settings()` exists for scripts/tests). Note this whenever you touch config.
 
 A `Stop` hook in `.claude/settings.local.json` prints a reminder of this protocol; the protocol
 itself lives here.
+
+## Repository structure (CANONICAL — keep this current every session)
+
+This is the authoritative module-level map. `docs/CODEBASE_MAP.md` is the orientation
+narrative (stack, flow, gotchas) at directory level; **when you add, remove, rename or
+repurpose a module, update this section in the same change** (and `CODEBASE_MAP.md` if a
+whole directory changed). A stale map costs every future session real time.
+
+```
+cassandra/     the meta-agent (agent-agnostic — never imports patient/)
+patient/       the supervised demo agent, "ShopBot" (agent.py, flaky tools.py, instrumentation.py)
+dashboard/     FastAPI + SSE cockpit; ui/index.html is the no-build fallback at /cockpit
+web/           PRIMARY React/Vite frontend (edit web/src/**); built by the Dockerfile webbuild stage
+tests/         offline pytest suite — LLM + MCP mocked, no live services needed
+scripts/       one-shot drivers: run_pipeline (thin wrapper), seed_incident, stress_probe, MCP spike
+deploy/        cloudrun.Dockerfile, cloudbuild.yaml, agent_engine.py, vm_startup.sh
+functions/     trace_poller (scheduled Watcher driver)
+examples/      third-party adapter template, gate cases, GitHub Actions prompt gate
+docs/          design refs + sessions/ (newest note = last session's state)
+```
+
+### `cassandra/` by role
+
+**Pipeline stages** — each takes and returns the one `Incident`, enriching it in place:
+`watcher.py` → `diagnostician.py` → `rootcause.py` → `synthesizer.py` → `evaluator.py`
+(baseline) → `patcher.py` → `evaluator.py` (candidate) → `replay.py` → `redteam.py`.
+`loop_agent.py` orchestrates them (`SupervisionPipeline.run_once`) and holds the thin ADK shell.
+
+**Verdict layer** (what decides pass/fail — the product's core):
+- `grounding.py` — deterministic verifier + `GroundingSpec`. Pure: no LLM, no network, no env.
+- `oracle.py` — the shared scoring contract: grounding first, LLM judge only on abstain/no ledger.
+  Used by `evaluator.py`, `redteam.py`, `replay.py`, `gate.py` — change scoring here, once.
+- `models.py` — `Incident`, `Verdict`, `SpanRecord` and every other shared type.
+
+**Seams** (the single chokepoints — keep them single; this is what makes the product portable):
+- `config.py` — ALL env access (`get_settings()`, cached; `reload_settings()` for tests/scripts)
+- `llm.py` — ALL model calls (`structured()` / `text()`), backend chosen at runtime
+- `phoenix_mcp.py` — ALL Phoenix MCP access (NFR-10)
+- `state.py` — durable cursor + dedupe (`STATE_BACKEND`: firestore | gcs | local)
+- `patient_client.py` — ALL live probes to the supervised agent (the documented HTTP contract)
+- `baseline.py` — resolves the supervised agent's current prompt (file → span → demo fallback)
+- `events.py` — in-process pub/sub feeding the dashboard SSE
+
+**Entry points:** `cli.py` (the `cassandra` console script; lazy per-subcommand imports),
+`run_once.py` (one full cycle), `mcp_server.py` (published `cassandra-mcp` tools),
+`gate.py` (`cassandra-gate` CI prompt-regression gate), `banner.py`.
+
+**Self-observability:** `instrumentation.py` (Cassandra's own spans → `cassandra-meta`),
+`selfeval.py` + `traps.py` (grades its own diagnostic accuracy vs hand-labeled ground truth),
+`report.py` (auto-postmortem → `reports/<id>.md`).
+
+**Optional:** `phoenix_experiments.py` (on-product A/B, gated by `PHOENIX_EXPERIMENTS_ENABLED`).
 
 ## What this is
 

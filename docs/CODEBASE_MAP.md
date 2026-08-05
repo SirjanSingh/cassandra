@@ -38,6 +38,11 @@ Cloud Rapid Agent Hackathon entry (Arize track).
 - `cassandra/gate.py` (`main` → `cassandra-gate`) — CI prompt-regression gate.
 
 ## Directory map
+
+> **Canonical structure lives in `CLAUDE.md` → "Repository structure"** (module-level, kept
+> current every session). This section is the directory-level summary; if the two disagree,
+> CLAUDE.md wins — and fix the drift.
+
 - `cassandra/` — the meta-agent; one module per pipeline stage (see flow below) + `config.py`, `llm.py`, `models.py`, `phoenix_mcp.py` gateway.
 - `patient/` — the supervised demo agent (ShopBot): `agent.py`, intentionally flaky `tools.py`, `instrumentation.py`.
 - `dashboard/` — FastAPI dashboard + SSE; `ui/index.html` is the self-contained `/cockpit` fallback.
