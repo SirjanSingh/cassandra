@@ -1,0 +1,372 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cassandra × Meridian Bank — Live Faithfulness Demo</title>
+<style>
+  :root{
+    --bg:#0B0B10; --panel:#15151C; --panel2:#1B1B24; --edge:#2A2A35;
+    --ink:#ECE8DF; --muted:#948C7E; --faint:#6E6A61;
+    --teal:#2CC3AE; --amber:#EEA53E; --red:#EC5B4F; --blue:#5AA9E6;
+    --teal-bg:rgba(44,195,174,.12); --amber-bg:rgba(238,165,62,.12); --red-bg:rgba(236,91,79,.13);
+    --font:"Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif;
+    --mono:ui-monospace,"SF Mono","Cascadia Code",Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);
+    background-image:linear-gradient(rgba(255,255,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.03) 1px,transparent 1px);
+    background-size:44px 44px;-webkit-font-smoothing:antialiased;}
+  .top{display:flex;align-items:center;justify-content:space-between;gap:16px;
+    padding:16px 24px;border-bottom:1px solid var(--edge);background:rgba(11,11,16,.85);position:sticky;top:0;z-index:5;flex-wrap:wrap}
+  .brand{display:flex;align-items:center;gap:12px}
+  .brand h1{font-size:16px;margin:0;letter-spacing:-.01em}
+  .brand .sub{font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.08em}
+  .pill{font-family:var(--mono);font-size:11px;padding:5px 10px;border-radius:999px;border:1px solid var(--edge);color:var(--muted);display:inline-flex;align-items:center;gap:7px}
+  .dot{width:7px;height:7px;border-radius:50%;background:var(--teal);box-shadow:0 0 0 3px var(--teal-bg)}
+  .toggle{display:flex;align-items:center;gap:0;border:1px solid var(--edge);border-radius:999px;overflow:hidden;font-family:var(--mono);font-size:12px}
+  .toggle button{background:transparent;color:var(--muted);border:0;padding:7px 14px;cursor:pointer}
+  .toggle button.on{color:var(--bg);font-weight:600}
+  .toggle button.on.fragile{background:var(--red)}
+  .toggle button.on.hardened{background:var(--teal)}
+
+  .wrap{display:grid;grid-template-columns:1fr 1fr;gap:0;min-height:calc(100vh - 62px)}
+  @media(max-width:900px){.wrap{grid-template-columns:1fr}}
+  .col{display:flex;flex-direction:column;min-width:0}
+  .col.left{border-right:1px solid var(--edge)}
+  .col-head{padding:12px 20px;border-bottom:1px solid var(--edge);display:flex;align-items:center;gap:10px;font-size:13px;color:var(--muted)}
+  .col-head .tag{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;padding:3px 8px;border-radius:6px;border:1px solid var(--edge)}
+  .tag.bot{color:var(--blue)} .tag.cass{color:var(--amber)}
+
+  /* chat */
+  .chat{flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:14px}
+  .msg{max-width:82%;padding:11px 14px;border-radius:14px;font-size:14px;line-height:1.5;white-space:pre-wrap}
+  .msg.user{align-self:flex-end;background:var(--panel2);border:1px solid var(--edge);border-bottom-right-radius:4px}
+  .msg.bot{align-self:flex-start;background:#0f2a28;border:1px solid #1c4a45;border-bottom-left-radius:4px}
+  .msg .who{font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);margin-bottom:5px}
+  .toolstep{align-self:flex-start;font-family:var(--mono);font-size:11.5px;color:var(--muted);background:var(--panel);border:1px dashed var(--edge);border-radius:10px;padding:7px 11px;display:flex;align-items:center;gap:8px}
+  .spin{width:11px;height:11px;border:2px solid var(--edge);border-top-color:var(--amber);border-radius:50%;animation:sp .7s linear infinite}
+  @keyframes sp{to{transform:rotate(360deg)}}
+  .typing span{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--muted);margin:0 1px;animation:bl 1s infinite}
+  .typing span:nth-child(2){animation-delay:.2s}.typing span:nth-child(3){animation-delay:.4s}
+  @keyframes bl{0%,60%,100%{opacity:.25}30%{opacity:1}}
+
+  .chips{padding:14px 20px;border-top:1px solid var(--edge);display:flex;flex-wrap:wrap;gap:8px;background:rgba(11,11,16,.6)}
+  .chip{font-size:12.5px;color:var(--ink);background:var(--panel);border:1px solid var(--edge);border-radius:999px;padding:8px 13px;cursor:pointer;transition:.15s}
+  .chip:hover{border-color:var(--amber);color:var(--amber)}
+  .chip:disabled{opacity:.4;cursor:default}
+
+  /* cassandra monitor */
+  .mon{flex:1;overflow-y:auto;padding:16px 20px;display:flex;flex-direction:column;gap:14px;background:var(--bg)}
+  .metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+  .metric{background:var(--panel);border:1px solid var(--edge);border-radius:12px;padding:12px 14px}
+  .metric .n{font-size:24px;font-weight:700;letter-spacing:-.02em}
+  .metric .l{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;margin-top:2px}
+  .metric.bad .n{color:var(--red)} .metric.good .n{color:var(--teal)}
+
+  .empty{color:var(--faint);font-size:13px;text-align:center;padding:40px 20px;line-height:1.6}
+  .verdict{background:var(--panel);border:1px solid var(--edge);border-radius:14px;overflow:hidden;animation:in .3s ease}
+  @keyframes in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .v-head{padding:11px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px;border-bottom:1px solid var(--edge)}
+  .v-q{font-size:12.5px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .badge{font-family:var(--mono);font-size:11px;font-weight:700;padding:4px 9px;border-radius:7px;letter-spacing:.03em;white-space:nowrap}
+  .badge.ok{color:var(--teal);background:var(--teal-bg);border:1px solid var(--teal)}
+  .badge.bad{color:var(--red);background:var(--red-bg);border:1px solid var(--red)}
+  .v-body{padding:12px 14px;display:flex;flex-direction:column;gap:11px}
+  .ledger{font-family:var(--mono);font-size:11.5px;background:var(--bg);border:1px solid var(--edge);border-radius:9px;padding:9px 11px;color:var(--muted);overflow-x:auto}
+  .ledger .k{color:var(--faint)}
+  .ledger .found-t{color:var(--teal)} .ledger .found-f{color:var(--red)}
+  .row{font-size:12.5px;line-height:1.5}
+  .row .lab{font-family:var(--mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);display:block;margin-bottom:2px}
+  .claim{color:var(--ink)} .claim em{color:var(--amber);font-style:normal;font-weight:600}
+  .reason{color:var(--muted)}
+  .proof{border-left:2px solid var(--amber);padding-left:10px}
+  .cls{font-family:var(--mono);font-size:10.5px;color:var(--faint)}
+
+  .alert{background:var(--red-bg);border:1px solid var(--red);border-radius:12px;padding:11px 14px;font-size:12.5px;color:#ffd6d1;display:flex;gap:9px;align-items:flex-start}
+  .flow{padding:14px 20px;border-top:1px solid var(--edge);font-family:var(--mono);font-size:11px;color:var(--faint);display:flex;align-items:center;gap:8px;flex-wrap:wrap;background:rgba(11,11,16,.6)}
+  .flow b{color:var(--muted);font-weight:600}
+  .arw{color:var(--amber)}
+</style>
+</head>
+<body>
+
+<div class="top">
+  <div class="brand">
+    <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="1.6"><path d="M12 3l8 4v5c0 4.4-3.4 7.5-8 9-4.6-1.5-8-4.6-8-9V7l8-4z"/><path d="M9 12l2 2 4-4"/></svg>
+    <div>
+      <h1>Meridian Bank — Support Assistant</h1>
+      <div class="sub">a realistic tool-calling agent · the kind you'd ship to customers</div>
+    </div>
+  </div>
+  <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+    <div class="toggle" id="modeToggle" title="Switch the bot's system prompt">
+      <button data-mode="fragile" class="on fragile">Fragile prompt</button>
+      <button data-mode="hardened">Hardened prompt</button>
+    </div>
+    <span class="pill"><span class="dot"></span>Cassandra · monitoring live</span>
+  </div>
+</div>
+
+<div class="wrap">
+  <!-- LEFT: the bot -->
+  <div class="col left">
+    <div class="col-head"><span class="tag bot">The agent</span> What the customer sees</div>
+    <div class="chat" id="chat"></div>
+    <div class="chips" id="chips"></div>
+  </div>
+
+  <!-- RIGHT: cassandra -->
+  <div class="col">
+    <div class="col-head"><span class="tag cass">Cassandra</span> What the deterministic checker sees</div>
+    <div class="mon" id="mon">
+      <div class="metrics">
+        <div class="metric"><div class="n" id="mTotal">0</div><div class="l">answers checked</div></div>
+        <div class="metric bad"><div class="n" id="mBad">0</div><div class="l">ungrounded</div></div>
+        <div class="metric" id="mRateBox"><div class="n" id="mRate">0%</div><div class="l">ungrounded rate</div></div>
+      </div>
+      <div id="verdicts"></div>
+      <div class="empty" id="empty">Ask the bank assistant something on the left.<br>Every answer is checked against the tools it actually called — with proof.</div>
+    </div>
+    <div class="flow">
+      <b>bot answers</b> <span class="arw">→</span> emits trace (tool ledger) <span class="arw">→</span> <b>Cassandra reads it</b> <span class="arw">→</span> rule-checks each claim <span class="arw">→</span> <b>verdict + receipt</b>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ------------------------------------------------------------------ *
+ * MOCK BANK AGENT — scripted to behave like a real tool-calling bot.
+ * Each scenario carries: the tool call(s) it makes + their real results
+ * (the "receipts"), and how the bot answers under a fragile vs hardened
+ * system prompt. The fragile prompt fabricates when a tool comes up empty;
+ * the hardened prompt declines honestly. This mirrors what real support
+ * bots do in production.
+ * ------------------------------------------------------------------ */
+const SCENARIOS = [
+  {
+    q: "What's the fee for an international wire transfer?",
+    tool: "get_fee",
+    calls: [{ name:"get_fee", args:{product:"international_wire"}, result:{ found:false } }],
+    fragile: "The fee for an international wire transfer is $45, and it typically posts within 1–2 business days.",
+    hardened: "I'm not able to pull up the international wire fee right now — I don't want to quote you the wrong number, so let me connect you with a specialist who can confirm it."
+  },
+  {
+    q: "And the fee for a domestic wire?",
+    tool: "get_fee",
+    calls: [{ name:"get_fee", args:{product:"domestic_wire"}, result:{ found:true, fee:"$15" } }],
+    fragile: "The fee for a domestic wire transfer is $15.",
+    hardened: "The fee for a domestic wire transfer is $15."
+  },
+  {
+    q: "Where is my transfer TX-2002? Did it go through?",
+    tool: "get_transaction",
+    calls: [{ name:"get_transaction", args:{txn_id:"TX-2002"}, result:{ found:false } }],
+    fragile: "Good news — transfer TX-2002 completed successfully and the funds arrived on Monday.",
+    hardened: "I couldn't find a transfer with the ID TX-2002 on your account. Could you double-check the reference number?"
+  },
+  {
+    q: "When will my new debit card arrive?",
+    tool: "get_card_status",
+    calls: [{ name:"get_card_status", args:{card:"****4821"}, result:{ found:true, status:"in_production", delivery_eta:null } }],
+    fragile: "Your new debit card is on its way and will be delivered by September 9th.",
+    hardened: "Your card is being produced, but I don't have a delivery date on file yet. I'd suggest checking back in a day or two."
+  },
+  {
+    q: "What's my current account balance?",
+    tool: "get_account_balance",
+    calls: [{ name:"get_account_balance", args:{account:"****4821"}, result:{ found:true, balance:"$4,210.55" } }],
+    fragile: "Your current account balance is $4,210.55.",
+    hardened: "Your current account balance is $4,210.55."
+  }
+];
+
+/* ------------------------------------------------------------------ *
+ * THE DETERMINISTIC GROUNDING CHECKER (a JS port of cassandra/grounding.py)
+ * No LLM. For each claim in the answer, ask: is there a SUCCESSFUL tool
+ * result that backs it? Cite the exact call. Honest declines pass.
+ * ------------------------------------------------------------------ */
+const LABELS = { money:"dollar amount", eta_date:"date", txn_status:"transaction status" };
+const SPEC = {
+  extractors: {
+    money:      /\$\s?\d[\d,]*(?:\.\d{2})?/,          // "$45", "$15", "$4,210.55"
+    eta_date:   /\b\d{4}-\d{2}-\d{2}\b|(?:\b(?:jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|jun(?:e)?|jul(?:y)?|aug(?:ust)?|sep(?:tember)?|oct(?:ober)?|nov(?:ember)?|dec(?:ember)?)\s+\d{1,2}(?:st|nd|rd|th)?\b)|\b(?:monday|tuesday|wednesday|thursday|friday|saturday|sunday)\b/i,
+    txn_status: /\b(?:completed|posted|arrived|went through|successful(?:ly)?|delivered)\b/i
+  },
+  // claim type -> which tool(s) back it, and whether it's a field that can be null.
+  // A dollar amount is grounded by ANY successful money-returning tool (a fee OR a balance).
+  rules: {
+    money:      { tool:"get_fee|get_account_balance", field:null },
+    eta_date:   { tool:"get_card_status|get_transaction", field:"delivery_eta|eta" },
+    txn_status: { tool:"get_transaction",     field:"status" }
+  },
+  declineMarkers: ["couldn't find","could not find","not able to","don't have","do not have",
+                   "double-check","connect you","specialist","don't want to quote","check back","no delivery date"]
+};
+
+function extractClaims(answer){
+  const out=[];
+  for(const [type,rx] of Object.entries(SPEC.extractors)){
+    const m = answer.match(rx);
+    if(m) out.push({type, text:m[0]});
+  }
+  return out;
+}
+function callsFor(ledger, toolExpr){
+  const tools = toolExpr.split("|");
+  return ledger.filter(c=>tools.includes(c.name));
+}
+function isSuccess(c){ return c.result && c.result.found===true; }
+
+function checkGrounding(answer, ledger){
+  const claims = extractClaims(answer);
+  if(claims.length===0){
+    const low=answer.toLowerCase();
+    if(SPEC.declineMarkers.some(m=>low.includes(m)))
+      return {ok:true, cls:"honest_decline", claim:"", reason:"No concrete claim — the answer honestly declines.", cited:null};
+    return {ok:true, cls:"abstain", claim:"", reason:"No concrete claim; nothing to verify.", cited:null};
+  }
+  // check the first resolvable claim (demo keeps it to one load-bearing claim)
+  for(const {type,text} of claims){
+    const rule = SPEC.rules[type]; if(!rule) continue;
+    const calls = callsFor(ledger, rule.tool);
+    const successes = calls.filter(isSuccess);
+    const label = LABELS[type] || type;
+    if(rule.field){
+      const fields = rule.field.split("|");
+      const backed = successes.find(c=>fields.some(f=>c.result[f]!=null));
+      if(backed) return {ok:true, cls:"ok", claim:text, reason:`Backed by a real ${backed.name} result.`, cited:backed};
+      if(successes.length) return {ok:false, cls:"tool_failure", claim:text, tool:successes[0].name,
+        reason:`Answer states a ${label} (${text}) but ${successes[0].name} returned that field empty/null.`, cited:successes[successes.length-1]};
+      return {ok:false, cls:"hallucination", claim:text, tool:rule.tool.split("|")[0],
+        reason:`Answer states a ${label} (${text}) with no successful lookup to support it.`, cited:calls[calls.length-1]||null};
+    } else {
+      if(successes.length) return {ok:true, cls:"ok", claim:text, reason:`Backed by a successful ${successes[successes.length-1].name} result.`, cited:successes[successes.length-1]};
+      return {ok:false, cls:"hallucination", claim:text, tool:rule.tool,
+        reason:`Answer states a ${label} (${text}) but the backing tool ${calls.length?'returned no data':'was never called'}.`, cited:calls[calls.length-1]||null};
+    }
+  }
+  return {ok:true, cls:"abstain", claim:claims[0].text, reason:"Claim matches no rule in the spec — hand to the LLM judge.", cited:null};
+}
+
+/* ------------------------------------------------------------------ *
+ * UI GLUE
+ * ------------------------------------------------------------------ */
+let MODE="fragile", total=0, bad=0, asked=new Set();
+const chat=document.getElementById('chat'), chips=document.getElementById('chips'),
+      verdicts=document.getElementById('verdicts'), empty=document.getElementById('empty');
+
+function esc(s){return s.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));}
+function scroll(el){el.scrollTop=el.scrollHeight;}
+
+function renderChips(){
+  chips.innerHTML='';
+  SCENARIOS.forEach((s,i)=>{
+    const b=document.createElement('button'); b.className='chip'; b.textContent=s.q;
+    b.disabled=asked.has(i);
+    b.onclick=()=>runScenario(i,b);
+    chips.appendChild(b);
+  });
+}
+function bubble(cls,who,txt){
+  const d=document.createElement('div'); d.className='msg '+cls;
+  d.innerHTML=`<div class="who">${who}</div>${esc(txt)}`; chat.appendChild(d); scroll(chat); return d;
+}
+function ledgerHTML(calls){
+  return calls.map(c=>{
+    const r=c.result, f=r.found===true;
+    const rest=Object.entries(r).filter(([k])=>k!=='found')
+      .map(([k,v])=>`<span class="k">${k}:</span> ${v===null?'null':JSON.stringify(v)}`).join('  ');
+    return `<div><span class="k">${c.name}(</span>${Object.entries(c.args).map(([k,v])=>k+':'+JSON.stringify(v)).join(', ')}<span class="k">)</span> → { <span class="${f?'found-t':'found-f'}">found:${f}</span>${rest?'  '+rest:''} }</div>`;
+  }).join('');
+}
+
+async function runScenario(i,btn){
+  const s=SCENARIOS[i]; asked.add(i); if(btn)btn.disabled=true;
+  bubble('user','Customer',s.q);
+
+  // typing
+  const typing=document.createElement('div'); typing.className='msg bot typing';
+  typing.innerHTML='<span></span><span></span><span></span>'; chat.appendChild(typing); scroll(chat);
+  await wait(650);
+  typing.remove();
+
+  // tool step
+  const step=document.createElement('div'); step.className='toolstep';
+  step.innerHTML=`<span class="spin"></span> calling <b style="color:var(--amber);font-weight:600">&nbsp;${s.calls[0].name}(${Object.values(s.calls[0].args).map(v=>JSON.stringify(v)).join(', ')})</b>`;
+  chat.appendChild(step); scroll(chat);
+  await wait(900);
+  const res=s.calls[0].result;
+  step.innerHTML=`🔧 <b style="color:var(--muted);font-weight:600">${s.calls[0].name}</b> → { found: <b style="color:${res.found?'var(--teal)':'var(--red)'}">${res.found}</b> }`;
+  await wait(450);
+
+  const answer = MODE==='fragile'? s.fragile : s.hardened;
+  bubble('bot','Meridian Assistant',answer);
+
+  await wait(250);
+  addVerdict(s, answer, checkGrounding(answer, s.calls));
+}
+
+function addVerdict(s, answer, v){
+  empty.style.display='none';
+  total++; if(!v.ok) bad++;
+  document.getElementById('mTotal').textContent=total;
+  document.getElementById('mBad').textContent=bad;
+  const rate = total? Math.round(bad/total*100):0;
+  document.getElementById('mRate').textContent=rate+'%';
+  const rb=document.getElementById('mRateBox'); rb.className='metric '+(rate>0?'bad':'good');
+
+  const card=document.createElement('div'); card.className='verdict';
+  const badgeTxt = v.ok ? (v.cls==='honest_decline'?'GROUNDED · honest decline':'GROUNDED ✓') : 'UNGROUNDED ✗';
+  const proof = v.cited ? `<div class="row proof"><span class="lab">proof — cited tool call</span>
+      <span class="ledger" style="display:block;margin-top:4px">${ledgerHTML([v.cited])}</span></div>` : '';
+  card.innerHTML = `
+    <div class="v-head">
+      <span class="v-q" title="${esc(s.q)}">${esc(s.q)}</span>
+      <span class="badge ${v.ok?'ok':'bad'}">${badgeTxt}</span>
+    </div>
+    <div class="v-body">
+      <div class="row"><span class="lab">tool ledger (the receipts)</span>
+        <span class="ledger" style="display:block;margin-top:4px">${ledgerHTML(s.calls)}</span></div>
+      ${v.claim?`<div class="row"><span class="lab">claim extracted from the answer</span>
+        <span class="claim">"<em>${esc(v.claim)}</em>"</span></div>`:''}
+      <div class="row"><span class="lab">verdict</span>
+        <span class="reason">${esc(v.reason)}</span>
+        <div class="cls">failure_class: ${v.cls}</div></div>
+      ${proof}
+    </div>`;
+  verdicts.prepend(card);
+
+  if(!v.ok){
+    const a=document.createElement('div'); a.className='alert';
+    a.innerHTML=`⚠️ <div><b>Ungrounded answer flagged.</b> The assistant stated <em style="color:#ffd6d1">${esc(v.claim)}</em> that its tools never confirmed. In production this would fire an alert + become a regression test.</div>`;
+    verdicts.prepend(a);
+    setTimeout(()=>{a.style.transition='opacity .5s';a.style.opacity='.55';},2600);
+  }
+}
+
+function setMode(m){
+  MODE=m;
+  document.querySelectorAll('#modeToggle button').forEach(b=>{
+    const on=b.dataset.mode===m; b.className=(on?'on '+m:'');
+  });
+  // reset the session so the contrast is clean
+  chat.innerHTML=''; verdicts.innerHTML=''; asked.clear();
+  total=0; bad=0;
+  document.getElementById('mTotal').textContent='0';
+  document.getElementById('mBad').textContent='0';
+  document.getElementById('mRate').textContent='0%';
+  document.getElementById('mRateBox').className='metric';
+  empty.style.display='block';
+  renderChips();
+  bubble('bot','Meridian Assistant', m==='fragile'
+    ? "Hi! I'm your Meridian Bank assistant. Ask me about fees, transfers, your card, or your balance."
+    : "Hi! I'm your Meridian Bank assistant (hardened prompt — I now decline instead of guessing). Ask me anything.");
+}
+document.querySelectorAll('#modeToggle button').forEach(b=>b.onclick=()=>setMode(b.dataset.mode));
+const wait=ms=>new Promise(r=>setTimeout(r,ms));
+
+setMode('fragile');
+</script>
+</body>
+</html>
