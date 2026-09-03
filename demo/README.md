@@ -5,9 +5,14 @@ No install, no server, no keys — **open `mock-bot-integration.html` in any bro
 
 ## What it shows
 
-A realistic **bank support assistant** ("Meridian Bank") on the left — the kind of
-tool-calling agent you'd actually ship — and a live **Cassandra faithfulness monitor**
-on the right.
+A realistic **support assistant** on the left — the kind of tool-calling agent you'd
+actually ship — and a live **Cassandra faithfulness monitor** on the right.
+
+Use the **agent switcher** (top of the page) to flip between two industries — a
+**bank** ("Meridian Bank") and an **airline** ("Zephyr Airlines"). Same deterministic
+checker, different tools and claims (fees, transfers, cards vs. flights, gates, baggage) —
+the point being that the approach isn't tied to one vertical; each agent just brings its
+own tiny grounding spec.
 
 Click a suggested question. The bot "thinks", calls a tool (e.g. `get_fee`,
 `get_transaction`), and answers. On the right, Cassandra shows, for that same answer:
