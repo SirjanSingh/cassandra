@@ -246,6 +246,24 @@ the prompt diff, before/after replay evidence, and the red-team table. File it a
 issue (`gh issue create --body-file reports/<id>.md`), drop it in Slack, or attach it to the
 PR that applies the patch. The `supervise_latest` MCP tool returns the same markdown.
 
+## The faithfulness cascade (rule → NLI → LLM) + multilingual
+
+The pass/fail verdict runs a **three-layer cascade**, cheapest and most reproducible first
+(`cassandra/oracle.py`):
+
+1. **Rule** (`grounding.py`) — deterministic check over the structured tool ledger; cites the
+   exact tool call. Free, reproducible, no model.
+2. **NLI** (`nli.py`) — for free-text **RAG** evidence a regex can't parse, a cross-encoder
+   entailment model asks "does the retrieved passage support this claim?" No LLM, no hardcoded
+   knowledge, and **language-agnostic** (point `NLI_MODEL` at a multilingual checkpoint).
+3. **LLM judge** — last resort, only when neither layer above can decide.
+
+Because the rule reads *facts* (a ₹ amount, a date), it catches hallucinations in **Hindi with
+zero extra model** — try the 🇮🇳 Hindi agent in `demo/mock-bot-integration.html`. This is the
+basis for a **data-sovereign, multilingual** posture (nothing leaves your VPC; works in Indian
+languages) that US SaaS + English-LLM-judge tools can't match. Design details:
+[`docs/NLI_AND_MULTILINGUAL.md`](docs/NLI_AND_MULTILINGUAL.md).
+
 ## Built with
 
 - **Reasoning core** — Gemini 2.5 on Vertex AI (`gemini-2.5-flash-lite`), with OpenRouter and
@@ -278,6 +296,9 @@ cassandra/
 │   ├── diagnostician.py  #   LLM-as-judge → annotate span + severity
 │   ├── rootcause.py      #   culprit + causal chain + fix strategy
 │   ├── synthesizer.py    #   adversarial dataset → Phoenix dataset
+│   ├── grounding.py      #   deterministic faithfulness rule (Layer 1) — cites the tool call
+│   ├── nli.py            #   NLI/entailment (Layer 2) — verifies free-text RAG evidence
+│   ├── oracle.py         #   the pass/fail cascade: rule → NLI → LLM (one scoring contract)
 │   ├── evaluator.py      #   live baseline vs. candidate scoring + efficiency
 │   ├── patcher.py        #   prompt patch → Phoenix prompt version + diff
 │   ├── replay.py         #   re-run the original failing input on the patch

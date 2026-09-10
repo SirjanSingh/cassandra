@@ -45,6 +45,14 @@ class Settings(BaseSettings):
     jury_size: int = 1
     jury_max_temperature: float = 0.8
 
+    # NLI (cassandra/nli.py) — Layer 2 of the faithfulness cascade. When set to a
+    # HuggingFace cross-encoder NLI checkpoint (and `transformers`/`sentence-transformers`
+    # is installed), free-text RAG evidence is verified by entailment instead of falling
+    # straight to the LLM judge. Point it at a MULTILINGUAL NLI model to verify Hindi and
+    # other languages. Unset = an offline lexical heuristic (dev/test only). No facts are
+    # hardcoded — the model judges the (claim, evidence) pair.
+    nli_model: str | None = None
+
     # Introspection / on-product depth
     self_trace_enabled: bool = True       # trace Cassandra's own reasoning into META_PROJECT
     phoenix_experiments_enabled: bool = False  # also register A/B as a real Phoenix experiment

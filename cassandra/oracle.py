@@ -1,13 +1,16 @@
 """Shared pass/fail oracle for the active stages (EVAL_PLAN.md §6, step B2).
 
-One scoring contract for Evaluator, RedTeam, TraceReplay, and the CI gate:
+One scoring contract for Evaluator, RedTeam, TraceReplay, and the CI gate — a
+three-layer cascade, cheapest and most reproducible first:
 
-1. PRIMARY — deterministic grounding verdict (`cassandra/grounding.py`, L1) computed
-   from the tool ledger the supervised agent returned with its reply. Reproducible,
-   free, and auditable (the verdict cites the tool call).
-2. FALLBACK — the LLM-as-judge (L2), used only when the agent reported no tool
-   ledger at all (third-party adapters that don't emit `tool_calls`) or the spec
-   abstained. This keeps the zero-config path working for any agent.
+1. LAYER 1 (PRIMARY) — deterministic grounding verdict (`cassandra/grounding.py`)
+   over the STRUCTURED tool ledger. Reproducible, free, cites the tool call.
+2. LAYER 2 (NLI) — `cassandra/nli.py`. When the rule can't decide but the agent
+   supplied free-text `evidence` (a retrieved RAG passage), an entailment model
+   checks whether the evidence supports/contradicts the answer. Cheap, no LLM,
+   language-agnostic (point NLI_MODEL at a multilingual checkpoint for Hindi).
+3. LAYER 3 (FALLBACK) — the LLM-as-judge, used only when neither layer above can
+   decide (no ledger, no evidence, or both abstained). Keeps any agent working.
 
 The spec is resolved per deployment: `GROUNDING_SPEC_FILE` (operator-provided JSON)
 with the bundled ShopBot spec as the demo fallback — the same pattern as
@@ -57,6 +60,25 @@ def deterministic_verdict(answer: str, tool_calls: list | None) -> GroundingVerd
     return None if verdict.abstain else verdict
 
 
+def nli_verdict(answer: str, evidence: str | None) -> Score | None:
+    """LAYER 2 — entailment of the answer against a retrieved evidence passage.
+
+    Returns a Score when the NLI model is confident (entailment/contradiction),
+    or None (→ LLM fallback) when there is no evidence or the model is unsure
+    (neutral). No knowledge is hardcoded; the model judges the two texts only.
+    """
+    if not evidence:
+        return None
+    from . import nli
+
+    r = nli.check_claim(answer, evidence)
+    if r.refuted:
+        return Score(passed=False, why=f"nli[{r.backend}]: evidence contradicts the answer ({r.score:.0%})")
+    if r.supported:
+        return Score(passed=True, why=f"nli[{r.backend}]: evidence supports the answer ({r.score:.0%})")
+    return None  # neutral -> hand up to the LLM judge
+
+
 async def _judge_once(
     case_input: str, expected: str, answer: str, temperature: float
 ) -> Score:
@@ -96,13 +118,24 @@ async def _judge_fallback(case_input: str, expected: str, answer: str) -> Score:
 
 
 async def score_case(
-    case_input: str, expected: str, answer: str, tool_calls: list | None
+    case_input: str,
+    expected: str,
+    answer: str,
+    tool_calls: list | None,
+    evidence: str | None = None,
 ) -> Score:
-    """Score one probe answer: grounding verdict first, LLM judge/jury only as fallback."""
-    verdict = deterministic_verdict(answer, tool_calls)
+    """Score one probe answer through the cascade: rule → NLI → LLM.
+
+    `evidence` (optional) is a retrieved passage for RAG agents; when the rule can't
+    decide, it enables the deterministic-ish NLI layer before the LLM fallback.
+    """
+    verdict = deterministic_verdict(answer, tool_calls)  # LAYER 1
     if verdict is not None:
         return Score(
             passed=verdict.failure_class is FailureClass.OK,
             why=f"grounding: {verdict.rationale}",
         )
-    return await _judge_fallback(case_input, expected, answer)
+    nli_score = nli_verdict(answer, evidence)  # LAYER 2
+    if nli_score is not None:
+        return nli_score
+    return await _judge_fallback(case_input, expected, answer)  # LAYER 3

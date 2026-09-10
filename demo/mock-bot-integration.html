@@ -105,6 +105,7 @@
       <span class="cap">agent</span>
       <button data-agent="bank" class="on">🏦 Bank</button>
       <button data-agent="airline">✈ Airline</button>
+      <button data-agent="bharat">🇮🇳 Hindi</button>
     </div>
     <div class="toggle" id="modeToggle" title="Switch the bot's system prompt">
       <span class="cap">prompt</span>
@@ -147,7 +148,7 @@
  * exact call. Honest declines pass.
  * ------------------------------------------------------------------ */
 const EX = {
-  money:      /\$\s?\d[\d,]*(?:\.\d{2})?/,
+  money:      /(?:\$|₹|Rs\.?)\s?\d[\d,]*(?:\.\d{2})?/,   // $, ₹ and Rs. — a format, not a language
   eta_date:   /\b\d{4}-\d{2}-\d{2}\b|(?:\b(?:jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|jun(?:e)?|jul(?:y)?|aug(?:ust)?|sep(?:tember)?|oct(?:ober)?|nov(?:ember)?|dec(?:ember)?)\s+\d{1,2}(?:st|nd|rd|th)?\b)|\b(?:monday|tuesday|wednesday|thursday|friday|saturday|sunday)\b/i,
   txn_status: /\b(?:completed|posted|arrived|went through|successful(?:ly)?|delivered)\b/i,
   gate:       /\bgate\s+[A-Z]?\d+\b/i
@@ -155,7 +156,9 @@ const EX = {
 const LABELS = { money:"dollar amount", eta_date:"date", txn_status:"transaction status", gate:"gate" };
 const DECLINE = ["couldn't find","could not find","not able to","don't have","do not have",
   "double-check","connect you","specialist","don't want to quote","don't want to give",
-  "check back","check at the counter","no delivery date","gate assignment yet","don't have a gate"];
+  "check back","check at the counter","no delivery date","gate assignment yet","don't have a gate",
+  // Hindi honest-decline phrases (so an honest "I don't know" in Hindi scores GROUNDED)
+  "माफ़","उपलब्ध नहीं","जानकारी नहीं","संपर्क करें","पता नहीं","नहीं है फ़िलहाल"];
 
 function extractClaims(answer, spec){
   const out=[];
@@ -273,6 +276,32 @@ const AGENTS = {
         calls:[{name:"get_flight",args:{flight:"ZP-100"},result:{found:true,status:"boarding",departure:"11:20",gate:"A4"}}],
         fragile:"Yes — flight ZP-100 is now boarding at Gate A4.",
         hardened:"Yes — flight ZP-100 is now boarding at Gate A4." }
+    ]
+  },
+  bharat: {
+    name: "भारत बैंक — सहायक",
+    sub: "same checker, a different LANGUAGE — Hindi, with zero extra model",
+    greet: "नमस्ते! मैं भारत बैंक का सहायक हूँ। शुल्क, ट्रांसफ़र या बैलेंस के बारे में पूछें।",
+    greetHard: "नमस्ते! (हार्डन्ड प्रॉम्प्ट — अब मैं अनुमान नहीं लगाता, ईमानदारी से बताता हूँ)।",
+    spec: {
+      // A ₹ amount is a fact regardless of the sentence's language — the SAME rule works.
+      extractors: { money:EX.money },
+      rules: { money: { tool:"get_fee|get_balance", field:null } },
+      declineMarkers: DECLINE
+    },
+    scenarios: [
+      { q:"अंतरराष्ट्रीय वायर ट्रांसफ़र का शुल्क क्या है?",
+        calls:[{name:"get_fee",args:{product:"intl_wire"},result:{found:false}}],
+        fragile:"अंतरराष्ट्रीय वायर ट्रांसफ़र का शुल्क ₹1,500 है, और यह 1–2 कार्यदिवस में लग जाता है।",
+        hardened:"माफ़ कीजिए, अभी अंतरराष्ट्रीय वायर शुल्क की जानकारी उपलब्ध नहीं है — कृपया सहायता टीम से संपर्क करें।" },
+      { q:"घरेलू ट्रांसफ़र का शुल्क कितना है?",
+        calls:[{name:"get_fee",args:{product:"domestic"},result:{found:true,fee:"₹50"}}],
+        fragile:"घरेलू ट्रांसफ़र का शुल्क ₹50 है।",
+        hardened:"घरेलू ट्रांसफ़र का शुल्क ₹50 है।" },
+      { q:"मेरा खाता बैलेंस क्या है?",
+        calls:[{name:"get_balance",args:{account:"****4821"},result:{found:true,balance:"₹42,105.55"}}],
+        fragile:"आपका वर्तमान खाता बैलेंस ₹42,105.55 है।",
+        hardened:"आपका वर्तमान खाता बैलेंस ₹42,105.55 है।" }
     ]
   }
 };
