@@ -14,14 +14,15 @@ _COMMANDS = """\
 commands:
   dashboard    run the dashboard + SSE cockpit (default port 8085)
   run          drive one full end-to-end supervision cycle
-  gate         CI prompt-regression gate (fails when a prompt edit drops the pass rate)
+  scan         check exported chat logs for answers no tool backed (no Phoenix needed)
+  gate        CI prompt-regression gate (fails when a prompt edit drops the pass rate)
   pr           open the proven prompt fix for an incident as a GitHub pull request
   mcp          run Cassandra's MCP server over stdio (for Claude Desktop / Cursor)
 
 Run `cassandra <command> --help` for command-specific options.
 """
 
-_SUBCOMMANDS = {"dashboard", "run", "gate", "pr", "mcp"}
+_SUBCOMMANDS = {"dashboard", "run", "scan", "gate", "pr", "mcp"}
 
 
 def _make_stdout_safe() -> None:
@@ -37,6 +38,44 @@ def _make_stdout_safe() -> None:
             stream.reconfigure(encoding="utf-8", errors="replace")  # type: ignore[union-attr]
         except (AttributeError, ValueError):  # not a reconfigurable TextIOWrapper
             pass
+
+
+def _scan(args: argparse.Namespace) -> int:
+    """`cassandra scan`: returns the process exit code (2 = bad input, 0 otherwise)."""
+    import asyncio
+    import json
+    from pathlib import Path
+
+    from cassandra.config import get_settings
+    from cassandra.grounding import GroundingSpec
+    from cassandra import scan as scan_mod
+
+    spec_path = args.spec or get_settings().grounding_spec_file
+    if not spec_path:
+        # Never fall back to the bundled ShopBot spec: it would misgrade every other agent.
+        print("scan needs this agent's grounding spec: pass --spec spec.json "
+              "(or set GROUNDING_SPEC_FILE). See docs/SCAN.md.", file=sys.stderr)
+        return 2
+    try:
+        spec = GroundingSpec.model_validate_json(Path(spec_path).read_text(encoding="utf-8"))
+        turns = scan_mod.load_turns(args.logs)
+    except (OSError, ValueError) as e:
+        print(f"scan: {e}", file=sys.stderr)
+        return 2
+
+    results = asyncio.run(scan_mod.scan(turns, spec, judge=args.judge))
+    mode = "rule + LLM judge on undecided turns" if args.judge else "rule only, no LLM"
+    report = scan_mod.ScanReport(source=Path(args.logs).name, mode=mode, results=results)
+    Path(args.out).write_text(scan_mod.render_markdown(report, top=args.top), encoding="utf-8")
+    if args.json:
+        Path(args.json).write_text(
+            json.dumps([r.model_dump(mode="json") for r in results], indent=1, ensure_ascii=False),
+            encoding="utf-8",
+        )
+    bad, total = report.count("unsupported"), len(results)
+    print(f"{bad} of {total} answers stated a fact no tool backed "
+          f"({report.count('undecided')} not checkable). Report: {args.out}")
+    return 0
 
 
 def main(argv: list[str] | None = None) -> None:
@@ -57,6 +96,15 @@ def main(argv: list[str] | None = None) -> None:
     p_dash.add_argument("--host", default="127.0.0.1", help="bind host (default: 127.0.0.1)")
 
     sub.add_parser("run", help="drive one full end-to-end supervision cycle")
+    p_scan = sub.add_parser("scan", help="check exported chat logs for unsupported answers")
+    p_scan.add_argument("logs", help="JSONL export, one turn per line (see docs/SCAN.md)")
+    p_scan.add_argument("--spec", default=None,
+                        help="grounding spec JSON for this agent (default: GROUNDING_SPEC_FILE)")
+    p_scan.add_argument("--out", default="scan_report.md", help="markdown report path")
+    p_scan.add_argument("--json", default=None, help="also write per-turn results as JSON")
+    p_scan.add_argument("--top", type=int, default=10, help="examples shown in the report")
+    p_scan.add_argument("--judge", action="store_true",
+                        help="send turns the rule can't decide to the LLM judge (calls the LLM)")
     sub.add_parser("gate", help="CI prompt-regression gate (passes args through)", add_help=False)
     p_pr = sub.add_parser("pr", help="open the proven prompt fix as a GitHub PR")
     p_pr.add_argument("incident_id", help="incident id (reads reports/<id>.json)")
@@ -112,6 +160,10 @@ def main(argv: list[str] | None = None) -> None:
         from cassandra.run_once import main as run_main
         run_main()
         return
+
+    if command == "scan":
+        args = p_scan.parse_args(rest)
+        sys.exit(_scan(args))
 
     if command == "pr":
         args = p_pr.parse_args(rest)

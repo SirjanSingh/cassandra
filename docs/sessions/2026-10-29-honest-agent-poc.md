@@ -93,4 +93,40 @@ Branch: `feature/nli-and-hindi`.
 - The Patcher sees one incident, so the patch wording is narrow. Patch from a **cluster** of similar incidents.
 - The Synthesizer, Evaluator, Replay and RedTeam stages were not exercised here. The test sets were mine, not synthesized, and Phoenix was stubbed.
 - Wrong-place and wrong-date failures are invisible to Cassandra and unfixable by prompt. They need entity/argument checks.
-- Week 2 is next: `cassandra scan logs.jsonl` (see `docs/30_DAY_PLAN.md`).
+
+---
+
+## Week 2 build (same day): `cassandra scan`
+
+### Why
+
+Asking a stranger to set up Phoenix and expose a replay endpoint is too much for a first try.
+"Send me a log file, I'll tell you what your bot made up" is easy to say yes to. This is
+level 1 of the integration ladder in `docs/POSITIONING.md`.
+
+### Changes
+
+- **New `cassandra/scan.py`:**
+  - `load_turns` reads JSONL with field aliases and line-numbered errors;
+  - `check_turn` gives a pure rule verdict: unsupported / ok / declined / undecided;
+  - async `scan` is rule-only by default; `judge=True` sends *only* undecided turns to `Diagnostician.judge`;
+  - `render_markdown` writes the one-page report.
+- **`cassandra/cli.py`:** new `scan` subcommand (`--spec`, `--out`, `--json`, `--top`, `--judge`).
+  - It refuses to run without a spec (exit 2) instead of falling back to the ShopBot spec, which would misgrade any other agent.
+- **New `tests/test_scan.py`** (13 tests). It caught a real bug: `tool_calls: {}` was falsy and silently treated as no calls.
+- **New `docs/SCAN.md`:** the 5-minute guide (export format, writing a spec, reading the report, limits).
+- README and CLAUDE.md command lists updated.
+
+### Verification
+
+- `pytest`: 114 passed. `ruff` and `mypy` are clean on `scan.py` and `cli.py`.
+- Real run via the installed `cassandra` command on `poc/travelpal/runs_heldout.jsonl` (frozen spec):
+  - **Rule-only:** 8 flagged, 8 true, 0 false, no LLM.
+  - **`--judge`:** 11 flagged, 11 true, 0 false, matching the earlier cascade result.
+  - Misses: h020, h024, h026 (wrong date) and h031 (wrong place), the known blind spot.
+
+### Open items
+
+- Week 2 outreach: list 20 bot owners, message 10 (`docs/30_DAY_PLAN.md`). Not code.
+- Scan can't see wrong-entity or wrong-date answers (it checks success, not relevance).
+- Amounts echoed from the user's question still count as claims.

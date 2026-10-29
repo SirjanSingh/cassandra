@@ -19,10 +19,10 @@ Code only gets built if it helps answer that.
 
 ## Week 2 (Nov 5 – Nov 11): make it easy to try on someone else's bot
 
-- [ ] Build `cassandra scan logs.jsonl`: reads exported chat logs, no Phoenix needed
-  - [ ] Input: one line per turn, `{question, answer, tool_calls}`
-  - [ ] Output: a one-page report with "X% of answers stated facts with no source" and the worst 10 examples
-- [ ] A 5-minute guide: "how to export your logs in this format"
+- [x] Build `cassandra scan logs.jsonl`: reads exported chat logs, no Phoenix needed
+  - [x] Input: one line per turn, `{question, answer, tool_calls}`
+  - [x] Output: a one-page report with "X% of answers stated facts with no source" and the worst 10 examples
+- [x] A 5-minute guide: "how to export your logs in this format"
 - [ ] List 20 people or teams running a support or tool-using bot (college projects, startups, friends)
 - [ ] Message 10 of them: "Free: I'll check your bot's answers for made-up facts"
 

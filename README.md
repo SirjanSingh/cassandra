@@ -137,6 +137,7 @@ PHOENIX_COLLECTOR_ENDPOINT=http://localhost:6006
 | `cassandra` | Print the banner + list of commands. |
 | `cassandra dashboard [--port N] [--host H]` | Run the dashboard + SSE cockpit (default port 8085). |
 | `cassandra run` | Drive one full end-to-end supervision cycle. |
+| `cassandra scan logs.jsonl --spec spec.json` | Check exported chat logs for answers no tool backed. Rule-only, no LLM, no Phoenix (`--judge` adds the LLM for undecided turns). See [docs/SCAN.md](docs/SCAN.md). |
 | `cassandra gate ...` | CI prompt-regression gate (args pass through to `cassandra-gate`). |
 | `cassandra mcp` | Run Cassandra's MCP server over stdio (Claude Desktop / Cursor). |
 

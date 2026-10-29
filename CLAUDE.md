@@ -59,6 +59,7 @@ cassandra-mcp                    # run Cassandra's own published MCP server over
 cassandra                        # banner + command list
 cassandra dashboard [--port N]   # dashboard + SSE cockpit (default 8085)
 cassandra run                    # one full supervision cycle (== python scripts/run_pipeline.py)
+cassandra scan logs.jsonl --spec spec.json  # offline log scan, rule-only (cassandra/scan.py; docs/SCAN.md)
 cassandra gate ...               # CI prompt-regression gate (passthrough to cassandra-gate)
 cassandra mcp                    # MCP server over stdio (== cassandra-mcp; emits zero stdout)
 ```
