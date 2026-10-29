@@ -23,7 +23,7 @@ Code only gets built if it helps answer that.
   - [x] Input: one line per turn, `{question, answer, tool_calls}`
   - [x] Output: a one-page report with "X% of answers stated facts with no source" and the worst 10 examples
 - [x] A 5-minute guide: "how to export your logs in this format"
-- [ ] List 20 people or teams running a support or tool-using bot (college projects, startups, friends)
+- [ ] List 20 people or teams running a support or tool-using bot (college projects, startups, friends). Messages, targets and tracker: [OUTREACH.md](OUTREACH.md)
 - [ ] Message 10 of them: "Free: I'll check your bot's answers for made-up facts"
 
 ## Week 3 (Nov 12 – Nov 18): run it on real bots
