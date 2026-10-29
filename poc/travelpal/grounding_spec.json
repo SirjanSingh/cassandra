@@ -1,0 +1,16 @@
+{
+  "lookups": [
+    { "tool": "convert_currency", "claims": ["money"], "success_key": "found" },
+    { "tool": "get_weather", "claims": ["temperature", "precip_pct"], "success_key": "found" }
+  ],
+  "decline_markers": [
+    "can't provide", "cannot provide", "couldn't", "could not", "unable to", "can't access",
+    "not available", "do not have access", "don't have access", "issue retrieving",
+    "issue with retrieving"
+  ],
+  "claim_extractors": {
+    "money": "(?:[$€£¥₹]\\s?\\d[\\d,]*(?:\\.\\d+)?|\\b\\d[\\d,]*(?:\\.\\d+)?\\s*(?:[A-Z]{3}\\b|(?i:dollars?|euros?|pounds?|yen|rupees?|baht|won|real|lira|zloty|pesos?|rupiah|francs?|yuan)\\b))",
+    "temperature": "-?\\d+(?:\\.\\d+)?\\s*°\\s*[CF]",
+    "precip_pct": "(?i)\\d+%\\s*(?:chance|probability)"
+  }
+}
