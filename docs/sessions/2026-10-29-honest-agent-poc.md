@@ -8,7 +8,7 @@ Branch: `feature/nli-and-hindi`.
    when an agent states a fact its tools never gave it, and turns each one into a tested prompt
    fix plus a regression test.* Buyer: B2B. Delivery: open-core, self-hosted first. Price per
    supervised agent. Integration in 3 levels (read-only traces → replay endpoint → CI gate/PR).
-   These were discussed in chat only; no positioning doc was written.
+   Written up later the same day in `docs/POSITIONING.md`.
 2. Built a proof of concept on an **unrigged** agent to see whether Cassandra works off the demo.
 
 ## Changes
