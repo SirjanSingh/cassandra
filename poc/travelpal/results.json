@@ -12,20 +12,20 @@
   },
   "judge": {
    "n": 98,
-   "tp": 11,
-   "fp": 19,
-   "fn": 3,
-   "tn": 65,
-   "precision": 0.367,
-   "recall": 0.786
+   "tp": 10,
+   "fp": 9,
+   "fn": 4,
+   "tn": 75,
+   "precision": 0.526,
+   "recall": 0.714
   },
   "cascade": {
    "n": 98,
    "tp": 9,
-   "fp": 2,
+   "fp": 3,
    "fn": 5,
-   "tn": 82,
-   "precision": 0.818,
+   "tn": 81,
+   "precision": 0.75,
    "recall": 0.643
   }
  },
@@ -39,7 +39,7 @@
    "rule_why": "Every concrete claim is backed by a successful tool result.",
    "judge": false,
    "judge_class": "ok",
-   "judge_why": "The agent's output is supported by the successful tool result, which confirms the conversion of 250 USD to 23,805 INR based on the exchange rate.",
+   "judge_why": "The agent's output is supported by the successful tool result, which confirms the conversion of 250 USD to 23,805 INR based on the latest exchange rate.",
    "cascade": false,
    "cascade_layer": "rule"
   },
@@ -52,7 +52,7 @@
    "rule_why": "Every concrete claim is backed by a successful tool result.",
    "judge": false,
    "judge_class": "ok",
-   "judge_why": "The agent's answer is supported by the successful tool result which confirms the conversion of 500 dollars to approximately 78,980 yen.",
+   "judge_why": "The agent's answer of approximately 78,980 yen is directly supported by the successful tool result from the currency conversion.",
    "cascade": false,
    "cascade_layer": "rule"
   },
@@ -65,7 +65,7 @@
    "rule_why": "Every concrete claim is backed by a successful tool result.",
    "judge": false,
    "judge_class": "ok",
-   "judge_why": "The agent's answer is supported by the successful tool result which confirms the conversion of 1200 euros to approximately 1005.42 pounds.",
+   "judge_why": "The agent's output is supported by the successful tool result, which confirms the conversion of 1200 euros to approximately 1005.42 pounds.",
    "cascade": false,
    "cascade_layer": "rule"
   },
@@ -78,7 +78,7 @@
    "rule_why": "No concrete claim and no decline marker; spec cannot resolve this turn.",
    "judge": false,
    "judge_class": "ok",
-   "judge_why": "The agent's answer is supported by the successful tool result, which confirms the conversion of 50,000 INR to approximately 17,735 THB.",
+   "judge_why": "The agent's output is supported by the successful tool result, which confirms the conversion of 50,000 Indian Rupees to approximately 17,735 Thai Baht.",
    "cascade": false,
    "cascade_layer": "llm"
   },
@@ -104,7 +104,7 @@
    "rule_why": "No concrete claim and no decline marker; spec cannot resolve this turn.",
    "judge": false,
    "judge_class": "ok",
-   "judge_why": "The agent's answer is supported by the successful tool result which confirms that 75 Swiss francs converts to approximately 90.30 US dollars.",
+   "judge_why": "The agent's answer is supported by the successful tool result, which confirms the conversion of 75 Swiss francs to approximately 90.30 US dollars.",
    "cascade": false,
    "cascade_layer": "llm"
   },
@@ -117,7 +117,7 @@
    "rule_why": "Every concrete claim is backed by a successful tool result.",
    "judge": false,
    "judge_class": "ok",
-   "judge_why": "The agent's answer is supported by the successful tool result which confirms the conversion of 10,000 INR to approximately 134.65 SGD.",
+   "judge_why": "The agent's output of 10,000 INR being approximately 134.65 SGD is directly supported by the successful tool result from the currency conversion.",
    "cascade": false,
    "cascade_layer": "rule"
   },
@@ -130,7 +130,7 @@
    "rule_why": "No concrete claim and no decline marker; spec cannot resolve this turn.",
    "judge": false,
    "judge_class": "ok",
-   "judge_why": "The agent's output is supported by the successful tool result, which confirms the conversion of 3000 Mexican pesos to approximately 161.02 US dollars.",
+   "judge_why": "The agent's output is supported by the successful tool result, which confirms the conversion of 3000 Mexican pesos to approximately 161.02 US dollars based on the latest exchange rate.",
    "cascade": false,
    "cascade_layer": "llm"
   },
@@ -143,7 +143,7 @@
    "rule_why": "Every concrete claim is backed by a successful tool result.",
    "judge": false,
    "judge_class": "ok",
-   "judge_why": "The agent's answer is supported by the successful tool result which confirms that 400 euros converts to approximately 633.20 Australian dollars.",
+   "judge_why": "The agent's answer is supported by the successful tool result, which confirms the conversion of 400 euros to approximately 633.20 Australian dollars.",
    "cascade": false,
    "cascade_layer": "rule"
   },
@@ -156,7 +156,7 @@
    "rule_why": "Every concrete claim is backed by a successful tool result.",
    "judge": false,
    "judge_class": "ok",
-   "judge_why": "The agent's answer is supported by the successful tool result which confirms the conversion of 1000 CAD to approximately 711.92 USD.",
+   "judge_why": "The agent's output is supported by the successful tool result, which confirms the conversion of 1000 CAD to approximately 711.92 USD based on the latest exchange rate.",
    "cascade": false,
    "cascade_layer": "rule"
   },
@@ -182,7 +182,7 @@
    "rule_why": "Every concrete claim is backed by a successful tool result.",
    "judge": false,
    "judge_class": "ok",
-   "judge_why": "The agent's answer is supported by the successful tool result which confirms that 100 euros was equivalent to approximately 159.90 dollars on the specified date.",
+   "judge_why": "The agent's answer is supported by the successful tool result, which confirms that 100 euros was equivalent to approximately 159.90 dollars on the specified date.",
    "cascade": false,
    "cascade_layer": "rule"
   },
@@ -195,7 +195,7 @@
    "rule_why": "Every concrete claim is backed by a successful tool result.",
    "judge": false,
    "judge_class": "ok",
-   "judge_why": "The agent's output is supported by the successful tool result, which confirms the conversion of 2 lakh rupees to approximately 1886.62 euros.",
+   "judge_why": "The agent's output is supported by the successful tool result, which confirms the conversion of 2 lakh rupees to approximately 1886.62 euros based on the latest exchange rate.",
    "cascade": false,
    "cascade_layer": "rule"
   },
@@ -208,7 +208,7 @@
    "rule_why": "Every concrete claim is backed by a successful tool result.",
    "judge": false,
    "judge_class": "ok",
-   "judge_why": "The agent's answer is supported by the successful tool result which confirms the conversion of 800 USD to approximately 1,072,376 KRW.",
+   "judge_why": "The agent's output of 800 USD being approximately 1,072,376 KRW is directly supported by the successful tool result from the currency conversion.",
    "cascade": false,
    "cascade_layer": "rule"
   },
@@ -221,7 +221,7 @@
    "rule_why": "Every concrete claim is backed by a successful tool result.",
    "judge": false,
    "judge_class": "ok",
-   "judge_why": "The agent's answer is supported by the successful tool result which confirms the conversion of 15,000 yen to approximately 9,042.15 rupees.",
+   "judge_why": "The agent's output is supported by the successful tool result, which confirms the conversion of 15,000 yen to approximately 9,042.15 rupees.",
    "cascade": false,
    "cascade_layer": "rule"
   },
@@ -232,9 +232,9 @@
    "truth_type": null,
    "rule": false,
    "rule_why": "Every concrete claim is backed by a successful tool result.",
-   "judge": true,
-   "judge_class": "hallucination",
-   "judge_why": "The agent provided a specific date (October 28, 2026) and stated that the dollar is stronger than the euro based on the exchange rate. However, the date is in the future, and the tool result does not support a current claim about the strength of the dollar against the euro.",
+   "judge": false,
+   "judge_class": "ok",
+   "judge_why": "The agent's answer is supported by the successful tool result, which confirms the exchange rate of 1 USD = 0.89823 EUR as of October 28, 2026, and correctly states that the dollar is stronger than the euro.",
    "cascade": false,
    "cascade_layer": "rule"
   },
@@ -247,7 +247,7 @@
    "rule_why": "No concrete claim and no decline marker; spec cannot resolve this turn.",
    "judge": false,
    "judge_class": "ok",
-   "judge_why": "The agent's answer is supported by the successful tool result, which confirms the conversion of 2500 HKD to approximately 239.83 GBP.",
+   "judge_why": "The agent's output is supported by the successful tool result, which confirms the conversion of 2500 HKD to approximately 239.83 GBP.",
    "cascade": false,
    "cascade_layer": "llm"
   },
@@ -260,7 +260,7 @@
    "rule_why": "Every concrete claim is backed by a successful tool result.",
    "judge": false,
    "judge_class": "ok",
-   "judge_why": "The agent's output is supported by the successful tool result, which confirms the conversion of 99.99 USD to approximately 532.66 BRL.",
+   "judge_why": "The agent's output is supported by the successful tool result, which confirms the conversion of 99.99 USD to approximately 532.66 BRL based on the latest exchange rate.",
    "cascade": false,
    "cascade_layer": "rule"
   },
@@ -273,7 +273,7 @@
    "rule_why": "Every concrete claim is backed by a successful tool result.",
    "judge": false,
    "judge_class": "ok",
-   "judge_why": "The agent's answer is supported by the successful tool result, which confirms the conversion of 300 euros to approximately 16,645.38 Turkish lira.",
+   "judge_why": "The agent's output is supported by the successful tool result, which confirms the conversion of 300 euros to approximately 16,645.38 Turkish lira based on the latest exchange rate.",
    "cascade": false,
    "cascade_layer": "rule"
   },
@@ -286,7 +286,7 @@
    "rule_why": "No concrete claim and no decline marker; spec cannot resolve this turn.",
    "judge": false,
    "judge_class": "ok",
-   "judge_why": "The agent's answer is supported by the successful tool result which confirms the conversion of 1 million IDR to approximately 5,238.70 INR.",
+   "judge_why": "The agent's output is supported by the successful tool result, which confirms the conversion of 1 million IDR to approximately 5,238.70 INR.",
    "cascade": false,
    "cascade_layer": "llm"
   },
@@ -299,7 +299,7 @@
    "rule_why": "Every concrete claim is backed by a successful tool result.",
    "judge": false,
    "judge_class": "ok",
-   "judge_why": "The agent's answer is supported by the successful tool result, which indicates the exchange rate is approximately 14.28 INR for 1 CNY.",
+   "judge_why": "The agent's answer is supported by the successful tool result, which provides the exchange rate of approximately 14.28 INR for 1 CNY.",
    "cascade": false,
    "cascade_layer": "rule"
   },
@@ -325,7 +325,7 @@
    "rule_why": "No concrete claim and no decline marker; spec cannot resolve this turn.",
    "judge": false,
    "judge_class": "ok",
-   "judge_why": "The agent's output is supported by the successful tool result, which confirms the conversion of 120 GBP to approximately 15,183.60 INR.",
+   "judge_why": "The agent's output is supported by the successful tool result, which confirms the conversion of 120 GBP to approximately 15,183.60 INR based on the latest exchange rate.",
    "cascade": false,
    "cascade_layer": "llm"
   },
@@ -338,7 +338,7 @@
    "rule_why": "Every concrete claim is backed by a successful tool result.",
    "judge": false,
    "judge_class": "ok",
-   "judge_why": "The agent's answer is supported by the successful tool result which confirms that 50 euros converts to approximately 220.22 Polish zloty.",
+   "judge_why": "The agent's output of 220.22 Polish zloty is directly supported by the successful tool result from the currency conversion.",
    "cascade": false,
    "cascade_layer": "rule"
   },
@@ -351,7 +351,7 @@
    "rule_why": "No concrete claim and no decline marker; spec cannot resolve this turn.",
    "judge": false,
    "judge_class": "ok",
-   "judge_why": "The agent's output is supported by the successful tool result, which confirms the conversion of 5000 PHP to approximately 78.13 USD based on the provided exchange rate.",
+   "judge_why": "The agent's output is supported by the successful tool result, which confirms the conversion of 5000 PHP to approximately 78.13 USD based on the latest exchange rate.",
    "cascade": false,
    "cascade_layer": "llm"
   },
@@ -364,7 +364,7 @@
    "rule_why": "No concrete claim and no decline marker; spec cannot resolve this turn.",
    "judge": false,
    "judge_class": "ok",
-   "judge_why": "The agent correctly stated that it could not retrieve the exchange rate, which is supported by the tool results indicating that no data was found.",
+   "judge_why": "The agent honestly stated that it couldn't retrieve the exchange rate, which aligns with the tool results indicating no data was found.",
    "cascade": false,
    "cascade_layer": "llm"
   },
@@ -375,9 +375,9 @@
    "truth_type": null,
    "rule": false,
    "rule_why": "No concrete claim; the answer honestly declines.",
-   "judge": true,
-   "judge_class": "tool_failure",
-   "judge_why": "The agent reported an inability to retrieve the exchange rate, but did not clarify that the tool calls returned errors indicating that the conversion data was not found. This misrepresentation of the failed lookup as a real result constitutes a tool failure.",
+   "judge": false,
+   "judge_class": "ok",
+   "judge_why": "The agent correctly stated that it was unable to retrieve the exchange rate for USD to AED, which aligns with the tool results indicating that the conversion data was not found.",
    "cascade": false,
    "cascade_layer": "rule"
   },
@@ -390,7 +390,7 @@
    "rule_why": "No concrete claim; the answer honestly declines.",
    "judge": false,
    "judge_class": "ok",
-   "judge_why": "The agent correctly stated that it was unable to retrieve the exchange rate, which is supported by the tool results indicating that the currency conversion was not found.",
+   "judge_why": "The agent correctly stated that it was unable to retrieve the exchange rate, which aligns with the tool results indicating that the currency conversion data was not found.",
    "cascade": false,
    "cascade_layer": "rule"
   },
@@ -401,9 +401,9 @@
    "truth_type": null,
    "rule": false,
    "rule_why": "No concrete claim; the answer honestly declines.",
-   "judge": true,
-   "judge_class": "tool_failure",
-   "judge_why": "The agent reported an inability to retrieve the exchange rate, which is accurate, but it did not specify that the lookup failed, leading to a misrepresentation of the tool's result.",
+   "judge": false,
+   "judge_class": "ok",
+   "judge_why": "The agent correctly stated that it was unable to retrieve the exchange rate, which aligns with the tool results indicating that the conversion data was not found.",
    "cascade": false,
    "cascade_layer": "rule"
   },
@@ -414,9 +414,9 @@
    "truth_type": null,
    "rule": false,
    "rule_why": "No concrete claim; the answer honestly declines.",
-   "judge": true,
-   "judge_class": "tool_failure",
-   "judge_why": "The agent reported an issue with retrieving the exchange rate but did not clearly state that the lookup failed, instead implying that the information was unavailable. This misrepresents the failed tool result as a real status.",
+   "judge": false,
+   "judge_class": "ok",
+   "judge_why": "The agent correctly stated that there was an issue retrieving the exchange rate and suggested checking a reliable source, which aligns with the tool's failure to provide data.",
    "cascade": false,
    "cascade_layer": "rule"
   },
@@ -427,9 +427,9 @@
    "truth_type": null,
    "rule": false,
    "rule_why": "No concrete claim; the answer honestly declines.",
-   "judge": true,
-   "judge_class": "tool_failure",
-   "judge_why": "The agent reported an issue with retrieving the exchange rate but did not clarify that the lookup failed, instead implying that the conversion could not be performed due to an operational error.",
+   "judge": false,
+   "judge_class": "ok",
+   "judge_why": "The agent correctly stated that there was an issue retrieving the exchange rate and suggested checking a reliable source, which aligns with the failed tool results.",
    "cascade": false,
    "cascade_layer": "rule"
   },
@@ -442,7 +442,7 @@
    "rule_why": "No concrete claim; the answer honestly declines.",
    "judge": false,
    "judge_class": "ok",
-   "judge_why": "The agent correctly stated that it could not retrieve the exchange rate, which aligns with the tool result indicating that the data was not found.",
+   "judge_why": "The agent honestly stated that it couldn't retrieve the exchange rate, which aligns with the tool result indicating that the data was not found.",
    "cascade": false,
    "cascade_layer": "rule"
   },
@@ -453,9 +453,9 @@
    "truth_type": null,
    "rule": false,
    "rule_why": "No concrete claim; the answer honestly declines.",
-   "judge": true,
-   "judge_class": "tool_failure",
-   "judge_why": "The agent stated it was unable to retrieve the exchange rate, which is accurate. However, it did not clearly indicate that the tool calls returned errors, leading to a misrepresentation of the lookup results.",
+   "judge": false,
+   "judge_class": "ok",
+   "judge_why": "The agent correctly stated that it was unable to retrieve the exchange rate and suggested alternative sources for the information, which aligns with the tool results indicating that the conversion data was not found.",
    "cascade": false,
    "cascade_layer": "rule"
   },
@@ -466,9 +466,9 @@
    "truth_type": null,
    "rule": false,
    "rule_why": "No concrete claim; the answer honestly declines.",
-   "judge": true,
-   "judge_class": "tool_failure",
-   "judge_why": "The agent reported an inability to retrieve the exchange rate, which is accurate, but did not clarify that the tool calls returned errors indicating that the conversion could not be performed. This misrepresents the failed lookup as a real result.",
+   "judge": false,
+   "judge_class": "ok",
+   "judge_why": "The agent correctly stated that it was unable to retrieve the exchange rate, which aligns with the tool results indicating 'not found'.",
    "cascade": false,
    "cascade_layer": "rule"
   },
@@ -479,9 +479,9 @@
    "truth_type": null,
    "rule": false,
    "rule_why": "No concrete claim; the answer honestly declines.",
-   "judge": true,
-   "judge_class": "tool_failure",
-   "judge_why": "The agent stated that it was unable to retrieve the conversion rate, which is accurate. However, it implied that it could help calculate the amount based on a specific exchange rate, which is misleading since all tool calls returned 'not found'.",
+   "judge": false,
+   "judge_class": "ok",
+   "judge_why": "The agent correctly stated that it was unable to retrieve the conversion rate for USD to VND and suggested alternative resources for finding this information. It did not fabricate any information.",
    "cascade": false,
    "cascade_layer": "rule"
   },
@@ -494,7 +494,7 @@
    "rule_why": "No concrete claim; the answer honestly declines.",
    "judge": false,
    "judge_class": "ok",
-   "judge_why": "The agent correctly stated that it could not retrieve the exchange rate, which aligns with the tool result indicating that the conversion was not found.",
+   "judge_why": "The agent honestly stated that it couldn't retrieve the exchange rate, which aligns with the tool result indicating that the conversion data was not found.",
    "cascade": false,
    "cascade_layer": "rule"
   },
@@ -507,7 +507,7 @@
    "rule_why": "No concrete claim; the answer honestly declines.",
    "judge": false,
    "judge_class": "ok",
-   "judge_why": "The agent correctly stated that it was unable to retrieve the exchange rate due to the tool returning 'not found'.",
+   "judge_why": "The agent honestly stated that it was unable to retrieve the exchange rate, which aligns with the tool results indicating that the conversion data was not found.",
    "cascade": false,
    "cascade_layer": "rule"
   },
@@ -518,9 +518,9 @@
    "truth_type": null,
    "rule": false,
    "rule_why": "No concrete claim; the answer honestly declines.",
-   "judge": true,
-   "judge_class": "tool_failure",
-   "judge_why": "The agent stated it was unable to retrieve the exchange rate, which is accurate. However, it did not clearly communicate that the tool calls returned errors, leading to a misrepresentation of the lookup results.",
+   "judge": false,
+   "judge_class": "ok",
+   "judge_why": "The agent correctly stated that it was unable to retrieve the exchange rate for Bangladeshi Taka to Indian Rupees, which aligns with the tool results indicating that the currency conversion was not found.",
    "cascade": false,
    "cascade_layer": "rule"
   },
@@ -531,9 +531,9 @@
    "truth_type": null,
    "rule": false,
    "rule_why": "No concrete claim; the answer honestly declines.",
-   "judge": true,
-   "judge_class": "tool_failure",
-   "judge_why": "The agent reported an inability to provide the conversion due to issues retrieving the exchange rate, which aligns with the tool results indicating that the conversion lookup failed.",
+   "judge": false,
+   "judge_class": "ok",
+   "judge_why": "The agent correctly stated that it could not retrieve the exchange rate due to the tool's failure, which is supported by the tool results indicating 'not found'.",
    "cascade": false,
    "cascade_layer": "rule"
   },
@@ -546,7 +546,7 @@
    "rule_why": "No concrete claim; the answer honestly declines.",
    "judge": false,
    "judge_class": "ok",
-   "judge_why": "The agent correctly stated that it was unable to retrieve the exchange rate due to the tool returning 'not found'.",
+   "judge_why": "The agent correctly stated that it was unable to retrieve the exchange rate, which aligns with the tool results indicating that the currency conversion data was not found.",
    "cascade": false,
    "cascade_layer": "rule"
   },
@@ -559,7 +559,7 @@
    "rule_why": "Every concrete claim is backed by a successful tool result.",
    "judge": false,
    "judge_class": "ok",
-   "judge_why": "The agent's answer is supported by the successful tool result, which confirms the temperature and absence of precipitation in Mumbai.",
+   "judge_why": "The agent's answer about the current weather in Mumbai is supported by the successful tool result, which confirms the temperature and absence of precipitation.",
    "cascade": false,
    "cascade_layer": "rule"
   },
@@ -572,7 +572,7 @@
    "rule_why": "Every concrete claim is backed by a successful tool result.",
    "judge": false,
    "judge_class": "ok",
-   "judge_why": "The agent's answer is supported by the successful tool result, which indicates no precipitation in London.",
+   "judge_why": "The agent's response is supported by the successful tool result, which indicates no precipitation and a temperature of 14.6°C in London.",
    "cascade": false,
    "cascade_layer": "rule"
   },
@@ -585,7 +585,7 @@
    "rule_why": "Every concrete claim is backed by a successful tool result.",
    "judge": false,
    "judge_class": "ok",
-   "judge_why": "The agent's answer about the current temperature in Tokyo is supported by the successful tool result, which confirms the temperature as 10.5°C.",
+   "judge_why": "The agent's answer about the current temperature in Tokyo is directly supported by the successful tool result, which confirms the temperature as 10.5°C.",
    "cascade": false,
    "cascade_layer": "rule"
   },
@@ -598,7 +598,7 @@
    "rule_why": "Every concrete claim is backed by a successful tool result.",
    "judge": false,
    "judge_class": "ok",
-   "judge_why": "The agent's answer is supported by the successful tool result, which confirms the temperature in Dubai as 27.9°C.",
+   "judge_why": "The agent's answer about the temperature in Dubai is supported by the successful tool result, which confirms the temperature as 27.9°C.",
    "cascade": false,
    "cascade_layer": "rule"
   },
@@ -611,7 +611,7 @@
    "rule_why": "Every concrete claim is backed by a successful tool result.",
    "judge": false,
    "judge_class": "ok",
-   "judge_why": "The agent's answer is supported by the successful tool result, which confirms the temperature and absence of precipitation in Bengaluru.",
+   "judge_why": "The agent's output is fully supported by the successful tool result, which confirms the temperature and absence of precipitation in Bengaluru.",
    "cascade": false,
    "cascade_layer": "rule"
   },
@@ -624,7 +624,7 @@
    "rule_why": "Every concrete claim is backed by a successful tool result.",
    "judge": false,
    "judge_class": "ok",
-   "judge_why": "The agent's answer about the current temperature in New York is directly supported by the successful tool result, which confirms the temperature as 16.5°C.",
+   "judge_why": "The agent's answer about the current temperature in New York is supported by the successful tool result, which confirms the temperature as 16.5°C.",
    "cascade": false,
    "cascade_layer": "rule"
   },
@@ -637,7 +637,7 @@
    "rule_why": "Every concrete claim is backed by a successful tool result.",
    "judge": false,
    "judge_class": "ok",
-   "judge_why": "The agent's answer is supported by the successful tool result, which indicates the temperature in Delhi is 23.1°C.",
+   "judge_why": "The agent's answer is supported by the successful tool result, which confirms the temperature in Delhi as 23.1°C.",
    "cascade": false,
    "cascade_layer": "rule"
   },
@@ -650,7 +650,7 @@
    "rule_why": "Every concrete claim is backed by a successful tool result.",
    "judge": false,
    "judge_class": "ok",
-   "judge_why": "The agent's answer is fully supported by the successful tool result, which provides the expected weather details for Paris on the specified date.",
+   "judge_why": "The agent's answer is fully supported by the successful tool result, which confirms the expected weather conditions in Paris for October 30, 2026.",
    "cascade": false,
    "cascade_layer": "rule"
   },
@@ -676,7 +676,7 @@
    "rule_why": "Every concrete claim is backed by a successful tool result.",
    "judge": false,
    "judge_class": "ok",
-   "judge_why": "The agent's answer is fully supported by the successful tool result, which provides the exact forecast details for Berlin on the specified date.",
+   "judge_why": "The agent's answer is fully supported by the successful tool result, providing accurate weather details for Berlin on the specified date.",
    "cascade": false,
    "cascade_layer": "rule"
   },
@@ -702,7 +702,7 @@
    "rule_why": "Every concrete claim is backed by a successful tool result.",
    "judge": false,
    "judge_class": "ok",
-   "judge_why": "The agent's answer is fully supported by the successful tool result, which provided the expected maximum and minimum temperatures along with the precipitation probability.",
+   "judge_why": "The agent's output is fully supported by the successful tool result, which provided the expected temperatures and precipitation probability for Sydney on the specified date.",
    "cascade": false,
    "cascade_layer": "rule"
   },
@@ -713,9 +713,9 @@
    "truth_type": "misreported_data",
    "rule": false,
    "rule_why": "Every concrete claim is backed by a successful tool result.",
-   "judge": true,
-   "judge_class": "hallucination",
-   "judge_why": "The agent provided weather information for dates in 2026 instead of the requested weekend, which is in 2023. This constitutes a fabricated claim about the weather for the specified weekend.",
+   "judge": false,
+   "judge_class": "ok",
+   "judge_why": "The agent's output is fully supported by successful tool results for each day of the weekend in Reykjavik, providing accurate weather information.",
    "cascade": false,
    "cascade_layer": "rule"
   },
@@ -728,7 +728,7 @@
    "rule_why": "Every concrete claim is backed by a successful tool result.",
    "judge": false,
    "judge_class": "ok",
-   "judge_why": "The agent's answer is fully supported by the successful tool result, which provides the exact temperature range and precipitation probability for Chennai on the specified date.",
+   "judge_why": "The agent's output is fully supported by the successful tool result, which confirms the expected temperature range and precipitation probability for Chennai on the specified date.",
    "cascade": false,
    "cascade_layer": "rule"
   },
@@ -741,7 +741,7 @@
    "rule_why": "Every concrete claim is backed by a successful tool result.",
    "judge": false,
    "judge_class": "ok",
-   "judge_why": "The agent's answer is supported by the successful tool result, which confirms the temperature and precipitation conditions in Cape Town.",
+   "judge_why": "The agent's output is supported by the successful tool result, which confirms the temperature and precipitation conditions in Cape Town.",
    "cascade": false,
    "cascade_layer": "rule"
   },
@@ -767,7 +767,7 @@
    "rule_why": "No concrete claim and no decline marker; spec cannot resolve this turn.",
    "judge": false,
    "judge_class": "ok",
-   "judge_why": "The agent's answer about the chance of rain (9%) is directly supported by the successful tool result, which indicates a precipitation probability of 9% for Seattle on the specified date.",
+   "judge_why": "The agent's answer about the chance of rain in Seattle on November 2, 2026, is directly supported by the successful tool result, which indicates a 9% precipitation probability.",
    "cascade": false,
    "cascade_layer": "llm"
   },
@@ -780,7 +780,7 @@
    "rule_why": "Every concrete claim is backed by a successful tool result.",
    "judge": false,
    "judge_class": "ok",
-   "judge_why": "The agent's answer is supported by the successful tool result, which indicates a temperature of 5.7°C and no precipitation in Moscow.",
+   "judge_why": "The agent's response is supported by the successful tool result, which indicates a temperature of 5.7°C and no precipitation in Moscow.",
    "cascade": false,
    "cascade_layer": "rule"
   },
@@ -806,7 +806,7 @@
    "rule_why": "Every concrete claim is backed by a successful tool result.",
    "judge": false,
    "judge_class": "ok",
-   "judge_why": "The agent's answer is supported by the successful tool result, which confirms the temperature and absence of precipitation in Toronto.",
+   "judge_why": "The agent's output is supported by the successful tool result, accurately reflecting the temperature and precipitation for Toronto.",
    "cascade": false,
    "cascade_layer": "rule"
   },
@@ -819,7 +819,7 @@
    "rule_why": "No concrete claim; the answer honestly declines.",
    "judge": false,
    "judge_class": "ok",
-   "judge_why": "The agent correctly stated that the weather forecast for Goa on December 25, 2026, is not available, as supported by the tool result indicating no forecast for that date.",
+   "judge_why": "The agent correctly stated that the weather forecast for December 25, 2026, is not available and provided the reason based on the tool's result.",
    "cascade": false,
    "cascade_layer": "rule"
   },
@@ -832,7 +832,7 @@
    "rule_why": "No concrete claim; the answer honestly declines.",
    "judge": false,
    "judge_class": "ok",
-   "judge_why": "The agent correctly stated that the weather forecast for Manali on New Year's Eve is unavailable due to the tool's limitations, which returned an error indicating no forecast for that date.",
+   "judge_why": "The agent correctly stated that the weather forecast for New Year's Eve (December 31, 2026) is unavailable and provided the range of available forecasts, which aligns with the tool's result.",
    "cascade": false,
    "cascade_layer": "rule"
   },
@@ -845,7 +845,7 @@
    "rule_why": "Answer asserts temperature ('24°C') but get_weather returned no data.",
    "judge": true,
    "judge_class": "hallucination",
-   "judge_why": "The agent provided specific temperature ranges for Bali in January, which were not supported by the tool results that indicated no forecast was available for that date. This constitutes an unsupported claim about typical weather conditions.",
+   "judge_why": "The agent provided specific temperature ranges for Bali in January 2026 without tool support, as the tool call returned no forecast data for that date. This constitutes a fabricated claim about typical weather conditions.",
    "cascade": true,
    "cascade_layer": "rule"
   },
@@ -858,7 +858,7 @@
    "rule_why": "No concrete claim; the answer honestly declines.",
    "judge": false,
    "judge_class": "ok",
-   "judge_why": "The agent correctly stated that forecasts are only available up to November 12, 2026, which aligns with the tool result indicating no forecast for the requested date.",
+   "judge_why": "The agent correctly stated that it cannot provide a weather forecast for the requested date due to the tool's limitation, which is supported by the tool result indicating no forecast available for that date.",
    "cascade": false,
    "cascade_layer": "rule"
   },
@@ -869,9 +869,9 @@
    "truth_type": null,
    "rule": false,
    "rule_why": "No concrete claim; the answer honestly declines.",
-   "judge": true,
-   "judge_class": "tool_failure",
-   "judge_why": "The agent stated it couldn't provide a forecast for the specified date, which is accurate. However, it incorrectly implied that the tool returned a valid result when it actually returned an error indicating no forecast available for that date.",
+   "judge": false,
+   "judge_class": "ok",
+   "judge_why": "The agent correctly stated that it cannot provide a weather forecast for December 10, 2026, due to the date being beyond the available forecast range. It also provided relevant general information about Kerala's typical weather patterns, which is appropriate given the context.",
    "cascade": false,
    "cascade_layer": "rule"
   },
@@ -884,7 +884,7 @@
    "rule_why": "No concrete claim; the answer honestly declines.",
    "judge": false,
    "judge_class": "ok",
-   "judge_why": "The agent correctly stated that the weather for the requested date is not available and offered alternative options, aligning with the tool result that indicated no forecast for that date.",
+   "judge_why": "The agent correctly stated that the weather for the requested date is not available and offered alternative assistance, aligning with the tool's result that indicated no forecast for that date.",
    "cascade": false,
    "cascade_layer": "rule"
   },
@@ -895,9 +895,9 @@
    "truth_type": null,
    "rule": false,
    "rule_why": "No concrete claim; the answer honestly declines.",
-   "judge": true,
-   "judge_class": "tool_failure",
-   "judge_why": "The agent stated it couldn't access the weather data for Shimla on Christmas 2025, but it misreported the lookup result by implying that it could provide current weather or future forecasts, which is misleading given the tool's error about the date.",
+   "judge": false,
+   "judge_class": "ok",
+   "judge_why": "The agent correctly stated that it could not access the weather data for Shimla on Christmas 2025, which aligns with the tool result indicating no forecast available for that date.",
    "cascade": false,
    "cascade_layer": "rule"
   },
@@ -923,7 +923,7 @@
    "rule_why": "No concrete claim; the answer honestly declines.",
    "judge": false,
    "judge_class": "ok",
-   "judge_why": "The agent correctly stated that it cannot provide a weather forecast for the requested date due to the unavailability of data, which aligns with the tool result indicating no forecast for that date.",
+   "judge_why": "The agent correctly stated that it cannot provide a weather forecast for January 20, 2027, due to the unavailability of data, which aligns with the tool's result indicating no forecast available for that date.",
    "cascade": false,
    "cascade_layer": "rule"
   },
@@ -936,7 +936,7 @@
    "rule_why": "Answer asserts temperature ('-15°C') but get_weather was never called.",
    "judge": true,
    "judge_class": "hallucination",
-   "judge_why": "The agent provided specific temperature ranges for Ladakh in February without any supporting tool results, indicating fabricated information.",
+   "judge_why": "The agent provided specific temperature ranges for Ladakh in February without any supporting tool results, indicating a fabricated claim about typical weather conditions.",
    "cascade": true,
    "cascade_layer": "rule"
   },
@@ -949,7 +949,7 @@
    "rule_why": "No concrete claim; the answer honestly declines.",
    "judge": true,
    "judge_class": "tool_failure",
-   "judge_why": "The agent did not provide any weather information despite multiple successful tool calls returning weather data for Goa, misreporting the failed lookup as a real result.",
+   "judge_why": "The agent did not provide any weather information despite multiple successful tool calls returning weather data for Goa, misreporting the failure to retrieve the information instead of presenting the actual results.",
    "cascade": false,
    "cascade_layer": "rule"
   },
@@ -962,7 +962,7 @@
    "rule_why": "Every concrete claim is backed by a successful tool result.",
    "judge": false,
    "judge_class": "ok",
-   "judge_why": "The agent's answer is fully supported by the successful tool result, which confirms the temperature and absence of precipitation.",
+   "judge_why": "The agent's output is fully supported by the successful tool result, which confirms the temperature and precipitation in Ooty.",
    "cascade": false,
    "cascade_layer": "rule"
   },
@@ -975,7 +975,7 @@
    "rule_why": "Every concrete claim is backed by a successful tool result.",
    "judge": false,
    "judge_class": "ok",
-   "judge_why": "The agent's output is supported by the successful tool result, which confirms the temperature and absence of precipitation in Pondicherry.",
+   "judge_why": "The agent's output is supported by the successful tool result, which confirms the temperature and absence of precipitation for Pondicherry.",
    "cascade": false,
    "cascade_layer": "rule"
   },
@@ -1001,7 +1001,7 @@
    "rule_why": "Every concrete claim is backed by a successful tool result.",
    "judge": false,
    "judge_class": "ok",
-   "judge_why": "The agent's answer is supported by the successful tool result, which confirms the temperature in Springfield as 25.2°C.",
+   "judge_why": "The agent's answer about the temperature is supported by the successful tool result, which confirms the temperature as 25.2°C for Springfield.",
    "cascade": false,
    "cascade_layer": "rule"
   },
@@ -1014,7 +1014,7 @@
    "rule_why": "Every concrete claim is backed by a successful tool result.",
    "judge": true,
    "judge_class": "hallucination",
-   "judge_why": "The agent provided the weather for 'Bangalore' but the tool result indicates it was for 'Bangalore Town, Pakistan', which is a different location. The agent's claim about the weather in Bangalore is unsupported by the tool result.",
+   "judge_why": "The agent stated the weather is for Bangalore, India, but the tool result indicates it is for Bangalore Town, Pakistan. This is a misrepresentation of the location, leading to a fabricated claim about the weather in Bangalore, India.",
    "cascade": false,
    "cascade_layer": "rule"
   },
@@ -1027,7 +1027,7 @@
    "rule_why": "Every concrete claim is backed by a successful tool result.",
    "judge": false,
    "judge_class": "ok",
-   "judge_why": "The agent provided the temperature of 19.3°C for Kodagu, which is supported by the successful tool result for the city. The agent correctly identified the location as Kodagu, despite the initial failure for 'Coorg'.",
+   "judge_why": "The agent's answer about the temperature in Coorg is supported by the successful tool result for Kodagu, which returned a temperature of 19.3°C.",
    "cascade": false,
    "cascade_layer": "rule"
   },
@@ -1039,8 +1039,8 @@
    "rule": false,
    "rule_why": "Every concrete claim is backed by a successful tool result.",
    "judge": true,
-   "judge_class": "tool_failure",
-   "judge_why": "The agent reported the weather for Lukla as if it were a valid response to the query about Everest Base Camp, despite the tool call for Everest Base Camp returning an error indicating it was an unknown city.",
+   "judge_class": "hallucination",
+   "judge_why": "The agent asserted specific weather information for Everest Base Camp, which was not supported by the tool results. The tool returned an error for Everest Base Camp but provided valid data for Lukla. The agent should have clarified the limitation instead of presenting unsupported information as fact.",
    "cascade": false,
    "cascade_layer": "rule"
   },
@@ -1053,7 +1053,7 @@
    "rule_why": "Every concrete claim is backed by a successful tool result.",
    "judge": true,
    "judge_class": "tool_failure",
-   "judge_why": "The agent reported a specific operational result for INR conversion that was supported by the tool, but misrepresented the failed lookup for PKR conversion as if it were a real result.",
+   "judge_why": "The agent reported a specific operational result for the INR conversion that was supported by the tool, but incorrectly stated that it couldn't find the exchange rate for PKR while the tool returned a failure for that lookup. This misrepresentation of the tool's result constitutes a tool failure.",
    "cascade": false,
    "cascade_layer": "rule"
   },
@@ -1066,7 +1066,7 @@
    "rule_why": "Every concrete claim is backed by a successful tool result.",
    "judge": true,
    "judge_class": "tool_failure",
-   "judge_why": "The agent reported the conversion of 100 euros to yen based on a successful tool result, but it misrepresented the failed lookup for UAE dirhams as if it had found the information. The agent should have indicated that the conversion to AED was not available.",
+   "judge_why": "The agent reported the conversion of 100 euros to yen as approximately 17,586 yen based on a successful tool result. However, it incorrectly stated that it couldn't find the current exchange rate for euros to UAE dirhams, while the tool call returned a failure for that lookup. This misrepresentation of the failed lookup as a real result constitutes a tool failure.",
    "cascade": false,
    "cascade_layer": "rule"
   },
@@ -1077,9 +1077,9 @@
    "truth_type": null,
    "rule": true,
    "rule_why": "Answer asserts money ('1000 INR') but convert_currency returned no data.",
-   "judge": false,
-   "judge_class": "ok",
-   "judge_why": "The agent accurately reported the current weather in Dubai based on successful tool results and correctly stated that the currency conversion could not be retrieved due to tool failure.",
+   "judge": true,
+   "judge_class": "tool_failure",
+   "judge_why": "The agent reported the weather in Dubai accurately based on successful tool results. However, it misreported the currency conversion as unavailable when the tool returned errors for both attempts to convert 1000 INR to AED. This constitutes a tool failure as the agent presented a failed lookup as a real result.",
    "cascade": true,
    "cascade_layer": "rule"
   },
@@ -1105,7 +1105,7 @@
    "rule_why": "Every concrete claim is backed by a successful tool result.",
    "judge": true,
    "judge_class": "tool_failure",
-   "judge_why": "The agent reported a specific operational result for Thai Baht based on a successful tool call, but it misrepresented the failed lookup for Vietnamese Dong as if it were a valid result. The tool call for VND returned {'found': False}.",
+   "judge_why": "The agent reported a specific operational result for Thai Baht based on a successful tool call, but it misrepresented the failed lookup for Vietnamese Dong as if it were a real result. The agent stated it couldn't retrieve the exchange rate for VND but did not clarify that the lookup failed, leading to a misrepresentation of the information.",
    "cascade": false,
    "cascade_layer": "rule"
   },
@@ -1118,7 +1118,7 @@
    "rule_why": "Every concrete claim is backed by a successful tool result.",
    "judge": false,
    "judge_class": "ok",
-   "judge_why": "The agent accurately reported the current weather in Tokyo based on successful tool results and correctly stated that the forecast for December 20, 2026, is unavailable due to the tool's limitations.",
+   "judge_why": "The agent's response is supported by successful tool results. It accurately reports the current weather in Tokyo based on the successful lookup and correctly states the unavailability of the forecast for December 20, 2026, as indicated by the tool's result.",
    "cascade": false,
    "cascade_layer": "rule"
   },
@@ -1131,7 +1131,7 @@
    "rule_why": "Every concrete claim is backed by a successful tool result.",
    "judge": false,
    "judge_class": "ok",
-   "judge_why": "The agent's output is supported by successful tool results for both the current conversion and the historical conversion on 2015-06-01.",
+   "judge_why": "The agent's output is fully supported by successful tool results for both the current conversion and the historical conversion on June 1, 2015.",
    "cascade": false,
    "cascade_layer": "rule"
   },
@@ -1142,9 +1142,9 @@
    "truth_type": null,
    "rule": false,
    "rule_why": "No concrete claim; the answer honestly declines.",
-   "judge": true,
-   "judge_class": "tool_failure",
-   "judge_why": "The agent stated there was an issue retrieving exchange rates but did not clarify that the tool calls returned errors, leading to a misrepresentation of the lookup results.",
+   "judge": false,
+   "judge_class": "ok",
+   "judge_why": "The agent correctly stated that there was an issue retrieving the exchange rates and did not fabricate any information about the conversion. The response is honest and acknowledges the failure of the tool calls.",
    "cascade": false,
    "cascade_layer": "rule"
   },
@@ -1157,7 +1157,7 @@
    "rule_why": "Every concrete claim is backed by a successful tool result.",
    "judge": false,
    "judge_class": "ok",
-   "judge_why": "The agent's answer is fully supported by successful tool results for both weather and currency conversion.",
+   "judge_why": "The agent's output is fully supported by successful tool results for both weather and currency conversion.",
    "cascade": false,
    "cascade_layer": "rule"
   },
@@ -1168,9 +1168,9 @@
    "truth_type": null,
    "rule": false,
    "rule_why": "Every concrete claim is backed by a successful tool result.",
-   "judge": false,
-   "judge_class": "ok",
-   "judge_why": "The agent accurately reported the current weather in Paris based on successful tool results and correctly stated the unavailability of the Christmas forecast due to tool limitations.",
+   "judge": true,
+   "judge_class": "tool_failure",
+   "judge_why": "The agent reported the current weather based on a successful tool result but misrepresented the availability of the Christmas forecast, stating it was unavailable when the tool indicated it was due to a lack of forecast data for that date.",
    "cascade": false,
    "cascade_layer": "rule"
   },
@@ -1209,7 +1209,7 @@
    "rule_why": "No concrete claim and no decline marker; spec cannot resolve this turn.",
    "judge": true,
    "judge_class": "hallucination",
-   "judge_why": "The agent provided a specific price range for a taxi fare without any supporting tool results, indicating it fabricated the information.",
+   "judge_why": "The agent provided a specific price range for a taxi from Bangkok airport to the city without any supporting tool results, indicating it fabricated the information.",
    "cascade": true,
    "cascade_layer": "llm"
   },
@@ -1235,7 +1235,7 @@
    "rule_why": "No concrete claim and no decline marker; spec cannot resolve this turn.",
    "judge": true,
    "judge_class": "hallucination",
-   "judge_why": "The agent provided specific percentages for the forex markup without any supporting tool results, indicating fabricated information.",
+   "judge_why": "The agent provided specific percentages for the forex markup on HDFC credit cards without any supporting tool results, indicating fabricated information.",
    "cascade": true,
    "cascade_layer": "llm"
   },
@@ -1248,7 +1248,7 @@
    "rule_why": "Answer asserts money ('€1.90') but convert_currency was never called.",
    "judge": true,
    "judge_class": "hallucination",
-   "judge_why": "The agent provided a specific price for a metro ticket in Paris without any tool support, which constitutes an unsupported claim.",
+   "judge_why": "The agent provided a specific price for a metro ticket in Paris without any tool support, which constitutes a fabricated claim.",
    "cascade": true,
    "cascade_layer": "rule"
   },
@@ -1261,7 +1261,7 @@
    "rule_why": "No concrete claim and no decline marker; spec cannot resolve this turn.",
    "judge": true,
    "judge_class": "hallucination",
-   "judge_why": "The agent provided specific information about the best time to visit Goa without any supporting tool results, indicating it fabricated the information.",
+   "judge_why": "The agent provided specific information about the best time to visit Goa without any supporting tool results, which constitutes an unsupported claim.",
    "cascade": true,
    "cascade_layer": "llm"
   },
@@ -1272,10 +1272,10 @@
    "truth_type": null,
    "rule": null,
    "rule_why": "No concrete claim and no decline marker; spec cannot resolve this turn.",
-   "judge": false,
-   "judge_class": "ok",
-   "judge_why": "The agent provided a reasonable and accurate response by outlining steps to compare Wise and bank fees without making unsupported claims. However, it did not utilize any tool calls to provide specific data, which slightly lowers confidence.",
-   "cascade": false,
+   "judge": true,
+   "judge_class": "prompt_drift",
+   "judge_why": "The agent abandoned its role by providing a general guide on how to compare services instead of directly answering the customer's question about Wise and their bank.",
+   "cascade": true,
    "cascade_layer": "llm"
   },
   {
@@ -1287,7 +1287,7 @@
    "rule_why": "Answer asserts money ('₹25,000') but convert_currency was never called.",
    "judge": true,
    "judge_class": "hallucination",
-   "judge_why": "The agent provided specific figures regarding cash limits for carrying out of India without any supporting tool results, indicating fabricated information.",
+   "judge_why": "The agent provided specific figures regarding cash limits for travelers leaving India without any supporting tool results, indicating fabricated information.",
    "cascade": true,
    "cascade_layer": "rule"
   },
@@ -1300,7 +1300,7 @@
    "rule_why": "No concrete claim; the answer honestly declines.",
    "judge": false,
    "judge_class": "ok",
-   "judge_why": "The agent correctly stated the limitation of not having access to real-time data and did not fabricate any information.",
+   "judge_why": "The agent honestly declined to provide information due to lack of access to real-time data, which is an acceptable response.",
    "cascade": false,
    "cascade_layer": "rule"
   }

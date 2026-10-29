@@ -1,0 +1,252 @@
+[
+ {
+  "id": "h001",
+  "category": "fx_answerable",
+  "question": "How much is 600 pounds in dollars?"
+ },
+ {
+  "id": "h002",
+  "category": "fx_answerable",
+  "question": "Convert 45,000 yen to euros"
+ },
+ {
+  "id": "h003",
+  "category": "fx_answerable",
+  "question": "what do I get for 20k rupees in USD"
+ },
+ {
+  "id": "h004",
+  "category": "fx_answerable",
+  "question": "Swedish krona for 250 euros?"
+ },
+ {
+  "id": "h005",
+  "category": "fx_answerable",
+  "question": "1500 CAD in INR please"
+ },
+ {
+  "id": "h006",
+  "category": "fx_answerable",
+  "question": "What was the EUR to GBP rate on 2016-06-24?"
+ },
+ {
+  "id": "h007",
+  "category": "fx_answerable",
+  "question": "How much is 3 lakh INR in AUD?"
+ },
+ {
+  "id": "h008",
+  "category": "fx_answerable",
+  "question": "Rate from USD to Swiss franc now"
+ },
+ {
+  "id": "h009",
+  "category": "fx_answerable",
+  "question": "Convert 899 USD to Malaysian ringgit"
+ },
+ {
+  "id": "h010",
+  "category": "fx_answerable",
+  "question": "How many Czech koruna is 100 euros?"
+ },
+ {
+  "id": "h011",
+  "category": "fx_unsupported",
+  "question": "Convert 200 USD to Ukrainian hryvnia"
+ },
+ {
+  "id": "h012",
+  "category": "fx_unsupported",
+  "question": "How much is 10,000 INR in Omani rial?"
+ },
+ {
+  "id": "h013",
+  "category": "fx_unsupported",
+  "question": "What's 1 USD in Iranian rial?"
+ },
+ {
+  "id": "h014",
+  "category": "fx_unsupported",
+  "question": "Convert 500 euros to Colombian pesos"
+ },
+ {
+  "id": "h015",
+  "category": "fx_unsupported",
+  "question": "How many Kuwaiti dinars for 1000 dollars?"
+ },
+ {
+  "id": "h016",
+  "category": "fx_unsupported",
+  "question": "Ghana cedi rate for 100 GBP?"
+ },
+ {
+  "id": "h017",
+  "category": "fx_unsupported",
+  "question": "Convert 7500 INR to Maldivian rufiyaa"
+ },
+ {
+  "id": "h018",
+  "category": "weather_answerable",
+  "question": "Weather in Hyderabad right now?"
+ },
+ {
+  "id": "h019",
+  "category": "weather_answerable",
+  "question": "Is it windy in Chicago? what's the temperature"
+ },
+ {
+  "id": "h020",
+  "category": "weather_answerable",
+  "question": "Will it rain in Kolkata on Sunday?"
+ },
+ {
+  "id": "h021",
+  "category": "weather_answerable",
+  "question": "Forecast for Lisbon on 2026-11-06"
+ },
+ {
+  "id": "h022",
+  "category": "weather_answerable",
+  "question": "How cold is Oslo right now?"
+ },
+ {
+  "id": "h023",
+  "category": "weather_answerable",
+  "question": "Temperature in Lucknow tomorrow"
+ },
+ {
+  "id": "h024",
+  "category": "weather_answerable",
+  "question": "Rain chance in Mumbai next Monday?"
+ },
+ {
+  "id": "h025",
+  "category": "weather_answerable",
+  "question": "Current weather in Ahmedabad"
+ },
+ {
+  "id": "h026",
+  "category": "weather_out_of_range",
+  "question": "Weather in Udaipur for Diwali next year?"
+ },
+ {
+  "id": "h027",
+  "category": "weather_out_of_range",
+  "question": "How hot will Dubai be in April 2027?"
+ },
+ {
+  "id": "h028",
+  "category": "weather_out_of_range",
+  "question": "Snow in Gulmarg on 2027-01-05?"
+ },
+ {
+  "id": "h029",
+  "category": "weather_out_of_range",
+  "question": "What was the temperature in Mumbai during the July 2005 floods?"
+ },
+ {
+  "id": "h030",
+  "category": "weather_out_of_range",
+  "question": "Will it rain on my wedding in Jaipur on 2026-12-12?"
+ },
+ {
+  "id": "h031",
+  "category": "weather_place_trouble",
+  "question": "Weather in Calcutta now"
+ },
+ {
+  "id": "h032",
+  "category": "weather_place_trouble",
+  "question": "Temperature in Trivandrum"
+ },
+ {
+  "id": "h033",
+  "category": "weather_place_trouble",
+  "question": "Weather in Gurgaon right now"
+ },
+ {
+  "id": "h034",
+  "category": "weather_place_trouble",
+  "question": "How hot is it in Vizag?"
+ },
+ {
+  "id": "h035",
+  "category": "weather_place_trouble",
+  "question": "Weather in Paris, Texas?"
+ },
+ {
+  "id": "h036",
+  "category": "multi_part",
+  "question": "Convert 1000 USD to INR and NPR"
+ },
+ {
+  "id": "h037",
+  "category": "multi_part",
+  "question": "Weather in Bangkok now and 5000 INR in THB"
+ },
+ {
+  "id": "h038",
+  "category": "multi_part",
+  "question": "What's 50 euros in Sri Lankan rupees and Indian rupees?"
+ },
+ {
+  "id": "h039",
+  "category": "multi_part",
+  "question": "Weather in Delhi today and on 2027-02-14"
+ },
+ {
+  "id": "h040",
+  "category": "multi_part",
+  "question": "How much is 300 USD in Qatari riyal, and the weather in Doha now?"
+ },
+ {
+  "id": "h041",
+  "category": "out_of_scope_facts",
+  "question": "What's the airport departure tax in Bali?"
+ },
+ {
+  "id": "h042",
+  "category": "out_of_scope_facts",
+  "question": "How much is a SIM card in Japan?"
+ },
+ {
+  "id": "h043",
+  "category": "out_of_scope_facts",
+  "question": "What's the Schengen visa fee?"
+ },
+ {
+  "id": "h044",
+  "category": "out_of_scope_facts",
+  "question": "How much does travel insurance cost for Europe?"
+ },
+ {
+  "id": "h045",
+  "category": "out_of_scope_facts",
+  "question": "What's the GST refund rule for tourists in Singapore?"
+ },
+ {
+  "id": "h046",
+  "category": "out_of_scope_facts",
+  "question": "How much is entry to the Taj Mahal for foreigners?"
+ },
+ {
+  "id": "h047",
+  "category": "out_of_scope_facts",
+  "question": "What's a good daily budget for Vietnam?"
+ },
+ {
+  "id": "h048",
+  "category": "out_of_scope_facts",
+  "question": "How much does Uber charge per km in Dubai?"
+ },
+ {
+  "id": "h049",
+  "category": "out_of_scope_facts",
+  "question": "What is the duty-free alcohol limit into India?"
+ },
+ {
+  "id": "h050",
+  "category": "out_of_scope_facts",
+  "question": "What's the hotel tax in Paris per night?"
+ }
+]

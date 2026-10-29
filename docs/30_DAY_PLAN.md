@@ -9,13 +9,13 @@ Code only gets built if it helps answer that.
 
 ## Week 1 (Oct 29 – Nov 4): clean up and finish the proof
 
-- [ ] Commit the TravelPal proof of concept (`poc/travelpal/`)
-- [ ] Fix the judge: tell it today's date
-- [ ] Fix the judge: an honest "I couldn't get that data" counts as OK
-- [ ] Write a second set of ~50 TravelPal questions, without looking at the agent's answers first
-- [ ] Run the full fix loop on TravelPal: diagnose → patch the prompt → re-score both question sets
-- [ ] Write down the real before/after numbers (replaces the "illustrative" ones)
-- [ ] One-page positioning note: what it is, who buys it, what it is not
+- [x] Commit the TravelPal proof of concept (`poc/travelpal/`)
+- [x] Fix the judge: tell it today's date
+- [x] Fix the judge: an honest "I couldn't get that data" counts as OK
+- [x] Write a second set of ~50 TravelPal questions, without looking at the agent's answers first
+- [x] Run the full fix loop on TravelPal: diagnose → patch the prompt → re-score both question sets
+- [x] Write down the real before/after numbers (replaces the "illustrative" ones)
+- [x] One-page positioning note: what it is, who buys it, what it is not
 
 ## Week 2 (Nov 5 – Nov 11): make it easy to try on someone else's bot
 

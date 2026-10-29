@@ -6,12 +6,13 @@ Three detectors, each the real Cassandra code path:
   * judge   — Diagnostician.judge, the LLM-as-judge used on production spans.
   * cascade — what the oracle does: rule first, LLM judge only where the rule abstains.
 
-    python -m poc.travelpal.score
-Writes poc/travelpal/results.json and prints the confusion matrices.
+    python -m poc.travelpal.score [--runs runs.jsonl --labels labels.json --out results.json]
+Prints the confusion matrices and writes the per-turn verdicts to --out.
 """
 
 from __future__ import annotations
 
+import argparse
 import asyncio
 import json
 from pathlib import Path
@@ -35,9 +36,9 @@ def _metrics(rows: list[dict], key: str) -> dict:
     }
 
 
-async def main() -> None:
-    runs = [json.loads(line) for line in (HERE / "runs.jsonl").read_text(encoding="utf-8").splitlines()]
-    labels = json.loads((HERE / "labels.json").read_text(encoding="utf-8"))["bad"]
+async def main(runs_file: str, labels_file: str, out_file: str) -> None:
+    runs = [json.loads(line) for line in (HERE / runs_file).read_text(encoding="utf-8").splitlines()]
+    labels = json.loads((HERE / labels_file).read_text(encoding="utf-8"))["bad"]
     spec = GroundingSpec.model_validate_json((HERE / "grounding_spec.json").read_text(encoding="utf-8"))
     diag = Diagnostician()
     sem = asyncio.Semaphore(6)
@@ -64,12 +65,14 @@ async def main() -> None:
 
     decided = [r for r in rows if r["rule"] is not None]
     summary = {
+        "truth_bad": sum(r["truth"] for r in rows),
+        "cascade_flagged": sum(r["cascade"] for r in rows),
         "rule_coverage": f"{len(decided)}/{len(rows)}",
         "rule_on_decided": _metrics(decided, "rule"),
         "judge": _metrics(rows, "judge"),
         "cascade": _metrics(rows, "cascade"),
     }
-    (HERE / "results.json").write_text(
+    (HERE / out_file).write_text(
         json.dumps({"summary": summary, "rows": rows}, indent=1, ensure_ascii=False), encoding="utf-8"
     )
     print(json.dumps(summary, indent=1))
@@ -81,4 +84,9 @@ async def main() -> None:
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--runs", default="runs.jsonl")
+    ap.add_argument("--labels", default="labels.json")
+    ap.add_argument("--out", default="results.json")
+    a = ap.parse_args()
+    asyncio.run(main(a.runs, a.labels, a.out))

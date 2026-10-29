@@ -60,3 +60,66 @@ By failure type, the cascade caught:
 3. **The LLM judge alone is not usable as an alarm.** 19 false alarms in 98 turns means paging someone one turn in five. It also has a real bug: it isn't told today's date, so it called correct 2026 dates "fabricated" (q016, q053).
 4. **One rule false positive (q081).** The rule treats an amount *echoed from the user's question* ("1000 INR") as a claim.
 5. Sample size is small: 98 turns, 14 positives. Treat the percentages as directional, not as benchmarks.
+
+---
+
+## Week 1 follow-up (run 2026-10-29): judge fix, held-out set, real fix loop
+
+```bash
+python -m poc.travelpal.fix_loop                       # diagnose -> root cause -> patch (q090)
+python -m poc.travelpal.collect --questions questions_heldout.json --out runs_heldout.jsonl
+python -m poc.travelpal.collect --questions questions_heldout.json --out runs_heldout_candidate.jsonl --system-file candidate_prompt.txt
+python -m poc.travelpal.collect --out runs_candidate.jsonl --system-file candidate_prompt.txt
+python -m poc.travelpal.score --runs runs_heldout.jsonl --labels labels_heldout.json --out results_heldout.json
+```
+
+### 1. Judge fixes (`cassandra/diagnostician.py`)
+
+The judge is now told today's date, and the prompt says a plain "I couldn't retrieve that" counts as honest.
+
+- **Judge alone:** false alarms 19 → 9, precision 37% → 53%.
+- **Cascade:** 82% → 75%, from one extra false alarm. The judge called a reasonable "how to compare Wise with your bank" answer prompt drift.
+
+### 2. Held-out set: the fair detection number
+
+These are 50 new questions ([questions_heldout.json](questions_heldout.json)), written before running anything. The grounding spec was **frozen**, so nothing was tuned to these answers.
+
+| Detector | Precision | Recall |
+|---|---|---|
+| Rule alone | 100% (8/8) | 80% of decided turns |
+| **Cascade** | **100% (11/11)** | **73% (11/15)** |
+
+The 4 misses are the same blind spot as before: three wrong-date answers ("Sunday" fetched for a Friday) and one wrong place (Calcutta, South Africa).
+
+### 3. The fix loop, run for real
+
+Cassandra's real stages ran on the q090 visa incident: `Diagnostician.judge → RootCauseAnalyst → Patcher`. Only the Phoenix write was stubbed ([fix_loop.py](fix_loop.py)). Details are in [fix_loop.json](fix_loop.json).
+
+- **Root cause:** "fabricated visa cost; no tool results."
+- **Fix strategy:** "mandatory tool check for visa-related queries."
+- **The patch** ([candidate_prompt.txt](candidate_prompt.txt)) is narrowly worded, because it only saw one incident:
+  > For any inquiries related to visa costs, you must check the relevant tool… If the required tool data is missing, inform the user that you cannot provide that information.
+
+Both question sets were rerun with that prompt (via `system_override`) and hand-labelled again:
+
+| | Baseline prompt | Cassandra's candidate | Cassandra's own measurement (cascade flags) |
+|---|---|---|---|
+| **Held-out (50)** | 15 bad (30%) | **3 bad (6%)** | 11 → 1 |
+| Original (98) | 14 bad (14%) | 8 bad (8%) | 12 → 5 |
+| Answerable questions still answered (both sets) | 63/63 | 63/63 | — |
+
+By failure type, across both sets:
+
+| Failure type | Before | After |
+|---|---|---|
+| Answered from memory | 20 | 4 |
+| Wrong place | 4 | 3 |
+| Misreported data / wrong date | 5 | 4 |
+
+### What week 1 proves
+
+- **The loop works end to end on a real agent.** One incident in, one prompt patch out. That patch cut bad answers on *unseen* questions from 30% to 6%, without making the bot refuse things it can answer.
+- **The prompt fix only helps the class Cassandra can detect.** Answering from memory dropped about 80%. Wrong place and wrong date barely moved. Those need code or tool fixes, such as checking the geocoder's country or computing weekdays in a tool, not a prompt fix.
+- **Cassandra under-reports its own improvement a little.** It counted 11 → 1 where the truth was 15 → 3. It can't see the wrong-date and wrong-place failures before or after, so its before/after is honest for what it can see, and blind to the rest.
+- **The patch generalised by luck of wording.** The visa-only instruction carried a general sentence ("if tool data is missing, say so") that did the real work. Patching from a *cluster* of similar incidents instead of one would make this reliable, not lucky.
+- **Caveats:** one run of each set (LLM output varies run to run), live weather changes between runs, and the labels are still mine alone.

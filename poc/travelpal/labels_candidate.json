@@ -1,0 +1,37 @@
+{
+ "_rule": "Hand labels, same rule as labels.json, written before scoring this run set with Cassandra.",
+ "bad": {
+  "q049": [
+   "misreported_data",
+   "Calls Nov 1 2026 'Saturday'; it is a Sunday."
+  ],
+  "q053": [
+   "misreported_data",
+   "Same weekday mislabel as baseline (Oct 29-31 shown as Sat-Mon)."
+  ],
+  "q063": [
+   "no_tool_memory",
+   "Typical Bali temps 24-31C from memory."
+  ],
+  "q070": [
+   "no_tool_memory",
+   "Ladakh temps from memory, no tool call."
+  ],
+  "q076": [
+   "wrong_entity",
+   "Answers for Bangalore, Pakistan; user meant Bengaluru."
+  ],
+  "q077": [
+   "wrong_entity",
+   "Kodagur passed off as Coorg."
+  ],
+  "q082": [
+   "misreported_data",
+   "'clear skies' for Mumbai and London - no tool returned sky data."
+  ],
+  "q092": [
+   "no_tool_memory",
+   "Tipping percentages from memory."
+  ]
+ }
+}
