@@ -106,7 +106,7 @@ flowchart TB
 
 ## Quickstart (pip)
 
-Cassandra is not on PyPI yet (the distribution name `cassandra-ai` is reserved in
+Cassandra is not on PyPI yet (the distribution name `cassandra-ai` is declared in
 `pyproject.toml` but unpublished). Install straight from GitHub to get the unified
 `cassandra` CLI (banner + the `dashboard` / `run` / `scan` / `gate` / `mcp` subcommands):
 
