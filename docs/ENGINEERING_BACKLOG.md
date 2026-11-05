@@ -101,6 +101,8 @@ makes those reports trustworthy; it doesn't gate sending the first messages.
 ## Epic PKG: packaging and release
 
 ### PKG-1: Rename the import package to `cassandra_ai`
+> **Status: ✅ done (2026-11-05, branch `claude/loving-planck-llm1bd`, unreleased 0.4.0).** Verified by `scripts/smoke_install.py`: co-installs with cassandra-driver 3.30.1, and `import cassandra` resolves to the driver.
+
 - **Description:**
   - Move `cassandra/` → `cassandra_ai/` and update all imports, entry points, tests, docs, Dockerfiles and examples.
   - The CLI command stays `cassandra`.
@@ -119,6 +121,8 @@ makes those reports trustworthy; it doesn't gate sending the first messages.
 - **Verification:** CI smoke job (PKG-5) runs exactly this.
 
 ### PKG-2: Stop shipping `patient` and `dashboard` as top-level packages
+> **Status: ✅ done, implemented more narrowly than described below.** The directories stay where they are (so every documented `uvicorn patient.agent:app` / `dashboard.main:app` command, the Dockerfile and the tests keep working from a checkout). They are only excluded from the wheel, and `cassandra dashboard` explains the source-checkout requirement on a pip install. Moving them to `examples/shopbot/` and `apps/dashboard/` remains optional.
+
 - **Description:** Move `patient/` → `examples/shopbot/` and `dashboard/` → `apps/dashboard/`. Exclude both from the wheel. The `cassandra dashboard` subcommand prints how to run it from a checkout.
 - **User impact:** We don't squat on generic import names in users' environments.
 - **Files:** `pyproject.toml`, `patient/**`, `dashboard/**`, `cassandra_ai/cli.py`, `deploy/cloudrun.Dockerfile`, tests importing `patient`.
@@ -127,6 +131,8 @@ makes those reports trustworthy; it doesn't gate sending the first messages.
 - **Verification:** `python -c "import zipfile,glob; print({n.split('/')[0] for n in zipfile.ZipFile(glob.glob('dist/*.whl')[0]).namelist()})"`.
 
 ### PKG-3: Bound fast-moving dependencies; pin the dev toolchain
+> **Status: ✅ done, except the constraints file (deferred until CI-1 exists).** Every runtime dependency is capped at the next major. `ruff==0.17.3` and `mypy==2.4.1` are pinned. `google-adk` moved to a new `[adk]` extra: its `opentelemetry-api<=1.44` cap blocked the CVE-2026-114603 fix, and `[full]` now resolves opentelemetry-api 1.45.2. Guarded by `tests/test_packaging.py`.
+
 - **Description:**
   - `mcp>=1.2,<2` (2.x removed `mcp.server.fastmcp`; verified 2026-11-05 with mcp 2.3.0);
   - add `<next-major` caps on `google-genai`, `google-adk`, `openai`, `fastapi`;
@@ -138,12 +144,16 @@ makes those reports trustworthy; it doesn't gate sending the first messages.
 - **Verification:** CI from a clean cache.
 
 ### PKG-4 [human]: Release 0.4.0; yank 0.3.0
+> **Status: ⏳ waiting on a founder.** The code and CHANGELOG are ready; steps are in `CHANGELOG.md` ("Release steps").
+
 - **Description:** Build and `twine check`. Publish 0.4.0 with a CHANGELOG entry for the rename. Then yank 0.3.0 on PyPI with the reason "installs top-level `cassandra` package that conflicts with cassandra-driver; use ≥0.4.0".
 - **Deps:** PKG-1..3, CI-1. **P0. S.**
 - **Acceptance criteria:** `pip install cassandra-ai` resolves 0.4.0. 0.3.0 shows as yanked.
 - **Verification:** a fresh venv from PyPI, not a local wheel.
 
 ### PKG-5: Fresh-venv smoke tests (light and full)
+> **Status: ✅ done as `scripts/smoke_install.py [--full]`.** Python rather than bash, so it also runs on Windows. All 11 checks pass.
+
 - **Description:** Add `scripts/smoke_install.sh`. It:
   - builds the wheel;
   - installs light into an empty venv and runs `cassandra`, `cassandra scan examples/sample_logs.jsonl --spec examples/sample_contract.json`;
@@ -404,6 +414,14 @@ makes those reports trustworthy; it doesn't gate sending the first messages.
 ## Epic SEC: security hardening
 
 ### SEC-1: Fail-closed override in the Patient and the adapter template
+> **Status: ✅ done (2026-11-05, unreleased 0.4.0).** Beyond the spec below:
+> - agents now report `override_applied`;
+> - `ask_patient` raises `OverrideRejectedError` on a refused override, and the gate exits 2, so a misconfigured secret can't silently score the live prompt as the candidate;
+> - the token compare is on bytes (the str form raised `TypeError` on non-ASCII header values);
+> - secrets are whitespace-stripped.
+>
+> 5 of the new tests fail against the original code.
+
 - **Description:** In both `patient/agent.py:63-69` and `examples/adapter_template.py:84-89`, honour the override only when a secret is configured **and** `hmac.compare_digest(token, secret)` holds. No secret means never.
 - **User impact:** Customers copying the template no longer ship an unauthenticated system-prompt override.
 - **Deps:** none. **P0. S.**

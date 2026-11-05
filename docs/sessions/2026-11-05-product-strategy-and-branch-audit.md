@@ -1,4 +1,7 @@
-# Session log: 2026-11-05, product strategy + full branch audit
+# Session log: 2026-11-05, product strategy + full branch audit; packaging and override fixes
+
+Part 1 (strategy, documentation only) is below. **Part 2** (the packaging and `system_override`
+fixes, unreleased 0.4.0) follows the open items.
 
 Branch: `claude/loving-planck-llm1bd` (based on `main` @ `09ef23e`). **Documentation only.** No
 application code, branch, merge or history was changed. Per the brief, this was a research, architecture and
@@ -70,8 +73,8 @@ All of it is written under `docs/`.
 - this session note
 
 `README.md`, `docs/ARCHITECTURE.md`, `docs/SYSTEM_DESIGN.md` and `CLAUDE.md` were **not** changed: no
-behaviour changed. This branch's CLAUDE.md is the stale `main` version. Reconciling it belongs to backlog
-CON-1/CON-4 on the consolidation branch. There's no repo-level `MEMORY.md`.
+behaviour changed. At the time, this branch's CLAUDE.md was the stale `main` version (superseded by
+Part 2's merge of `feature/nli-and-hindi`). There's no repo-level `MEMORY.md`.
 
 ## Verification (what was actually run)
 
@@ -104,6 +107,134 @@ CON-1/CON-4 on the consolidation branch. There's no repo-level `MEMORY.md`.
 3. Approve CON-1 (consolidation) and PKG-4 (0.4.0 + yank 0.3.0). Both are flagged **[human]** where destructive or outward-facing.
 4. Outreach copy in `docs/OUTREACH.md` (on `feature/nli-and-hindi`) leads with "made-up facts". Consider the
    neutral offer in GO_TO_MARKET §2 before sending more messages.
+
+---
+
+# Part 2: packaging + `system_override` security fixes (unreleased 0.4.0)
+
+## Scope
+
+The founder asked to fix the packaging and adapter-template issues from Part 1: backlog PKG-1, PKG-2,
+PKG-3, PKG-5 and SEC-1. PKG-4 (publishing, yanking 0.3.0) is outward-facing and was left to the founders.
+
+## Base
+
+- This branch sat on stale `main`. The packaging that shipped to PyPI exists only on
+  `feature/nli-and-hindi`, so `origin/feature/nli-and-hindi` @ `062b60e` was **merged** into it (no
+  rebase, no force-push).
+- That branch had moved since Part 1's audit. The only addition was the RAGTruth PoC, with no packaging
+  or adapter changes.
+- The merge was clean. Baseline: 116 passed, ruff 50 findings, mypy 23 errors.
+
+## What changed and why
+
+1. **Import package `cassandra` → `cassandra_ai`** (PKG-1).
+   - `git mv`, then a scripted rewrite limited to the package's real module names: 158 code
+     references and 77 in living docs.
+   - Brand strings were deliberately kept: the ADK state keys (`"cassandra.handled"`), the PR branch
+     prefix `cassandra/fix-`, the CLI `prog="cassandra"`, and the MCP server and ADK agent names.
+   - Hand edits: the CLI's internal-module set, the Dockerfile `COPY`, Agent Engine `extra_packages`,
+     and the Cloud Function requirements.
+   - Session notes and `docs/archive/` were not rewritten (historical).
+2. **The wheel ships only `cassandra_ai`** (PKG-2, narrower than the backlog text).
+   - `patient/` and `dashboard/` stay where they are, so every documented `uvicorn` command, the
+     Dockerfile and the tests are unchanged. They are only excluded from the wheel.
+   - `cassandra dashboard` now prints source-checkout instructions instead of uvicorn's opaque import
+     error.
+3. **Dependency caps** (PKG-3).
+   - Every runtime dependency is capped at the next major above the version the suite passes with.
+   - `mcp>=1.2.0,<2`: 2.x removed `mcp.server.fastmcp`.
+   - `ruff==0.17.3` and `mypy==2.4.1` are pinned.
+   - **`google-adk` moved to a new `[adk]` extra.** Its `opentelemetry-api<=1.44` cap pinned
+     CVE-2026-114603 (quadratic `tracestate` parsing, fixed in 1.45.1). google-adk 2.13.0 is the latest
+     release, so it can't be upgraded out of this.
+   - Only `build_adk_agent()` and `deploy/agent_engine.py` (which has its own requirements list) use
+     google-adk. `[dev]` = full + adk + tools.
+4. **One version source.** `__version__` had been stuck at 0.1.0 while pyproject said 0.3.0. It is now
+   a hatch dynamic version from `cassandra_ai/__init__.py`, bumped to 0.4.0.
+5. **`system_override` fails closed** (SEC-1) in `patient/agent.py` and `examples/adapter_template.py`:
+   - honoured only with session `"test"` + a configured secret + a matching token;
+   - the constant-time compare is on bytes (the str form raised `TypeError` on non-ASCII header values);
+   - the secret is whitespace-stripped (a pydantic validator, and in the template);
+   - replies carry `override_applied`.
+
+   On Cassandra's side:
+   - `ask_patient` raises `OverrideRejectedError` when an override is refused, and `cassandra-gate`
+     exits 2;
+   - it logs a one-time warning when it sends an override with no secret configured.
+
+   **Why the detection matters:** failing closed on its own would turn a missing or mismatched secret into
+   silently scoring the live prompt as the candidate. A CI gate could then pass a prompt edit that was
+   never run. Agents that don't report the field behave as before.
+6. **Docs:**
+   - README (it claimed "the import package stays `cassandra`", and that pip users get the cockpit);
+   - CLAUDE.md (packaging rules, secret semantics, commands);
+   - SYSTEM_DESIGN (it recorded the override as "Fixed" although it fell open without a secret);
+   - WORKFLOWS (contract + the fail-closed rule);
+   - CODEBASE_MAP;
+   - TESTING_GUIDE (its PyPI-install demo ran `patient.agent` from the wheel; it now uses a checkout + secret);
+   - `.env.example`;
+   - a new `CHANGELOG.md` with release steps;
+   - status notes in the strategy docs.
+
+## Files touched (main ones)
+
+- `pyproject.toml`
+- `cassandra_ai/` (renamed; changes in `__init__.py`, `cli.py`, `config.py`, `gate.py`, `patient_client.py`)
+- `patient/agent.py`
+- `examples/adapter_template.py`
+- `deploy/cloudrun.Dockerfile`
+- `deploy/agent_engine.py`
+- `functions/trace_poller/*`
+- `.vscode/mcp.json`
+- `.env.example`
+- new `tests/test_packaging.py`, rewritten `tests/test_patient_security.py`, `tests/test_cli.py`
+- new `scripts/smoke_install.py`
+- new `CHANGELOG.md`
+- the docs listed above
+
+## Verification
+
+| Check | Result |
+|---|---|
+| `pytest` | **133 passed** (116 + 17 new: packaging 6, CLI 2, security 6 → 15) |
+| New security tests against the **original** Patient/template (swapped in, then restored; checksums verified) | 5 fail, as intended: fail-open, non-ASCII `TypeError`, empty override, template fail-open, missing `override_applied` |
+| Fresh venv, `pip install -e ".[dev]"`, **no manual pins** | `mcp` resolves 1.30.0 on its own; 133 passed |
+| `python scripts/smoke_install.py --full` | 11/11 checks (full list below) |
+| Fresh non-editable `.[full]` + `pip-audit -l` | "No known vulnerabilities found" |
+| `python -m build` + `twine check --strict` | Wheel and sdist PASSED; the sdist holds only `cassandra_ai/` + metadata |
+| ruff 0.17.3 / mypy 2.4.1 vs baseline | 50 → 50 findings, none new; identical 23-error mypy set |
+| Offline suite | The first version of the template test exported spans to Phoenix: importing `patient.agent` installs a global OTLP exporter, and FastAPI 0.162 traces requests itself. The tests now await the handler directly with a no-op tracer. 0 export attempts |
+
+The smoke checks:
+
+- the wheel contains only `cassandra_ai`;
+- it co-installs with cassandra-driver 3.30.1, and `import cassandra` is the driver;
+- offline `scan` = 8 of 50, the same as 0.3.0;
+- light `run` gives the `[full]` hint;
+- `dashboard` gives the checkout hint;
+- `[full]` installs and `pip check` passes;
+- MCP imports;
+- opentelemetry-api is 1.45.2.
+
+**Not verified:**
+
+- the Docker image build (no daemon here);
+- Agent Engine and Cloud Function deploys (need GCP);
+- the smoke script on Windows/macOS;
+- whether Cassandra's own endpoints reach the vulnerable OpenTelemetry function.
+
+## Open items
+
+1. **PKG-4 [human]:** publish 0.4.0, then yank 0.3.0. Steps are in `CHANGELOG.md`.
+2. **Behaviour change to announce:** local demos now need `REPLAY_SHARED_SECRET`, or eval, replay and
+   red-team stop with `OverrideRejectedError`.
+3. When CON-1 merges `task0-grounding-base-rate`, drop that branch's CLAUDE.md known-broken items #3
+   (override fails open) and #6 (rename), and update `docs/SECURITY_AUDIT.md`. Both are fixed here.
+4. Pre-existing: importing `patient.agent` installs a live OTLP exporter globally, so any test that
+   creates Patient spans would hit the network. Guard `init_tracing` under test.
+5. Migrate `mcp_server.py` to the mcp 2.x `MCPServer` API, then lift the `<2` cap.
+6. CI-1 still doesn't exist. `tests/test_packaging.py` and `scripts/smoke_install.py` are ready to wire in.
 
 ## Appendix: exploratory probe script (reproducibility)
 

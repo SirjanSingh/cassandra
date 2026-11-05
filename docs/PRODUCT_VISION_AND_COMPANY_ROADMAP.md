@@ -1,7 +1,19 @@
 # Cassandra: product vision and company roadmap
 
-> **Date:** 2026-11-05 · **Status:** strategy proposal for the founders. Nothing here has been executed. No
-> application code, branch or history was changed while producing it.
+> **Date:** 2026-11-05 · **Status:** strategy proposal for the founders. No application code,
+> branch or history was changed while producing it.
+>
+> **Update (later the same day):** at the founder's request, backlog items PKG-1, PKG-2, PKG-3,
+> PKG-5 and SEC-1 are now implemented on this branch as unreleased 0.4.0:
+> - the import package is `cassandra_ai`, and the wheel ships only that package;
+> - `mcp<2` and caps on every dependency;
+> - `google-adk` moved to an `[adk]` extra, which fixes the CVE-2026-114603 dependency for `[full]`;
+> - `system_override` fails closed in the Patient and the adapter template, and refused overrides are detected.
+>
+> See `CHANGELOG.md` and the session note. PKG-4 (publish 0.4.0, yank 0.3.0) still needs a
+> founder. On this branch, findings S-1 and S-5 and debt items TD-06 and TD-07 below are
+> resolved. S-8 is partly resolved: caps are in and the CVE is fixed, but there is no lockfile or
+> Dependabot yet. Everything else stands as written.
 >
 > **Document set** (read this one first):
 >

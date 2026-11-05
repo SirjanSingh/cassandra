@@ -141,6 +141,13 @@ byte-identical across both lines:
 - `patient/agent.py`
 - `dashboard/main.py`
 
+> **Status update (later on 2026-11-05).** This branch now merges `feature/nli-and-hindi` @ `062b60e` and fixes these rows (unreleased 0.4.0; see `CHANGELOG.md`):
+> - Packaging: the wheel ships only `cassandra_ai`, and `mcp` is capped `<2`.
+> - Security: the fail-open `system_override` in the Patient *and* the adapter template is fixed.
+> - The CVE-2026-114603 dependency is fixed for `[full]`.
+>
+> Every other row is still open. Line numbers below refer to `23994bf` and the old `cassandra/` path.
+
 | Area | Defect | Location |
 |---|---|---|
 | Verifier | Field claims are checked for non-null, never for equality | `cassandra/grounding.py:111-114` |
