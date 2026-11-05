@@ -38,6 +38,6 @@ Branch: `feature/nli-and-hindi`.
 
 ## Open items
 
-- **Upload to PyPI** (the user, with their own account and token). Until then, the docs' `pip install cassandra-ai` doesn't work, so **don't push these docs before the upload**.
+- ~~Upload to PyPI~~ **Done.** The user uploaded `cassandra-ai` 0.3.0 with their own token. The first try got a 403 (the token wasn't entered correctly); the retry used `TWINE_USERNAME`/`TWINE_PASSWORD`. Verified from PyPI itself in a fresh venv: the install took 11 s, `cassandra scan` gives 8 of 50, and `cassandra run` prints the `[full]` hint. Pushed after that.
 - `cassandra pr <unknown-id>` shows a raw `FileNotFoundError` traceback. Pre-existing and cosmetic.
 - The README still says "v0.1 is dev-audience" in the Quickstart. Stale wording.
