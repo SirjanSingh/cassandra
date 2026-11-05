@@ -2,7 +2,7 @@
 
 import json
 
-from cassandra.phoenix_mcp import _as_list, _extract_tool_calls, _id_of, normalize_span
+from cassandra_ai.phoenix_mcp import _as_list, _extract_tool_calls, _id_of, normalize_span
 
 
 def test_id_of_extracts_known_keys():

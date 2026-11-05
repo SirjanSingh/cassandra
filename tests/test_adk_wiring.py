@@ -6,7 +6,7 @@ pytest.importorskip("google.adk", reason="google-adk not installed in this env")
 
 
 def test_build_adk_agent_wires_a_real_sub_agent():
-    from cassandra.loop_agent import build_adk_agent
+    from cassandra_ai.loop_agent import build_adk_agent
 
     agent = build_adk_agent()
     assert agent.name == "cassandra"

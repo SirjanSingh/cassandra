@@ -63,11 +63,11 @@ they were *contest* decisions. Inventory:
 | Single-incident-per-cycle + 5s in-process loop | demo determinism | predictable demo | n/a | **Keep as a mode**; add a real queue/worker for production |
 
 **The good news:** the architecture already has the right chokepoints for a clean decoupling.
-`cassandra/phoenix_mcp.py` (all Phoenix access), `cassandra/llm.py` (all model calls),
-`cassandra/config.py` (all env), `cassandra/state.py` (durable state),
-`cassandra/baseline.py` + `cassandra/patient_client.py` (the supervised-agent contract) are
+`cassandra_ai/phoenix_mcp.py` (all Phoenix access), `cassandra_ai/llm.py` (all model calls),
+`cassandra_ai/config.py` (all env), `cassandra_ai/state.py` (durable state),
+`cassandra_ai/baseline.py` + `cassandra_ai/patient_client.py` (the supervised-agent contract) are
 each single seams. Independence is mostly *introducing one interface per seam and writing a
-second adapter* — not a rewrite. CLAUDE.md's "never import `patient/` inside `cassandra/`"
+second adapter* — not a rewrite. CLAUDE.md's "never import `patient/` inside `cassandra_ai/`"
 discipline already did the hard architectural work.
 
 ---

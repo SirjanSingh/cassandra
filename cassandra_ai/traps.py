@@ -2,7 +2,7 @@
 
 Each trap is a customer message plus the failure class a CORRECT Diagnostician must
 assign once the fragile Patient responds. This ground truth is what lets Cassandra
-grade its OWN diagnostic accuracy (cassandra/selfeval.py) — the introspection /
+grade its OWN diagnostic accuracy (cassandra_ai/selfeval.py) — the introspection /
 self-improvement loop the Arize track rewards.
 
 Used by both scripts/seed_incident.py (firing traps) and the self-evaluator (scoring).

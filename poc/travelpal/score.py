@@ -1,7 +1,7 @@
 """Score Cassandra's verdicts on the real TravelPal runs against the hand labels.
 
 Three detectors, each the real Cassandra code path:
-  * rule    — Layer 1 deterministic grounding (cassandra/grounding.py) with
+  * rule    — Layer 1 deterministic grounding (cassandra_ai/grounding.py) with
               poc/travelpal/grounding_spec.json; abstains when it can't decide.
   * judge   — Diagnostician.judge, the LLM-as-judge used on production spans.
   * cascade — what the oracle does: rule first, LLM judge only where the rule abstains.
@@ -17,9 +17,9 @@ import asyncio
 import json
 from pathlib import Path
 
-from cassandra.diagnostician import Diagnostician
-from cassandra.grounding import GroundingSpec, check_grounding
-from cassandra.models import FailureClass
+from cassandra_ai.diagnostician import Diagnostician
+from cassandra_ai.grounding import GroundingSpec, check_grounding
+from cassandra_ai.models import FailureClass
 
 HERE = Path(__file__).parent
 

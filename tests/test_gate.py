@@ -4,9 +4,9 @@ import json
 
 import pytest
 
-import cassandra.gate as gate
-from cassandra.models import DatasetExample
-from cassandra.oracle import Score
+import cassandra_ai.gate as gate
+from cassandra_ai.models import DatasetExample
+from cassandra_ai.oracle import Score
 
 _CASES = [
     DatasetExample(
@@ -69,7 +69,7 @@ async def test_gate_scores_deterministically_when_ledger_present(monkeypatch):
     async def boom(*a, **k):
         raise AssertionError("LLM judge must not be called on the deterministic path")
 
-    monkeypatch.setattr("cassandra.llm.structured", boom)
+    monkeypatch.setattr("cassandra_ai.llm.structured", boom)
 
     ledger = [
         {

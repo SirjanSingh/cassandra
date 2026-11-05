@@ -5,6 +5,7 @@ from __future__ import annotations
 from functools import lru_cache
 
 from dotenv import load_dotenv
+from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 load_dotenv(override=True)
@@ -37,7 +38,7 @@ class Settings(BaseSettings):
     diagnosis_confidence_threshold: float = 0.7
     synth_dataset_size: int = 12
 
-    # Jury (cassandra/jury.py). jury_size = number of independent LLM-as-judge
+    # Jury (cassandra_ai/jury.py). jury_size = number of independent LLM-as-judge
     # inferences aggregated by majority vote (1 = single judge, the original
     # behaviour). >1 convenes a panel spread over temperature up to
     # jury_max_temperature; agreement calibrates confidence. Costs jury_size LLM
@@ -45,7 +46,7 @@ class Settings(BaseSettings):
     jury_size: int = 1
     jury_max_temperature: float = 0.8
 
-    # NLI (cassandra/nli.py) — Layer 2 of the faithfulness cascade. When set to a
+    # NLI (cassandra_ai/nli.py) — Layer 2 of the faithfulness cascade. When set to a
     # HuggingFace cross-encoder NLI checkpoint (and `transformers`/`sentence-transformers`
     # is installed), free-text RAG evidence is verified by entailment instead of falling
     # straight to the LLM judge. Point it at a MULTILINGUAL NLI model to verify Hindi and
@@ -67,20 +68,32 @@ class Settings(BaseSettings):
 
     # Supervised-agent ("Patient") integration — generic, NOT ShopBot-specific.
     # baseline_prompt_file: file holding the supervised agent's CURRENT system prompt
-    # (cassandra/baseline.py resolver; unset = extract from the trace, else demo ShopBot).
+    # (cassandra_ai/baseline.py resolver; unset = extract from the trace, else demo ShopBot).
     # patient_prompt_name: the Phoenix prompt name candidate patches are versioned under.
     baseline_prompt_file: str | None = None
     patient_prompt_name: str = "patient-shopbot-system"
-    # grounding_spec_file: JSON GroundingSpec (cassandra/grounding.py) describing how the
+    # grounding_spec_file: JSON GroundingSpec (cassandra_ai/grounding.py) describing how the
     # supervised agent's tool results ground its claims — the deterministic pass/fail
     # oracle. Unset = bundled ShopBot demo spec (agents with no ledger fall back to the
     # LLM judge regardless).
     grounding_spec_file: str | None = None
 
-    # Shared secret for the Patient's system_override path (SECURITY). When set, the
-    # Patient honors system_override only if the caller also sends it in the
-    # X-Cassandra-Token header. Unset = local-dev mode (session_id gate only).
+    # Shared secret for the supervised agent's system_override path (SECURITY). REQUIRED
+    # for eval / replay / red-team / gate to apply candidate prompts: the agent (the demo
+    # Patient, or anything built from examples/adapter_template.py) honors system_override
+    # only when this is set on the agent AND Cassandra sends the same value in the
+    # X-Cassandra-Token header. Unset => the agent refuses every override (fail closed).
+    # Set the same value on both services, then restart both (settings are cached).
     replay_shared_secret: str | None = None
+
+    @field_validator("replay_shared_secret", mode="before")
+    @classmethod
+    def _normalize_secret(cls, v: object) -> object:
+        # Secret Manager values and `echo` often carry a trailing newline, which can't be
+        # sent in an HTTP header; a blank value means "not configured".
+        if isinstance(v, str):
+            return v.strip() or None
+        return v
 
     @property
     def phoenix_mcp_arg_list(self) -> list[str]:
@@ -118,10 +131,11 @@ def get_settings() -> Settings:
 
 
 def replay_auth_headers() -> dict[str, str]:
-    """Headers Cassandra attaches when calling the Patient with a system_override.
+    """Headers Cassandra attaches when calling the supervised agent.
 
-    Empty when no REPLAY_SHARED_SECRET is configured (local dev), so existing
-    deployments keep working until the secret is set on both services.
+    Empty when no REPLAY_SHARED_SECRET is configured. Agents that follow the adapter
+    contract then refuse every system_override (fail closed); `ask_patient` warns about
+    that, and raises if the agent reports the override was not applied.
     """
     s = get_settings()
     return {"X-Cassandra-Token": s.replay_shared_secret} if s.replay_shared_secret else {}

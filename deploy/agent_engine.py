@@ -11,7 +11,7 @@ Usage:
 
 import os
 
-from cassandra.config import get_settings
+from cassandra_ai.config import get_settings
 
 # Agent Engine requires a REGIONAL location (never "global") and a GCS staging
 # bucket. AGENT_ENGINE_* env vars take precedence over the (possibly stale) .env
@@ -27,7 +27,7 @@ def main() -> None:
     from vertexai import agent_engines  # type: ignore
     from vertexai.preview.reasoning_engines import AdkApp  # type: ignore
 
-    from cassandra.loop_agent import build_adk_agent
+    from cassandra_ai.loop_agent import build_adk_agent
 
     project = _PROJECT or s.google_cloud_project
     location = _LOCATION if s.google_cloud_location in ("", "global") else s.google_cloud_location
@@ -50,16 +50,16 @@ def main() -> None:
             "cloudpickle>=3.0.0",
             "google-genai>=0.3.0",
             "google-adk>=0.1.0",
-            "mcp>=1.2.0",
+            "mcp>=1.2.0,<2",  # mcp 2.x removed mcp.server.fastmcp
             "google-cloud-firestore>=2.19.0",
             "pydantic>=2.9.0",
             "pydantic-settings>=2.6.0",
             "httpx>=0.27.0",
             "openai>=1.50.0",
         ],
-        # Only the cassandra package is imported by the agent graph; the pipeline
+        # Only the cassandra_ai package is imported by the agent graph; the pipeline
         # was decoupled from patient/, so it need not ship in the runtime.
-        extra_packages=["cassandra"],
+        extra_packages=["cassandra_ai"],
         display_name="cassandra-meta-agent",
     )
     print(f"Deployed Cassandra to Agent Engine: {remote.resource_name}")

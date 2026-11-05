@@ -170,13 +170,13 @@ Patient because the MCP exposes no run-experiment tool.
 
 - **FR-IS1** A script SHALL send a fixed customer message that deterministically triggers
   the `get_refund_policy` tool failure path and the resulting hallucination, every run.
-- **FR-IS2** A shared hand-labeled trap library (`cassandra/traps.py`, single source of
+- **FR-IS2** A shared hand-labeled trap library (`cassandra_ai/traps.py`, single source of
   truth) SHALL cover all failure classes (hallucination, tool_failure, prompt_drift, ok)
   and back the diagnostic-precision metric (FR-SE*).
 
 ### 2.5 C6 — cassandra-mcp (published MCP server, FR-MCP*)
 
-- **FR-MCP1** Cassandra SHALL publish an MCP server (`cassandra/mcp_server.py`, FastMCP)
+- **FR-MCP1** Cassandra SHALL publish an MCP server (`cassandra_ai/mcp_server.py`, FastMCP)
   over stdio via the `cassandra-mcp` console entry point.
 - **FR-MCP2** It SHALL expose at least: `diagnose`, `synthesize_evals`, `propose_patch`
   (composable, no Phoenix), `supervise_latest` (full Phoenix-deep loop), and

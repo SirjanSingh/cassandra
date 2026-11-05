@@ -2,7 +2,7 @@
 
 `cassandra-gate` scores a system prompt against an eval dataset by running every
 case through the live agent and scoring each answer with the same pass/fail oracle
-the Evaluator uses (cassandra/oracle.py: deterministic grounding verdict when the
+the Evaluator uses (cassandra_ai/oracle.py: deterministic grounding verdict when the
 agent reports its tool ledger, LLM judge as fallback), then exits non-zero if the
 pass rate is below the threshold. Drop it
 into GitHub Actions (see examples/github-actions-prompt-gate.yml) and every prompt
@@ -27,7 +27,7 @@ from pydantic import BaseModel, Field, computed_field
 from .config import get_settings
 from .models import DatasetExample
 from .oracle import Score, score_case
-from .patient_client import ask_patient
+from .patient_client import OverrideRejectedError, ask_patient
 
 
 class CaseResult(BaseModel):
@@ -101,7 +101,8 @@ async def run_gate(
 
 
 def main(argv: list[str] | None = None) -> None:
-    """Console entry point: exit 0 if the prompt clears the gate, 1 otherwise."""
+    """Console entry point: exit 0 if the prompt clears the gate, 1 if it doesn't, and 2 if
+    the agent refused the candidate prompt (nothing was actually tested)."""
     ap = argparse.ArgumentParser(
         prog="cassandra-gate",
         description="Regression-gate a system prompt against an eval dataset in CI.",
@@ -124,7 +125,14 @@ def main(argv: list[str] | None = None) -> None:
     if args.max_cases:
         cases = cases[: args.max_cases]
 
-    res = asyncio.run(run_gate(prompt, cases, threshold=args.threshold, endpoint=args.endpoint))
+    try:
+        res = asyncio.run(
+            run_gate(prompt, cases, threshold=args.threshold, endpoint=args.endpoint)
+        )
+    except OverrideRejectedError as e:
+        # Never report a pass/fail for a prompt the agent didn't actually run.
+        print(f"gate ERROR: {e}", file=sys.stderr)
+        sys.exit(2)
 
     if args.json:
         print(res.model_dump_json(indent=2))

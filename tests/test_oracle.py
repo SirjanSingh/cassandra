@@ -11,9 +11,9 @@ from datetime import datetime, timezone
 
 import pytest
 
-from cassandra import oracle
-from cassandra.grounding import GroundingSpec, LookupRule
-from cassandra.models import DatasetExample, FailureClass, Incident, SpanRecord
+from cassandra_ai import oracle
+from cassandra_ai.grounding import GroundingSpec, LookupRule
+from cassandra_ai.models import DatasetExample, FailureClass, Incident, SpanRecord
 
 POLICY_MISS = [
     {
@@ -33,7 +33,7 @@ def _boom(monkeypatch):
     async def boom(*a, **k):
         raise AssertionError("LLM judge must not be called on the deterministic path")
 
-    monkeypatch.setattr("cassandra.llm.structured", boom)
+    monkeypatch.setattr("cassandra_ai.llm.structured", boom)
 
 
 def _span() -> SpanRecord:
@@ -79,7 +79,7 @@ async def test_abstain_falls_back_to_llm_judge(monkeypatch):
     async def fake_judge(prompt, model, system=None, **k):
         return oracle.Score(passed=True, why="llm fallback")
 
-    monkeypatch.setattr("cassandra.llm.structured", fake_judge)
+    monkeypatch.setattr("cassandra_ai.llm.structured", fake_judge)
     # no claim, no decline marker -> the spec abstains -> LLM decides
     score = await oracle.score_case("hi", "greets politely", "Hello there!", [])
     assert score.passed is True and score.why == "llm fallback"
@@ -92,7 +92,7 @@ async def test_missing_ledger_falls_back_to_llm_judge(monkeypatch):
         calls.append(prompt)
         return oracle.Score(passed=False, why="llm fallback")
 
-    monkeypatch.setattr("cassandra.llm.structured", fake_judge)
+    monkeypatch.setattr("cassandra_ai.llm.structured", fake_judge)
     # a third-party agent that reports NO tool_calls key: never grounded-scored
     score = await oracle.score_case("q", "expected", FABRICATION, None)
     assert score.passed is False and calls
@@ -127,7 +127,7 @@ def test_resolve_spec_reads_operator_file(monkeypatch, tmp_path):
 
 
 async def test_evaluator_scores_with_grounding(monkeypatch):
-    import cassandra.evaluator as ev
+    import cassandra_ai.evaluator as ev
 
     _boom(monkeypatch)
 
@@ -152,7 +152,7 @@ async def test_evaluator_scores_with_grounding(monkeypatch):
 
 
 async def test_replay_fix_verdict_is_deterministic(monkeypatch):
-    import cassandra.replay as rp
+    import cassandra_ai.replay as rp
 
     _boom(monkeypatch)
 
@@ -170,7 +170,7 @@ async def test_replay_fix_verdict_is_deterministic(monkeypatch):
 
 
 async def test_redteam_before_after_with_grounding(monkeypatch):
-    import cassandra.redteam as rt
+    import cassandra_ai.redteam as rt
 
     _boom(monkeypatch)
 

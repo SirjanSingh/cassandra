@@ -3,7 +3,7 @@
 The Arize track awards bonus points to agents that "use their own observability data
 to improve over time." This closes that loop literally: the meta-agent runs the
 labeled trap library through the live Patient, asks its own Diagnostician to judge each
-turn, and scores the verdicts against ground truth (cassandra/traps.py) — producing a
+turn, and scores the verdicts against ground truth (cassandra_ai/traps.py) — producing a
 diagnostic-accuracy Scorecard. The watcher, now watching itself.
 
 All Patient calls use session_id="test" so the Watcher filters them out (no self-

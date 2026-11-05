@@ -18,9 +18,9 @@ from pydantic import BaseModel, Field
 from sse_starlette.sse import EventSourceResponse
 
 import asyncio
-from cassandra.config import get_settings
-from cassandra.events import bus
-from cassandra.loop_agent import SupervisionPipeline
+from cassandra_ai.config import get_settings
+from cassandra_ai.events import bus
+from cassandra_ai.loop_agent import SupervisionPipeline
 
 app = FastAPI(title="Cassandra Dashboard")
 
@@ -33,7 +33,7 @@ _WEB_DIST = Path(__file__).resolve().parent.parent / "web" / "dist"
 
 @app.on_event("startup")
 def start_pipeline_watcher():
-    from cassandra.instrumentation import init_self_tracing
+    from cassandra_ai.instrumentation import init_self_tracing
 
     init_self_tracing()  # trace Cassandra's own reasoning into the cassandra-meta project
 
@@ -87,7 +87,7 @@ async def selfeval() -> dict:
 
     The introspection / self-improvement signal the Arize track rewards.
     """
-    from cassandra.selfeval import SelfEvaluator
+    from cassandra_ai.selfeval import SelfEvaluator
 
     try:
         # concurrency=1: low-quota Vertex projects 429 under any burst; the llm-layer

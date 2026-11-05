@@ -15,7 +15,7 @@ and the reason matters more than the bug.
 
 ### 1.1 The bug: the demo seeder poisons its own pipeline
 
-`cassandra/run_once.py` seeds the incident with:
+`cassandra_ai/run_once.py` seeds the incident with:
 
 ```python
 message = (
@@ -97,7 +97,7 @@ blocks the bad patch from shipping, this is a defensible security story worth pi
 
 ## Part 2 — What this looks like at a real company
 
-Nothing in `cassandra/` imports `patient/`. A company plugs in with exactly three things:
+Nothing in `cassandra_ai/` imports `patient/`. A company plugs in with exactly three things:
 
 1. an **adapter endpoint** (`examples/adapter_template.py` — the `/chat` contract),
 2. a **prompt file** (`BASELINE_PROMPT_FILE`),

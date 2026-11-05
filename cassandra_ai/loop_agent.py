@@ -48,7 +48,7 @@ class SupervisionPipeline:
             inc = await self.rootcause.analyze(inc)          # why it broke
             inc = await self.synthesizer.synthesize(inc)      # eval generation
             # Resolve the supervised agent's CURRENT prompt once (file/trace/demo —
-            # cassandra/baseline.py); Evaluator and Patcher both work from it.
+            # cassandra_ai/baseline.py); Evaluator and Patcher both work from it.
             inc.baseline_prompt = resolve_baseline_prompt(inc.span)
             inc = await self.evaluator.run_baseline(inc, inc.baseline_prompt)
             inc = await self.patcher.propose(inc)             # prompt fixing

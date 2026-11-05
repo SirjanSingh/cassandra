@@ -19,8 +19,8 @@ from opentelemetry.trace import SpanKind
 from pydantic import BaseModel
 from pydantic import Field as PydanticField
 
-from cassandra.config import get_settings
-from cassandra.llm import _gen_with_retry
+from cassandra_ai.config import get_settings
+from cassandra_ai.llm import _gen_with_retry
 
 from .instrumentation import init_tracing
 from .tools import TOOLSPECS, get_refund_policy, lookup_order
@@ -51,20 +51,23 @@ def resolve_override(
     """Decide whether to honor a caller-supplied system-prompt override (SECURITY).
 
     `system_override` replaces the whole system prompt of a tool-using agent — a
-    prompt-injection / instruction-override surface. Only Cassandra's sandboxed
-    replay/eval/red-team path legitimately uses it. Two gates:
+    prompt-injection / instruction-override surface. Only Cassandra's
+    replay/eval/red-team/gate path legitimately uses it. It is honored only when ALL hold:
 
-    1. session_id == "test" (also keeps these spans out of the Watcher).
-    2. When REPLAY_SHARED_SECRET is set (any public deployment), the caller must also
-       present it in the X-Cassandra-Token header. session_id alone is attacker-
-       controlled on an unauthenticated endpoint, so the secret is what actually
-       prevents prompt hijacking on Cloud Run.
+    1. session_id == "test" (also keeps these spans out of the Watcher);
+    2. REPLAY_SHARED_SECRET is configured on this service — no secret means the
+       override is NEVER honored (fail closed: session_id alone is attacker-controlled
+       on an unauthenticated endpoint, and those spans are hidden from the Watcher);
+    3. the caller presents the same secret in the X-Cassandra-Token header.
     """
-    if session_id != "test":
+    if not system_override or session_id != "test":
         return None
     secret = get_settings().replay_shared_secret
-    # Constant-time compare: a plain `token != secret` leaks length/prefix via timing.
-    if secret and not hmac.compare_digest(token or "", secret):
+    if not secret or not token:
+        return None
+    # Constant-time compare on bytes: `!=` leaks length/prefix via timing, and
+    # compare_digest raises TypeError on non-ASCII str input (header values may be).
+    if not hmac.compare_digest(token.encode("utf-8"), secret.encode("utf-8")):
         return None
     return system_override
 
@@ -91,6 +94,10 @@ class ChatResponse(BaseModel):
     # SUCCESSFUL tool call (ok) or fabricated over a missing/errored one (hallucination
     # / tool_failure). Without this the judge only sees a fluent reply and over-flags.
     tool_calls: list = []
+    # Whether a requested system_override was actually used. Lets Cassandra detect a
+    # refused override (e.g. REPLAY_SHARED_SECRET mismatch) instead of silently scoring
+    # the live prompt as if it were the candidate.
+    override_applied: bool = False
 
 
 def _gemini_tools() -> list[types.Tool]:
@@ -119,9 +126,9 @@ async def chat(
     s = get_settings()
     _t0 = time.perf_counter()
 
-    # SECURITY: honor a system-prompt override only on Cassandra's sandboxed
-    # replay/eval/red-team path (session_id=="test" + shared-secret header when
-    # REPLAY_SHARED_SECRET is configured); ignore it for any other caller.
+    # SECURITY: honor a system-prompt override only on Cassandra's replay/eval/red-team
+    # path (session_id=="test" + the REPLAY_SHARED_SECRET header; no secret configured =>
+    # never); ignore it for any other caller.
     override = resolve_override(req.system_override, req.session_id, x_cassandra_token)
 
     if s.is_openai or s.is_openrouter:
@@ -218,6 +225,7 @@ async def chat(
             total_tokens=total_tokens,
             latency_ms=int((time.perf_counter() - _t0) * 1000),
             tool_calls=tool_log,
+            override_applied=bool(override),
         )
 
     if s.google_genai_use_vertexai:
@@ -235,7 +243,7 @@ async def chat(
     system_prompt = override or FRAGILE_SYSTEM_PROMPT
 
     with _tracer.start_as_current_span("patient.chat", kind=SpanKind.SERVER) as span:
-        # Attributes match cassandra.phoenix_mcp.normalize_span expectations.
+        # Attributes match cassandra_ai.phoenix_mcp.normalize_span expectations.
         span.set_attribute("input.value", req.message)
         span.set_attribute("openinference.span.kind", "LLM")
         span.set_attribute("patient.session_id", req.session_id)
@@ -306,6 +314,7 @@ async def chat(
         total_tokens=total_tokens,
         latency_ms=int((time.perf_counter() - _t0) * 1000),
         tool_calls=tool_log,
+        override_applied=bool(override),
     )
 
 

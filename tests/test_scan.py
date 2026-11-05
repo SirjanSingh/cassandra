@@ -6,9 +6,9 @@ import json
 
 import pytest
 
-from cassandra import cli, scan
-from cassandra.grounding import GroundingSpec, LookupRule
-from cassandra.models import FailureClass, Verdict
+from cassandra_ai import cli, scan
+from cassandra_ai.grounding import GroundingSpec, LookupRule
+from cassandra_ai.models import FailureClass, Verdict
 
 SPEC = GroundingSpec(
     lookups=[LookupRule(tool="get_fee", claims=["money"])],
@@ -65,7 +65,7 @@ async def test_rule_only_never_calls_the_llm(monkeypatch):
     async def boom(*a, **k):
         raise AssertionError("LLM must not be called in rule-only mode")
 
-    monkeypatch.setattr("cassandra.llm.structured", boom)
+    monkeypatch.setattr("cassandra_ai.llm.structured", boom)
     turns = [scan.Turn(id="t", answer="Fees vary.", tool_calls=[])]
     assert [r.status for r in await scan.scan(turns, SPEC)] == ["undecided"]
 
@@ -78,7 +78,7 @@ async def test_judge_decides_only_undecided_turns(monkeypatch):
         seen.append(prompt)
         return Verdict(failure_class=FailureClass.HALLUCINATION, confidence=0.9, rationale="made up")
 
-    monkeypatch.setattr("cassandra.diagnostician.llm.structured", fake_structured)
+    monkeypatch.setattr("cassandra_ai.diagnostician.llm.structured", fake_structured)
     turns = [
         scan.Turn(id="a", answer="The wire fee is $45.", tool_calls=[FOUND]),
         scan.Turn(id="b", answer="Fees vary by account.", tool_calls=[]),
@@ -120,7 +120,7 @@ def test_cli_points_light_installs_at_the_full_extra(monkeypatch, capsys):
     def missing():
         raise ModuleNotFoundError("No module named 'openai'", name="openai")
 
-    monkeypatch.setattr("cassandra.run_once.main", missing)
+    monkeypatch.setattr("cassandra_ai.run_once.main", missing)
     with pytest.raises(SystemExit) as e:
         cli.main(["run"])
     assert e.value.code == 1
@@ -129,15 +129,15 @@ def test_cli_points_light_installs_at_the_full_extra(monkeypatch, capsys):
 
 def test_cli_does_not_mask_missing_internal_modules(monkeypatch):
     def broken():
-        raise ModuleNotFoundError("No module named 'cassandra.nope'", name="cassandra.nope")
+        raise ModuleNotFoundError("No module named 'cassandra_ai.nope'", name="cassandra_ai.nope")
 
-    monkeypatch.setattr("cassandra.run_once.main", broken)
+    monkeypatch.setattr("cassandra_ai.run_once.main", broken)
     with pytest.raises(ModuleNotFoundError):
         cli.main(["run"])
 
 
 def test_cli_scan_requires_a_spec(tmp_path, monkeypatch, capsys):
-    monkeypatch.setattr("cassandra.config.get_settings",
+    monkeypatch.setattr("cassandra_ai.config.get_settings",
                         lambda: type("S", (), {"grounding_spec_file": None})())
     logs = _write(tmp_path, [{"answer": "a"}])
     with pytest.raises(SystemExit) as e:

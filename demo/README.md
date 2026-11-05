@@ -38,10 +38,10 @@ sure," but only a check against the receipts proves it actually did.*
 The demo is self-contained (the bot is scripted so it always works and always hallucinates
 on cue), but the **integration pattern is the real one**:
 
-| In the demo | In production (`cassandra/`) |
+| In the demo | In production (`cassandra_ai/`) |
 |---|---|
 | Scripted bot + tool results | Your real agent emitting OpenInference **traces** to Phoenix |
-| The JS `checkGrounding()` | `cassandra/grounding.py` + `oracle.py` (the deterministic checker) |
+| The JS `checkGrounding()` | `cassandra_ai/grounding.py` + `oracle.py` (the deterministic checker) |
 | The right-hand verdict cards | Phoenix **annotations** + the postmortem |
 | The ungrounded-rate metric | The KPI you'd alert & gate on |
 | Fragile → Hardened toggle | The Patcher's proposed fix (a human approves) |

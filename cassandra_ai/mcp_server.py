@@ -22,7 +22,7 @@ the headline tool that exercises the whole partner-MCP surface and now also retu
 paste-ready markdown postmortem. See docs/WORKFLOWS.md for end-to-end recipes (live
 supervision, CI gating, IDE copilot, on-call postmortems).
 
-Run it:  cassandra-mcp           (stdio)  — or  python -m cassandra.mcp_server
+Run it:  cassandra-mcp           (stdio)  — or  python -m cassandra_ai.mcp_server
 """
 
 from __future__ import annotations

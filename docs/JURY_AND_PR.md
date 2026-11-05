@@ -121,7 +121,7 @@ only** — it never pushes. Handy inside Claude Desktop / Cursor.
 
 | | Jury | PR |
 |---|---|---|
-| **New file** | `cassandra/jury.py` | `cassandra/pr.py` |
+| **New file** | `cassandra_ai/jury.py` | `cassandra_ai/pr.py` |
 | **Turn on** | `JURY_SIZE=3` in `.env` | run `cassandra pr <id>` |
 | **Default** | off (single judge) | manual only |
 | **MCP tool** | `diagnose_jury` | `prepare_fix_pr` (draft) |

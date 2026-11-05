@@ -18,17 +18,18 @@ Full architecture: see `docs/CODEBASE_MAP.md` and `docs/SYSTEM_DESIGN.md` in the
 ## 2. Install
 
 ```bash
-python -m venv .venv           # Python 3.11 or 3.12
+python -m venv .venv           # Python 3.11, 3.12 or 3.13
 # Windows:  .venv\Scripts\activate      macOS/Linux:  source .venv/bin/activate
 pip install "cassandra-ai[full]"   # the full pipeline; plain `cassandra-ai` is the light scan-only install
 ```
 
-> The import package is `cassandra`; the distribution is `cassandra-ai`.
+> The import package is `cassandra_ai` (renamed from `cassandra` in 0.4.0, which clashed with
+> the Apache Cassandra driver); the distribution is `cassandra-ai`; the command is `cassandra`.
 
 ## 3. Smoke test (no keys, no infra — 1 minute)
 
 ```bash
-cassandra            # should print the "Cassandra" ASCII banner + a command list, v0.2.0
+cassandra            # should print the "Cassandra" ASCII banner + a command list, v0.4.0
 cassandra --help
 cassandra dashboard --help
 ```
@@ -40,26 +41,37 @@ useful data point — please report your **OS + Python version** and whether thi
 
 Cassandra needs three things to do real work:
 
-1. **An LLM key.** Backend is chosen by env (precedence in `cassandra/llm.py`):
+1. **An LLM key.** Backend is chosen by env (precedence in `cassandra_ai/llm.py`):
    `OPENAI_API_KEY` → OpenAI; else a `GEMINI_API_KEY` starting `sk-or-` → OpenRouter; else
    Vertex Gemini. Easiest: a free Gemini key from https://aistudio.google.com.
 2. **A Phoenix instance** — run one locally in Docker:
    `docker run -p 6006:6006 arizephoenix/phoenix`
 3. **Node / npx** — Cassandra shells out to `npx @arizeai/phoenix-mcp` to talk to Phoenix.
 
-Create a `.env` in your working directory (see the repo's `.env.example` for every key):
+The demo agent (ShopBot) and the dashboard run from a source checkout (since 0.4.0 the wheel
+ships only the `cassandra_ai` package):
+
+```bash
+git clone https://github.com/SirjanSingh/cassandra && cd cassandra
+pip install -e ".[full]"
+```
+
+Create a `.env` in the checkout (see `.env.example` for every key):
 
 ```bash
 GEMINI_API_KEY=your-key-here
 GOOGLE_GENAI_USE_VERTEXAI=false
 PHOENIX_BASE_URL=http://localhost:6006
 PATIENT_ENDPOINT=http://localhost:8082/chat
+# Required for eval/replay/red-team: ShopBot refuses candidate prompts without it.
+# Generate: python -c "import secrets; print(secrets.token_urlsafe(32))"
+REPLAY_SHARED_SECRET=paste-a-generated-value
 ```
 
-Then, in three terminals (all from the venv):
+Then, in three terminals (all from the checkout, in the venv):
 
 ```bash
-# 1. the victim agent (ShopBot) — ships inside the wheel
+# 1. the victim agent (ShopBot)
 python -m uvicorn patient.agent:app --port 8082
 
 # 2. the dashboard / cockpit  (open http://localhost:8085/cockpit)

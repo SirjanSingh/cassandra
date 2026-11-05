@@ -24,17 +24,20 @@ Cassandra has two layers, with different integration costs:
 
 ### The active contract
 
-All of Cassandra's live probes go through one module, `cassandra/patient_client.py`, so this is the entire contract:
+All of Cassandra's live probes go through one module, `cassandra_ai/patient_client.py`, so this is the entire contract:
 
 ```
 POST {PATIENT_ENDPOINT}
   body:    {"message": str, "session_id": "test", "system_override": str?}
-  headers: X-Cassandra-Token: <REPLAY_SHARED_SECRET>   (when configured)
+  headers: X-Cassandra-Token: <REPLAY_SHARED_SECRET>
   reply:   {"reply": str, "total_tokens": int, "latency_ms": int,
-            "tool_calls": [{"name", "args", "result"}, ...]?}
+            "tool_calls": [{"name", "args", "result"}, ...]?,
+            "override_applied": bool?}
 ```
 
-`tool_calls` is optional but strongly recommended: when your adapter returns the tool ledger, Cassandra scores eval/replay/red-team/gate runs with its **deterministic grounding oracle** (`cassandra/grounding.py`, configured per agent via `GROUNDING_SPEC_FILE`) instead of an LLM judge — reproducible verdicts that cite the exact tool call. Without it, scoring falls back to the LLM judge.
+**`system_override` must fail closed.** It replaces your agent's whole system prompt, so honor it only when `session_id == "test"` AND `REPLAY_SHARED_SECRET` is configured on the adapter AND `X-Cassandra-Token` matches it (constant-time compare). With no secret configured, refuse it: otherwise anyone who can reach the endpoint can rewrite your production prompt, and Cassandra's Watcher ignores `session_id == "test"` traffic, so it wouldn't see it. Return `override_applied` so Cassandra can tell when an override was refused: it then stops with an `OverrideRejectedError` (the CI gate exits 2) instead of silently scoring your live prompt as the candidate.
+
+`tool_calls` is optional but strongly recommended: when your adapter returns the tool ledger, Cassandra scores eval/replay/red-team/gate runs with its **deterministic grounding oracle** (`cassandra_ai/grounding.py`, configured per agent via `GROUNDING_SPEC_FILE`) instead of an LLM judge — reproducible verdicts that cite the exact tool call. Without it, scoring falls back to the LLM judge.
 
 Plus two span attributes on the traces your agent exports: `patient.session_id` and `patient.prompt_variant` (`"candidate"` when a `system_override` was applied). They are what keeps Cassandra from supervising its own probe traffic.
 
@@ -48,10 +51,10 @@ PATIENT_ENDPOINT=http://my-agent:8082/chat    # your adapter endpoint (active la
 PATIENT_PROMPT_NAME=my-agent-system           # Phoenix prompt name for patched versions
 BASELINE_PROMPT_FILE=prompts/system_prompt.txt
 GROUNDING_SPEC_FILE=grounding_spec.json       # your agent's grounding rules (deterministic oracle)
-REPLAY_SHARED_SECRET=<random>                 # same value on Cassandra and the adapter
+REPLAY_SHARED_SECRET=<random>                 # REQUIRED; same value on Cassandra and the adapter
 ```
 
-`BASELINE_PROMPT_FILE` tells Cassandra what your agent's *current* system prompt is (the thing it diffs patches against). If you skip it, Cassandra tries to extract the system message from the failing trace itself (`llm.input_messages`), and only falls back to the bundled ShopBot prompt in demo mode — the resolution chain lives in `cassandra/baseline.py`.
+`BASELINE_PROMPT_FILE` tells Cassandra what your agent's *current* system prompt is (the thing it diffs patches against). If you skip it, Cassandra tries to extract the system message from the failing trace itself (`llm.input_messages`), and only falls back to the bundled ShopBot prompt in demo mode — the resolution chain lives in `cassandra_ai/baseline.py`.
 
 ## Workflow 1: IDE copilot (zero infrastructure)
 
@@ -111,7 +114,7 @@ Each case runs through your live agent (staging endpoint) under the prompt being
 
 ## Workflow 3: Continuous live supervision
 
-The full loop, running unattended against production traces:
+The full loop, running unattended against production traces (from a source checkout: the dashboard and ShopBot are not in the PyPI wheel):
 
 ```bash
 uvicorn patient.agent:app --port 8082      # your agent (or the bundled ShopBot)

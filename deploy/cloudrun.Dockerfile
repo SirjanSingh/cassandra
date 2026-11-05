@@ -19,7 +19,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends nodejs npm \
     && rm -rf /var/lib/apt/lists/*
 
 COPY pyproject.toml LICENSE README.md ./
-COPY cassandra ./cassandra
+COPY cassandra_ai ./cassandra_ai
 COPY patient ./patient
 # dashboard/ui/index.html is self-contained (no build step) and ships in this copy.
 COPY dashboard ./dashboard

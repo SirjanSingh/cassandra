@@ -32,7 +32,7 @@ does not measure the code path that runs in production.** Details in §5.
 
 ## 2. What Cassandra actually evaluates today
 
-The pipeline (`cassandra/loop_agent.py:SupervisionPipeline.run_once`) threads one `Incident`
+The pipeline (`cassandra_ai/loop_agent.py:SupervisionPipeline.run_once`) threads one `Incident`
 through 9 stages. Six of them make an LLM-as-judge call:
 
 | # | Call site | Question the judge is asked | Sees tool results? | Temp |

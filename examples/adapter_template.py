@@ -16,25 +16,35 @@ Then point Cassandra at it:
     PATIENT_PROMPT_NAME=<name for patched prompt versions in Phoenix>
     BASELINE_PROMPT_FILE=<file holding your current system prompt>  # or let
     #   Cassandra extract it from your traces' llm.input_messages
-    REPLAY_SHARED_SECRET=<random string, same value on both services>
+    REPLAY_SHARED_SECRET=<random string, same value on both services>  # REQUIRED for
+    #   eval/replay/red-team/gate: without it this adapter refuses every override.
+    #   Generate one: python -c "import secrets; print(secrets.token_urlsafe(32))"
 
-The contract (also documented in cassandra/patient_client.py):
+The contract (also documented in cassandra_ai/patient_client.py):
 
     POST /chat
       body:    {"message": str, "session_id": str, "system_override": str?}
       headers: X-Cassandra-Token: <REPLAY_SHARED_SECRET>
       reply:   {"reply": str, "total_tokens": int, "latency_ms": int,
-                "tool_calls": [{"name", "args", "result"}, ...]?}
+                "tool_calls": [{"name", "args", "result"}, ...]?,
+                "override_applied": bool}
 
 `tool_calls` is optional but strongly recommended: return your agent's tool ledger
 (name/args/result per call) and Cassandra scores eval/replay/red-team/gate runs with
 its deterministic grounding oracle instead of an LLM judge (see GROUNDING_SPEC_FILE).
 
+`override_applied` tells Cassandra whether the candidate prompt was really used. When
+it is false for a request that carried an override, Cassandra stops with a clear error
+instead of silently scoring your live prompt as if it were the candidate.
+
 Two non-negotiable rules this template already implements:
 
 1. SECURITY — `system_override` swaps your agent's system prompt for one request.
-   Honor it ONLY when session_id == "test" AND the shared secret matches;
-   otherwise it is a prompt-injection surface on a public endpoint.
+   Honor it ONLY when session_id == "test" AND REPLAY_SHARED_SECRET is set on this
+   service AND the X-Cassandra-Token header matches it (constant-time compare). With no
+   secret configured it is NEVER honored (fail closed): otherwise anyone who can reach
+   this endpoint can replace your production system prompt, and Cassandra's Watcher
+   ignores session_id == "test" traffic, so it would not even see it happen.
 2. FEEDBACK-LOOP SAFETY — tag spans with `patient.session_id` and
    `patient.prompt_variant` so Cassandra's Watcher can filter out its own probe
    traffic instead of supervising itself forever.
@@ -42,6 +52,7 @@ Two non-negotiable rules this template already implements:
 
 from __future__ import annotations
 
+import hmac
 import os
 import time
 
@@ -81,11 +92,15 @@ class ChatRequest(BaseModel):
 
 
 def _resolve_override(req: ChatRequest, token: str | None) -> str | None:
-    """Honor system_override only on Cassandra's sandboxed test path."""
-    if req.session_id != "test":
+    """Honor system_override only on Cassandra's authenticated test path. Fails closed."""
+    if not req.system_override or req.session_id != "test":
         return None
-    secret = os.environ.get("REPLAY_SHARED_SECRET")
-    if secret and token != secret:
+    secret = (os.environ.get("REPLAY_SHARED_SECRET") or "").strip()
+    if not secret or not token:
+        return None  # no secret configured => never honored
+    # Constant-time compare on bytes: `!=` leaks length/prefix via timing, and
+    # compare_digest raises TypeError on non-ASCII str input (header values may be).
+    if not hmac.compare_digest(token.encode("utf-8"), secret.encode("utf-8")):
         return None
     return req.system_override
 
@@ -111,6 +126,7 @@ async def chat(req: ChatRequest, x_cassandra_token: str | None = Header(default=
         "reply": reply,
         "total_tokens": total_tokens,
         "latency_ms": int((time.perf_counter() - t0) * 1000),
+        "override_applied": override is not None,
     }
 
 

@@ -184,7 +184,7 @@ class Scorecard(BaseModel):
 
 
 class JuryReport(BaseModel):
-    """Outcome of a multi-judge jury (cassandra/jury.py).
+    """Outcome of a multi-judge jury (cassandra_ai/jury.py).
 
     When jury_size > 1 the LLM-as-judge is convened as a PANEL: K independent
     inferences (spread over temperature so they don't collapse to one sample) are
@@ -242,7 +242,7 @@ class Incident(BaseModel):
     dataset_examples: list[DatasetExample] = Field(default_factory=list)
     experiment: ExperimentResult | None = None
     # The supervised agent's CURRENT prompt, resolved once per incident
-    # (cassandra/baseline.py) so Evaluator and Patcher diff against the same text.
+    # (cassandra_ai/baseline.py) so Evaluator and Patcher diff against the same text.
     baseline_prompt: str | None = None
     candidate_prompt: str | None = None
     candidate_prompt_version: str | None = None

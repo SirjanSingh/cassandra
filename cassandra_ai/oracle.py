@@ -3,9 +3,9 @@
 One scoring contract for Evaluator, RedTeam, TraceReplay, and the CI gate — a
 three-layer cascade, cheapest and most reproducible first:
 
-1. LAYER 1 (PRIMARY) — deterministic grounding verdict (`cassandra/grounding.py`)
+1. LAYER 1 (PRIMARY) — deterministic grounding verdict (`cassandra_ai/grounding.py`)
    over the STRUCTURED tool ledger. Reproducible, free, cites the tool call.
-2. LAYER 2 (NLI) — `cassandra/nli.py`. When the rule can't decide but the agent
+2. LAYER 2 (NLI) — `cassandra_ai/nli.py`. When the rule can't decide but the agent
    supplied free-text `evidence` (a retrieved RAG passage), an entailment model
    checks whether the evidence supports/contradicts the answer. Cheap, no LLM,
    language-agnostic (point NLI_MODEL at a multilingual checkpoint for Hindi).
@@ -14,7 +14,7 @@ three-layer cascade, cheapest and most reproducible first:
 
 The spec is resolved per deployment: `GROUNDING_SPEC_FILE` (operator-provided JSON)
 with the bundled ShopBot spec as the demo fallback — the same pattern as
-`BASELINE_PROMPT_FILE` in `cassandra/baseline.py`.
+`BASELINE_PROMPT_FILE` in `cassandra_ai/baseline.py`.
 """
 
 from __future__ import annotations

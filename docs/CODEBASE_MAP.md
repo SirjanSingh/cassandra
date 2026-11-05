@@ -25,7 +25,7 @@ Cloud Rapid Agent Hackathon entry (Arize track).
 | Run (3 procs) | `uvicorn patient.agent:app --port 8082 --reload` · `uvicorn dashboard.main:app --port 8085 --reload` · `python scripts/run_pipeline.py` |
 | Frontend dev | `cd web && npm run dev` (build: `npm run build`) |
 | Test | `pytest` (offline; LLM+MCP mocked) — one file: `pytest tests/test_diagnostician.py` |
-| Lint / typecheck | `ruff check .` · `mypy cassandra patient dashboard` |
+| Lint / typecheck | `ruff check .` · `mypy cassandra_ai patient dashboard` |
 | MCP server | `cassandra-mcp` (stdio) · CI gate: `cassandra-gate` |
 | Deploy | `deploy/cloudbuild.yaml` + `deploy/cloudrun.Dockerfile` / `deploy/agent_engine.py` |
 
@@ -33,12 +33,12 @@ Cloud Rapid Agent Hackathon entry (Arize track).
 - `patient/agent.py` (`app`) — the fragile victim agent "ShopBot"; FastAPI `/chat`. Run on :8082.
 - `dashboard/main.py` (`app`) — dashboard + SSE cockpit; also runs a 5s in-process supervision loop. :8085.
 - `scripts/run_pipeline.py` — drives ONE full end-to-end supervision cycle.
-- `cassandra/loop_agent.py` (`SupervisionPipeline.run_once`) — the 8-stage pipeline core.
-- `cassandra/mcp_server.py` (`main` → `cassandra-mcp`) — published MCP server, reuses pipeline stages.
-- `cassandra/gate.py` (`main` → `cassandra-gate`) — CI prompt-regression gate.
+- `cassandra_ai/loop_agent.py` (`SupervisionPipeline.run_once`) — the 8-stage pipeline core.
+- `cassandra_ai/mcp_server.py` (`main` → `cassandra-mcp`) — published MCP server, reuses pipeline stages.
+- `cassandra_ai/gate.py` (`main` → `cassandra-gate`) — CI prompt-regression gate.
 
 ## Directory map
-- `cassandra/` — the meta-agent; one module per pipeline stage (see flow below) + `config.py`, `llm.py`, `models.py`, `phoenix_mcp.py` gateway.
+- `cassandra_ai/` — the meta-agent; one module per pipeline stage (see flow below) + `config.py`, `llm.py`, `models.py`, `phoenix_mcp.py` gateway.
 - `patient/` — the supervised demo agent (ShopBot): `agent.py`, intentionally flaky `tools.py`, `instrumentation.py`.
 - `dashboard/` — FastAPI dashboard + SSE; `ui/index.html` is the self-contained `/cockpit` fallback.
 - `web/` — primary React/Vite frontend (edit `web/src/**`); built by Dockerfile `webbuild` stage, served at `/`.
@@ -51,16 +51,16 @@ Cloud Rapid Agent Hackathon entry (Arize track).
 One `Incident` object threads through and is enriched in place at each stage:
 `Watcher → Diagnostician → RootCauseAnalyst → Synthesizer → Evaluator(baseline) → Patcher → Evaluator(candidate) → TraceReplay → RedTeam`
 One incident per cycle, deduped by span id. Live probes to the supervised agent go through
-`cassandra/patient_client.py:ask_patient()`.
+`cassandra_ai/patient_client.py:ask_patient()`.
 
 ## Gotchas & risky files
 - **`.env`/settings changes need a server restart** — `get_settings()` is cached (`reload_settings()` for tests).
-- **All Phoenix MCP access goes through `cassandra/phoenix_mcp.py`** (NFR-10). No live create/run-experiment tool → eval runs live in `evaluator.py`, not as a Phoenix experiment.
+- **All Phoenix MCP access goes through `cassandra_ai/phoenix_mcp.py`** (NFR-10). No live create/run-experiment tool → eval runs live in `evaluator.py`, not as a Phoenix experiment.
 - **All env via `config.py:get_settings()`; all LLM via `llm.py`** (`structured()`/`text()`) — never read `os.environ` or call SDKs directly.
 - **Vertex Gemini traps:** hold the genai client in a local across `await` (bare temporary is GC'd → "client closed"); use flash-lite (flash was DSQ-exhausted); location must be a real region, never `global`.
 - **Feedback-loop safety:** Cassandra probes with `session_id="test"` and the `Watcher` filters those out — don't remove the filter or it self-supervises infinitely.
-- **Never import from `patient/` inside `cassandra/`** — the pipeline is agent-agnostic; baseline resolved by `cassandra/baseline.py`.
-- `REPLAY_SHARED_SECRET` must be set on **both** services or replay/eval/red-team silently lose the `system_override`.
+- **Never import from `patient/` inside `cassandra_ai/`** — the pipeline is agent-agnostic; baseline resolved by `cassandra_ai/baseline.py`.
+- `REPLAY_SHARED_SECRET` must be set on **both** services or replay/eval/red-team/gate get no `system_override`: the Patient refuses it without a configured secret (fail closed), and Cassandra raises `OverrideRejectedError` rather than score the live prompt.
 
 ## Where to learn more
 - `CLAUDE.md` (root) — conventions + session protocol. `docs/SYSTEM_DESIGN.md` — deep architecture.

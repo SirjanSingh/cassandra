@@ -36,13 +36,13 @@ server** so any other agent/IDE can call it.
 | Component | Path | What it is |
 |-----------|------|-----------|
 | **The Patient** | `patient/` | Fragile ShopBot. FastAPI `/chat`, flaky tools, OpenInference spans → `patient-prod`. |
-| **Cassandra pipeline** | `cassandra/` | The 8-stage supervision loop + the ADK runtime shell. |
-| **Phoenix gateway** | `cassandra/phoenix_mcp.py` | The single module that talks the partner MCP (NFR-10). |
-| **cassandra-mcp** | `cassandra/mcp_server.py` | Cassandra's *own* published MCP server (5 tools). |
+| **Cassandra pipeline** | `cassandra_ai/` | The 8-stage supervision loop + the ADK runtime shell. |
+| **Phoenix gateway** | `cassandra_ai/phoenix_mcp.py` | The single module that talks the partner MCP (NFR-10). |
+| **cassandra-mcp** | `cassandra_ai/mcp_server.py` | Cassandra's *own* published MCP server (5 tools). |
 | **Dashboard** | `dashboard/` | FastAPI: serves the cockpit + the `/how` explainer, SSE feed, `/ask`, `/selfeval`. |
-| **Self-eval** | `cassandra/selfeval.py` + `cassandra/traps.py` | Grades Cassandra's own diagnoses vs. labeled ground truth. |
-| **Config** | `cassandra/config.py` | The one place env is read (`get_settings()`), backend selection. |
-| **LLM** | `cassandra/llm.py` | The one place LLM calls happen (`structured()`, `text()`), backend-agnostic. |
+| **Self-eval** | `cassandra_ai/selfeval.py` + `cassandra_ai/traps.py` | Grades Cassandra's own diagnoses vs. labeled ground truth. |
+| **Config** | `cassandra_ai/config.py` | The one place env is read (`get_settings()`), backend selection. |
+| **LLM** | `cassandra_ai/llm.py` | The one place LLM calls happen (`structured()`, `text()`), backend-agnostic. |
 
 The legacy React app under `web/` is **no longer wired in** (see §10).
 
@@ -58,14 +58,16 @@ from becoming a feedback loop where Cassandra supervises its own probes:
 
 1. **The Watcher drops `session_id=="test"` spans** (`watcher.py`) — so test traffic is never
    diagnosed.
-2. **The Patient only honors `system_override` on the `session_id=="test"` path**
-   (`patient/agent.py:resolve_override`) — so the override is both safe (see §9) and scoped.
+2. **The Patient only honors `system_override` on the authenticated `session_id=="test"`
+   path**: it also requires `REPLAY_SHARED_SECRET` configured on the Patient and presented in
+   `X-Cassandra-Token`, and refuses otherwise (fail closed; `patient/agent.py:resolve_override`)
+   — so the override is both safe (see §11) and scoped.
 
 ---
 
 ## 4. The Incident object (the spine)
 
-One `Incident` (`cassandra/models.py`) is created per failing span and **threads through every
+One `Incident` (`cassandra_ai/models.py`) is created per failing span and **threads through every
 stage**, getting enriched in place. By the end it carries: `span`, `verdict` + `severity`,
 `root_cause`, `dataset_id` + `dataset_examples`, `experiment` (baseline/candidate pass-rates +
 delta), `efficiency` (token/latency deltas), `candidate_prompt` + diff, `replay`, `redteam`, and
@@ -76,7 +78,7 @@ why the pipeline reads as a clean linear story.
 
 ## 5. Workflow A — the supervision pipeline (one incident)
 
-Orchestrated by `cassandra/loop_agent.py:SupervisionPipeline.run_once()`. Each stage is its own
+Orchestrated by `cassandra_ai/loop_agent.py:SupervisionPipeline.run_once()`. Each stage is its own
 module. "MCP tool" is the Phoenix partner tool the stage calls through `phoenix_mcp.py`.
 
 | # | Stage (module) | Input | What it does | Output | Phoenix MCP tool |
@@ -97,14 +99,14 @@ module. "MCP tool" is the Phoenix partner tool the stage calls through `phoenix_
 **Why evaluation is "live" and not a Phoenix experiment:** the `@arizeai/phoenix-mcp` surface has
 **no create/run-experiment tool** (only read-side `get-experiment-by-id`,
 `list-experiments-for-dataset`). So `evaluator.py` runs the probes against the live agent for real,
-honest numbers. `cassandra/phoenix_experiments.py` *optionally* also records a first-class Phoenix
+honest numbers. `cassandra_ai/phoenix_experiments.py` *optionally* also records a first-class Phoenix
 experiment via the Python client, gated behind `PHOENIX_EXPERIMENTS_ENABLED` and fully guarded.
 
 ---
 
 ## 6. Workflow B — the published `cassandra-mcp` server
 
-`cassandra/mcp_server.py` (FastMCP, console entry `cassandra-mcp`, stdio) re-exposes the same
+`cassandra_ai/mcp_server.py` (FastMCP, console entry `cassandra-mcp`, stdio) re-exposes the same
 `Diagnostician.judge`, `Synthesizer`, `Patcher` code as MCP tools — one source of truth:
 
 | Tool | Input → Output | Touches Phoenix? |
@@ -156,7 +158,7 @@ loop (the demo cadence; in production a Cloud Function drives it). Each stage pu
 
 ## 9. LLM backend selection (and the caching gotcha)
 
-All model calls go through `cassandra/llm.py`. Backend is chosen at runtime from env, in this
+All model calls go through `cassandra_ai/llm.py`. Backend is chosen at runtime from env, in this
 precedence (`config.py`):
 
 1. `OPENAI_API_KEY` set → **OpenAI** (`gpt-4o-mini`). *This is the current default* — it avoids the
@@ -195,7 +197,7 @@ The flaw list that kicked off the 2026-06-05 session was partly stale. Ground-tr
 | — | Diagnostician accuracy ≈ 18% (prior session's open item) | **Real, biggest item** | Plumbed tool results into the judge, sharpened the taxonomy, made it deterministic → **100%** on the trap suite (18→64→91→100). ⚠️ **See F1 below — this number measured the self-eval path only.** |
 | — | **F1: the 100% measured the wrong code path** | **Real (fixed on `cassandra-v2`)** | `normalize_span` read a top-level `tool_calls` key that never existed, so in **production** the Diagnostician judged with **no** tool ledger (the self-eval HTTP path *did* pass tools — hence 100%). Fixed via `_extract_tool_calls` (telemetry oracle / `EVAL_PLAN.md` L0); production path now feeds the ledger to the judge. **Re-run `selfeval` to record the true production-path accuracy as the new baseline.** |
 | — | Patient (gpt-4o-mini) no longer hallucinated → demo broken | **Discovered this session** | Strengthened `FRAGILE_SYSTEM_PROMPT` so the model fabricates on missing data again (the canonical failure). |
-| — | `system_override` was an open prompt-override surface | **Real (security)** | Gated to `session_id=="test"` via `resolve_override` (§11). |
+| — | `system_override` was an open prompt-override surface | **Real (security)** | Gated to `session_id=="test"` + a required `REPLAY_SHARED_SECRET` (fail closed since 0.4.0) via `resolve_override` (§11). |
 | — | `LoopAgent` deprecation warning (google-adk) | Cosmetic | Left as-is to avoid churn before ship; migrate to `Workflow` later. |
 
 ---
@@ -209,7 +211,7 @@ bar is "nothing embarrassing." Findings and actions:
 |------|---------|--------|
 | Secrets in git | **Clean** — git history and tracked files contain no keys; `.env` is gitignored, `.env.example` has only placeholders. | Keep `.env` untracked; never log secrets. |
 | Live keys in working tree | Real Gemini/OpenAI/Phoenix keys live in the local `.env` and were surfaced in a working session. | **Rotate** the surfaced keys (owner action — see checklist). |
-| `system_override` | Was honored for *any* caller → an unauthenticated party could replace ShopBot's whole system prompt and drive its tools (prompt-injection / instruction override). | **Fixed** — `resolve_override` honors it only on `session_id=="test"`; covered by `tests/test_patient_security.py` and verified live. |
+| `system_override` | Was honored for *any* caller → an unauthenticated party could replace ShopBot's whole system prompt and drive its tools (prompt-injection / instruction override). | **Fixed (fail closed since 0.4.0)** — `resolve_override` honors it only on `session_id=="test"` with `REPLAY_SHARED_SECRET` configured and presented in `X-Cassandra-Token` (constant-time compare). Before 0.4.0 it fell open whenever the secret was unset, and the copyable `examples/adapter_template.py` did too; both now refuse. Covered by `tests/test_patient_security.py`. |
 | Patient endpoint exposure | `/chat` is unauthenticated by design for the demo. | In production, put the Patient behind network/auth; the override gate is the in-app backstop. |
 | Dashboard proxy | `/ask` forwards to `PATIENT_ENDPOINT` from config (not user-supplied) → no SSRF. | None. |
 | Dependencies | Pinned to minimums in `pyproject.toml`. | Run `pip-audit` before ship (follow-up). |

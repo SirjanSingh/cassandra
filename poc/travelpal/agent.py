@@ -7,7 +7,7 @@ Unlike ShopBot (patient/), nothing here is rigged:
     weather), so every failure is a genuine one: ECB doesn't publish PKR/AED/NGN...,
     Open-Meteo only forecasts 16 days ahead, misspelled towns don't geocode.
 
-It speaks Cassandra's HTTP contract (cassandra/patient_client.py), so the same agent
+It speaks Cassandra's HTTP contract (cassandra_ai/patient_client.py), so the same agent
 can be supervised end-to-end:
 
     uvicorn poc.travelpal.agent:app --port 8090

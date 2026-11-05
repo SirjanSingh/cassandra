@@ -106,11 +106,13 @@ flowchart TB
 
 ## Quickstart (pip)
 
-Two installs, depending on what you need (the import package stays `cassandra`):
+Two installs, depending on what you need. The command is `cassandra`; the Python import
+package is `cassandra_ai` (renamed in 0.4.0: `cassandra` is the Apache Cassandra driver's
+import name, see [CHANGELOG.md](CHANGELOG.md)):
 
 ```bash
 pip install cassandra-ai            # light: the CLI + offline `cassandra scan` (3 small deps)
-pip install "cassandra-ai[full]"    # everything: live pipeline, dashboard, gate, pr, mcp
+pip install "cassandra-ai[full]"    # live pipeline, gate, pr, mcp (dashboard: source checkout)
 cassandra                           # banner + command list
 ```
 
@@ -120,7 +122,7 @@ command that needs the full stack tells you to add `[full]` instead of crashing.
 **v0.1 is dev-audience, not turnkey** — a fresh install still needs a few things wired up:
 
 - **Python 3.11+**
-- **An LLM key.** Backend is chosen by env (`cassandra/llm.py` precedence): `OPENAI_API_KEY`
+- **An LLM key.** Backend is chosen by env (`cassandra_ai/llm.py` precedence): `OPENAI_API_KEY`
   → OpenAI; else `GEMINI_API_KEY` starting `sk-or-` → OpenRouter; else Vertex Gemini.
 - **A Phoenix instance** — [Phoenix Cloud](https://phoenix.arize.com) or local:
   `docker run -p 6006:6006 arizephoenix/phoenix` (set `PHOENIX_*` env accordingly).
@@ -138,14 +140,16 @@ PHOENIX_COLLECTOR_ENDPOINT=http://localhost:6006
 | Command | What it does |
 |---------|--------------|
 | `cassandra` | Print the banner + list of commands. |
-| `cassandra dashboard [--port N] [--host H]` | Run the dashboard + SSE cockpit (default port 8085). |
+| `cassandra dashboard [--port N] [--host H]` | Run the dashboard + SSE cockpit from a source checkout (default port 8085). |
 | `cassandra run` | Drive one full end-to-end supervision cycle. |
 | `cassandra scan logs.jsonl --spec spec.json` | Check exported chat logs for answers no tool backed. Rule-only, no LLM, no Phoenix (`--judge` adds the LLM for undecided turns). See [docs/SCAN.md](docs/SCAN.md). |
 | `cassandra gate ...` | CI prompt-regression gate (args pass through to `cassandra-gate`). |
 | `cassandra mcp` | Run Cassandra's MCP server over stdio (Claude Desktop / Cursor). |
 
-> pip users get the self-contained cockpit (`dashboard/ui/index.html`) served at `/cockpit`
-> and at `/` (the React `web/` UI is built only in the Docker image, not shipped in the wheel).
+> The dashboard and the ShopBot demo agent run from a source checkout; the wheel ships only
+> the `cassandra_ai` package (`cassandra dashboard` tells pip users how to get a checkout).
+> In a checkout, the self-contained cockpit (`dashboard/ui/index.html`) is served at
+> `/cockpit` and at `/` (the React `web/` UI is built only in the Docker image).
 
 ## See it work
 
@@ -159,7 +163,8 @@ and Cassandra scores itself.
 
 ```bash
 pip install -e ".[dev]"
-cp .env.example .env            # fill in Vertex/Gemini (or OpenAI) keys + Phoenix URLs
+cp .env.example .env            # fill in Vertex/Gemini (or OpenAI) keys + Phoenix URLs, and
+                                # REPLAY_SHARED_SECRET (needed by eval/replay/red-team)
 
 uvicorn patient.agent:app --port 8082 --reload   # 1. the Patient (ShopBot)
 uvicorn dashboard.main:app --port 8085 --reload  # 2. UI + SSE at :8085 (animated explainer at /how)
@@ -171,8 +176,13 @@ pytest                          # offline unit tests (LLM + MCP mocked)
 > The deployed UI is the **React app in `web/`** (built by the Docker `webbuild` stage and
 > served at `/`). The self-contained single-file cockpit (`dashboard/ui/index.html`) is
 > served at `/cockpit`, and is the automatic fallback at `/` when `web/dist` is absent — e.g.
-> the `pytest`/local commands above need no Node build. Public deploys must also set
-> `REPLAY_SHARED_SECRET` on both services (see `deploy/cloudbuild.yaml`).
+> the `pytest`/local commands above need no Node build.
+>
+> Eval, replay, red-team and the gate need `REPLAY_SHARED_SECRET` set to the same value for
+> Cassandra and the Patient, **locally too**. Without it the Patient (like any agent built
+> from `examples/adapter_template.py`) refuses every `system_override`, and Cassandra stops
+> with an `OverrideRejectedError` rather than score the live prompt as the candidate. Public
+> deploys set it via Secret Manager (see `deploy/cloudbuild.yaml`).
 
 ## Three ways to use it
 
@@ -219,7 +229,7 @@ Click the badge (it prompts for your key and registers the server), or add a ser
 
 ```bash
 pip install -e ".[full]"
-cassandra-mcp                 # or: python -m cassandra.mcp_server
+cassandra-mcp                 # or: python -m cassandra_ai.mcp_server
 ```
 
 And it's not ShopBot-only: point `PATIENT_PROJECT` / `PATIENT_ENDPOINT` at **your** agent —
@@ -253,7 +263,7 @@ PR that applies the patch. The `supervise_latest` MCP tool returns the same mark
 ## The faithfulness cascade (rule → NLI → LLM) + multilingual
 
 The pass/fail verdict runs a **three-layer cascade**, cheapest and most reproducible first
-(`cassandra/oracle.py`):
+(`cassandra_ai/oracle.py`):
 
 1. **Rule** (`grounding.py`) — deterministic check over the structured tool ledger; cites the
    exact tool call. Free, reproducible, no model.
@@ -288,11 +298,11 @@ Two **separate** agents that communicate *only* through Phoenix telemetry — th
 agent-agnostic and never imports from `patient/`.
 
 ```
-cassandra/
+cassandra_ai/
 ├── patient/              # the fragile "ShopBot" victim agent
 │   ├── agent.py          #   Gemini/OpenAI agent + FastAPI /chat + OpenInference spans
 │   └── tools.py          #   intentionally flaky get_refund_policy / lookup_order
-├── cassandra/            # the meta-agent (8-stage pipeline)
+├── cassandra_ai/            # the meta-agent (8-stage pipeline)
 │   ├── models.py         #   Incident (threaded through every stage), Verdict, Severity, …
 │   ├── phoenix_mcp.py    #   the single Phoenix MCP gateway
 │   ├── llm.py            #   Gemini / OpenAI / OpenRouter structured/text helper

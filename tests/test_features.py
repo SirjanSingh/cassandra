@@ -1,6 +1,6 @@
 """Offline tests for severity, efficiency, Phoenix-experiments guard, self-tracing."""
 
-from cassandra.models import (
+from cassandra_ai.models import (
     EfficiencyReport,
     FailureClass,
     Severity,
@@ -32,14 +32,14 @@ def test_efficiency_deltas():
 
 
 def test_register_experiment_flag_off(monkeypatch):
-    import cassandra.phoenix_experiments as pe
+    import cassandra_ai.phoenix_experiments as pe
 
     monkeypatch.setattr(pe, "get_settings", lambda: type("S", (), {"phoenix_experiments_enabled": False})())
     assert pe.register_experiment("ds", "prompt", "baseline") is None
 
 
 def test_register_experiment_success_and_degradation(monkeypatch):
-    import cassandra.phoenix_experiments as pe
+    import cassandra_ai.phoenix_experiments as pe
 
     monkeypatch.setattr(pe, "get_settings", lambda: type("S", (), {"phoenix_experiments_enabled": True})())
 
@@ -54,7 +54,7 @@ def test_register_experiment_success_and_degradation(monkeypatch):
 
 
 def test_self_tracing_respects_flag(monkeypatch):
-    import cassandra.instrumentation as ins
+    import cassandra_ai.instrumentation as ins
 
     ins._INITIALIZED = False
     monkeypatch.setattr(ins, "get_settings", lambda: type("S", (), {"self_trace_enabled": False})())

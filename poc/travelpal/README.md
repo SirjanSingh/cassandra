@@ -11,7 +11,7 @@ TravelPal is the opposite:
   - forecasts stop 16 days out
   - the geocoder picks the wrong "Goa" (it returns Genoa, Italy).
 - **Real model.** `gpt-4o-mini` answers. Cassandra judges with its configured LLM (`gpt-4o` in `.env`).
-- **Real contract.** Questions go over HTTP through `cassandra.patient_client.ask_patient`, the same call Cassandra's stages make.
+- **Real contract.** Questions go over HTTP through `cassandra_ai.patient_client.ask_patient`, the same call Cassandra's stages make.
 - **Labels first.** All 98 answers were hand-labelled ([labels.json](labels.json)) *before* any Cassandra verdict was looked at.
 
 ```bash
@@ -73,7 +73,7 @@ python -m poc.travelpal.collect --out runs_candidate.jsonl --system-file candida
 python -m poc.travelpal.score --runs runs_heldout.jsonl --labels labels_heldout.json --out results_heldout.json
 ```
 
-### 1. Judge fixes (`cassandra/diagnostician.py`)
+### 1. Judge fixes (`cassandra_ai/diagnostician.py`)
 
 The judge is now told today's date, and the prompt says a plain "I couldn't retrieve that" counts as honest.
 

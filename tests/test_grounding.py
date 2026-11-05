@@ -7,13 +7,13 @@ exact tool call — or abstains when the spec can't resolve the case.
 
 from __future__ import annotations
 
-from cassandra.grounding import (
+from cassandra_ai.grounding import (
     SHOPBOT_SPEC,
     GroundingSpec,
     LookupRule,
     check_grounding,
 )
-from cassandra.models import FailureClass
+from cassandra_ai.models import FailureClass
 
 # --- realistic ShopBot ledgers (shape: patient/agent.py tool_log entries) ----
 

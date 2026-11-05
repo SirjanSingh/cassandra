@@ -19,7 +19,7 @@ from .oracle import deterministic_verdict
 from .patient_client import ask_patient
 
 # Fallback judge, used only when the replayed reply carries no tool ledger or the
-# grounding spec abstains (cassandra/oracle.py is the primary verdict).
+# grounding spec abstains (cassandra_ai/oracle.py is the primary verdict).
 _JUDGE = """You are verifying a fix. You see one customer input, the agent's ORIGINAL
 (bad) answer, and its NEW answer after a prompt patch. Return JSON {fixed: bool,
 judge_rationale: str}. `fixed` is true only if the new answer no longer commits the

@@ -59,7 +59,7 @@ LoopAgent("cassandra")                       # FR-L1 — one incident per cycle,
 ```
 
 - **Reasoning core:** Gemini 3, **or** direct OpenAI (`gpt-4o-mini`/`gpt-4o`), **or**
-  OpenRouter — selected at runtime in `cassandra/llm.py` from env. The pipeline logic is
+  OpenRouter — selected at runtime in `cassandra_ai/llm.py` from env. The pipeline logic is
   backend-agnostic.
 - **Orchestration:** real ADK — `build_adk_agent()` returns a `LoopAgent` wrapping a
   genuine custom `BaseAgent` (`SupervisionAgent`) whose `_run_async_impl` runs one
@@ -108,7 +108,7 @@ LoopAgent("cassandra")                       # FR-L1 — one incident per cycle,
 
 ## 4. Phoenix MCP Integration (consumed)
 
-All Phoenix access is funneled through a single wrapper `cassandra/phoenix_mcp.py` (NFR-10)
+All Phoenix access is funneled through a single wrapper `cassandra_ai/phoenix_mcp.py` (NFR-10)
 speaking to the `@arizeai/phoenix-mcp` server. Tool names were reconciled against the live
 server (`spike_output/phoenix_mcp_tools.json`).
 
@@ -125,7 +125,7 @@ server (`spike_output/phoenix_mcp_tools.json`).
 > tool** (only read-side: `get-experiment-by-id`, `list-experiments-for-dataset`,
 > `get-dataset-experiments`). So the baseline-vs-candidate evaluation is run **live against
 > the agent** in `evaluator.py` (real numbers, never stubbed). For an on-product artifact,
-> `cassandra/phoenix_experiments.py` optionally calls the **Phoenix Python client**
+> `cassandra_ai/phoenix_experiments.py` optionally calls the **Phoenix Python client**
 > (`phoenix.experiments.run_experiment`) — gated by `PHOENIX_EXPERIMENTS_ENABLED`, fully
 > guarded so any failure degrades to a no-op.
 
@@ -133,7 +133,7 @@ server (`spike_output/phoenix_mcp_tools.json`).
 
 ## 5. The cassandra-mcp Server (published)
 
-Cassandra doesn't only consume the partner MCP — it **publishes its own** (`cassandra/
+Cassandra doesn't only consume the partner MCP — it **publishes its own** (`cassandra_ai/
 mcp_server.py`, FastMCP). This turns the meta-agent into a tool any other agent or IDE
 (Claude Desktop, Cursor) can call, and is a primary Technological-Implementation
 differentiator for MCP-savvy judges.
@@ -157,12 +157,12 @@ source of truth.
 Two mechanisms make the meta-agent observable *to itself* — the explicit bonus criterion
 the Arize track rewards ("agents that use their own observability data to improve").
 
-- **Self-tracing** (`cassandra/instrumentation.py`, `init_self_tracing`): instruments
+- **Self-tracing** (`cassandra_ai/instrumentation.py`, `init_self_tracing`): instruments
   Cassandra's own OpenAI/OpenRouter reasoning via OpenInference into a dedicated
   `TracerProvider` and ships spans to the `cassandra-meta` Phoenix project (NFR-3). Scoped
   so it never clobbers the Patient's manual spans; idempotent; degrades to a no-op if
   packages/Phoenix are unavailable. Wired into dashboard startup and `run_pipeline`.
-- **Self-evaluation** (`cassandra/selfeval.py` + `cassandra/traps.py`): runs a hand-labeled
+- **Self-evaluation** (`cassandra_ai/selfeval.py` + `cassandra_ai/traps.py`): runs a hand-labeled
   ground-truth trap library through the live Patient and Cassandra's own Diagnostician,
   then scores its verdicts against ground truth → a diagnostic-accuracy `Scorecard`
   (overall + per failure class). Exposed via the dashboard ("Grade my own diagnoses"),

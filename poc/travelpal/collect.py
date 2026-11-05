@@ -1,7 +1,7 @@
 """Drive every question through TravelPal over Cassandra's HTTP contract.
 
 Writes the runs (question, reply, tool ledger) as JSONL. Uses
-cassandra.patient_client.ask_patient — the exact call Cassandra's stages make.
+cassandra_ai.patient_client.ask_patient — the exact call Cassandra's stages make.
 `--system-file` sends that prompt as system_override (the candidate A/B path).
 
     python -m poc.travelpal.collect [--questions questions.json] [--out runs.jsonl]
@@ -17,7 +17,7 @@ from pathlib import Path
 
 import httpx
 
-from cassandra.patient_client import ask_patient
+from cassandra_ai.patient_client import ask_patient
 
 HERE = Path(__file__).parent
 

@@ -2,7 +2,7 @@
 
 Scores the synthesized adversarial dataset against a system prompt by running each
 probe through the LIVE Patient under that prompt and scoring the answer with the
-shared pass/fail oracle (cassandra/oracle.py: deterministic grounding verdict first,
+shared pass/fail oracle (cassandra_ai/oracle.py: deterministic grounding verdict first,
 LLM judge only as fallback). Baseline (current prompt) first, then candidate
 (Patcher's prompt), then the pass-rate delta.
 

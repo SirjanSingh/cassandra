@@ -12,15 +12,15 @@ import asyncio
 
 import httpx
 
-from cassandra.config import get_settings
-from cassandra.loop_agent import SupervisionPipeline
+from cassandra_ai.config import get_settings
+from cassandra_ai.loop_agent import SupervisionPipeline
 
 
 async def run_once() -> None:
     s = get_settings()
 
     # 0. Trace Cassandra's own reasoning into the cassandra-meta Phoenix project
-    from cassandra.instrumentation import init_self_tracing
+    from cassandra_ai.instrumentation import init_self_tracing
     init_self_tracing()
 
     # 1. Reset local cursor state
@@ -61,7 +61,7 @@ async def run_once() -> None:
     pipeline = SupervisionPipeline()
 
     # Hook into event bus to print pipeline updates to console
-    from cassandra.events import bus
+    from cassandra_ai.events import bus
     async def log_events():
         async for event in bus.subscribe():
             print(f"\n>>> [Pipeline Event] Stage: {event.stage.value}")

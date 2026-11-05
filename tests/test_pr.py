@@ -11,8 +11,8 @@ from datetime import datetime, timezone
 
 import pytest
 
-from cassandra import pr
-from cassandra.models import (
+from cassandra_ai import pr
+from cassandra_ai.models import (
     ExperimentResult,
     FailureClass,
     Incident,
@@ -100,7 +100,7 @@ def test_open_pr_requires_candidate_prompt():
 
 def test_open_pr_requires_prompt_file(monkeypatch):
     # candidate prompt present but no target file configured/passed.
-    from cassandra.config import get_settings
+    from cassandra_ai.config import get_settings
 
     monkeypatch.setattr(get_settings(), "baseline_prompt_file", None)
     with pytest.raises(ValueError, match="prompt file"):

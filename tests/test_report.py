@@ -2,7 +2,7 @@
 
 from datetime import datetime, timezone
 
-from cassandra.models import (
+from cassandra_ai.models import (
     EfficiencyReport,
     ExperimentResult,
     FailureClass,
@@ -14,7 +14,7 @@ from cassandra.models import (
     SpanRecord,
     Verdict,
 )
-from cassandra.report import render_postmortem
+from cassandra_ai.report import render_postmortem
 
 
 def _full_incident() -> Incident:
@@ -106,7 +106,7 @@ def test_bare_incident_renders_without_optional_sections():
 
 
 def test_pipeline_writes_report_file(tmp_path, monkeypatch):
-    from cassandra.loop_agent import SupervisionPipeline
+    from cassandra_ai.loop_agent import SupervisionPipeline
 
     monkeypatch.chdir(tmp_path)
     inc = _full_incident()

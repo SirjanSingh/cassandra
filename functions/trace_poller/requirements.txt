@@ -1,7 +1,7 @@
-# Cloud Function deps. Installs the cassandra package from the deployed source.
+# Cloud Function deps. Imports the cassandra_ai package from the deployed source.
 functions-framework>=3.8.0
 google-genai>=0.3.0
-mcp>=1.2.0
+mcp>=1.2.0,<2  # mcp 2.x removed mcp.server.fastmcp
 google-cloud-firestore>=2.19.0
 pydantic>=2.9.0
 pydantic-settings>=2.6.0

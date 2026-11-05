@@ -15,8 +15,8 @@ import asyncio
 
 import httpx
 
-from cassandra.config import get_settings
-from cassandra.traps import CANONICAL_TRAP, LABELED_TRAPS
+from cassandra_ai.config import get_settings
+from cassandra_ai.traps import CANONICAL_TRAP, LABELED_TRAPS
 
 
 async def _send(message: str) -> dict:
@@ -32,7 +32,7 @@ async def main() -> None:
     ap.add_argument("--all", action="store_true", help="fire the full labeled trap set")
     args = ap.parse_args()
 
-    from cassandra.traps import LabeledTrap
+    from cassandra_ai.traps import LabeledTrap
 
     targets = (
         LABELED_TRAPS

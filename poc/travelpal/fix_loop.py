@@ -17,10 +17,10 @@ from contextlib import asynccontextmanager
 from datetime import datetime, timezone
 from pathlib import Path
 
-from cassandra.diagnostician import Diagnostician
-from cassandra.models import Incident, SpanRecord
-from cassandra.patcher import Patcher
-from cassandra.rootcause import RootCauseAnalyst
+from cassandra_ai.diagnostician import Diagnostician
+from cassandra_ai.models import Incident, SpanRecord
+from cassandra_ai.patcher import Patcher
+from cassandra_ai.rootcause import RootCauseAnalyst
 from poc.travelpal.agent import SYSTEM_PROMPT
 
 HERE = Path(__file__).parent

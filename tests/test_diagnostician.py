@@ -9,9 +9,9 @@ import json
 
 import pytest
 
-from cassandra.diagnostician import Diagnostician
-from cassandra.models import FailureClass, Incident, SpanRecord, Verdict
-from cassandra.phoenix_mcp import normalize_span
+from cassandra_ai.diagnostician import Diagnostician
+from cassandra_ai.models import FailureClass, Incident, SpanRecord, Verdict
+from cassandra_ai.phoenix_mcp import normalize_span
 
 
 class _FakePhx:
@@ -57,7 +57,7 @@ async def test_high_confidence_failure_is_annotated(monkeypatch):
             rationale="Invented a refund policy with no supporting tool data.",
         )
 
-    monkeypatch.setattr("cassandra.diagnostician.llm.structured", fake_structured)
+    monkeypatch.setattr("cassandra_ai.diagnostician.llm.structured", fake_structured)
     phx = _FakePhx()
     d = Diagnostician(mcp=phx)  # type: ignore[arg-type]
     inc = await d.diagnose(Incident.from_span(_span()))
@@ -71,7 +71,7 @@ async def test_ok_verdict_not_annotated(monkeypatch):
     async def fake_structured(prompt, schema, system="", temperature=0.2):
         return Verdict(failure_class=FailureClass.OK, confidence=0.99, rationale="grounded")
 
-    monkeypatch.setattr("cassandra.diagnostician.llm.structured", fake_structured)
+    monkeypatch.setattr("cassandra_ai.diagnostician.llm.structured", fake_structured)
     phx = _FakePhx()
     inc = await Diagnostician(mcp=phx).diagnose(Incident.from_span(_span()))  # type: ignore[arg-type]
     assert inc.annotation_id is None
@@ -107,7 +107,7 @@ async def test_production_path_feeds_tool_ledger_to_judge(monkeypatch):
             failure_class=FailureClass.HALLUCINATION, confidence=0.9, rationale="ungrounded"
         )
 
-    monkeypatch.setattr("cassandra.diagnostician.llm.structured", fake_structured)
+    monkeypatch.setattr("cassandra_ai.diagnostician.llm.structured", fake_structured)
     await Diagnostician(mcp=_FakePhx()).diagnose(Incident.from_span(span))  # type: ignore[arg-type]
 
     prompt = captured["prompt"]

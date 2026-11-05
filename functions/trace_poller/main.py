@@ -10,7 +10,7 @@ import asyncio
 
 import functions_framework
 
-from cassandra.loop_agent import SupervisionPipeline
+from cassandra_ai.loop_agent import SupervisionPipeline
 
 
 @functions_framework.http

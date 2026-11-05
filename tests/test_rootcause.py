@@ -4,8 +4,8 @@ from datetime import datetime, timezone
 
 import pytest
 
-from cassandra.models import FailureClass, Incident, RootCause, SpanRecord, Verdict
-from cassandra.rootcause import RootCauseAnalyst
+from cassandra_ai.models import FailureClass, Incident, RootCause, SpanRecord, Verdict
+from cassandra_ai.rootcause import RootCauseAnalyst
 
 
 class _Phx:
@@ -52,7 +52,7 @@ async def test_rootcause_enriches_incident(monkeypatch):
             fix_strategy="Add explicit refuse-and-escalate when policy data is missing.",
         )
 
-    monkeypatch.setattr("cassandra.rootcause.llm.structured", fake_structured)
+    monkeypatch.setattr("cassandra_ai.rootcause.llm.structured", fake_structured)
     out = await RootCauseAnalyst(mcp=_Phx()).analyze(_inc())  # type: ignore[arg-type]
     assert out.root_cause is not None
     assert "get_refund_policy" in out.root_cause.culprit

@@ -23,8 +23,8 @@ import collections
 import json
 from pathlib import Path
 
-from cassandra.diagnostician import Diagnostician
-from cassandra.models import FailureClass
+from cassandra_ai.diagnostician import Diagnostician
+from cassandra_ai.models import FailureClass
 
 HERE = Path(__file__).parent
 DATA = HERE / "data"
@@ -119,6 +119,6 @@ if __name__ == "__main__":
                     help="override OPENAI_MODEL (the shell env can't: config loads .env with override)")
     a = ap.parse_args()
     if a.judge_model:
-        from cassandra.config import get_settings
+        from cassandra_ai.config import get_settings
         get_settings().openai_model = a.judge_model
     asyncio.run(main(a.models, a.split, a.concurrency, a.out, a.sample))

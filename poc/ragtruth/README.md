@@ -63,4 +63,4 @@ python -m poc.ragtruth.run_judge --sample 250 --judge-model gpt-4o --out verdict
 ```
 
 `--judge-model` exists because exporting `OPENAI_MODEL` in the shell does **not** work:
-`cassandra/config.py` calls `load_dotenv(override=True)`, so `.env` wins.
+`cassandra_ai/config.py` calls `load_dotenv(override=True)`, so `.env` wins.

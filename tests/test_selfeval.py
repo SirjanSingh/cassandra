@@ -2,13 +2,13 @@
 
 import pytest
 
-from cassandra.models import FailureClass, Scorecard, Verdict
-from cassandra.selfeval import SelfEvaluator
-from cassandra.traps import LabeledTrap
+from cassandra_ai.models import FailureClass, Scorecard, Verdict
+from cassandra_ai.selfeval import SelfEvaluator
+from cassandra_ai.traps import LabeledTrap
 
 
 def test_scorecard_accuracy_and_per_class():
-    from cassandra.models import ScorecardCase
+    from cassandra_ai.models import ScorecardCase
 
     card = Scorecard(
         total=2,
@@ -48,7 +48,7 @@ async def test_evaluate_grades_against_ground_truth(monkeypatch):
         return next(verdicts)
 
     monkeypatch.setattr(SelfEvaluator, "_patient_reply", fake_reply)
-    from cassandra.diagnostician import Diagnostician
+    from cassandra_ai.diagnostician import Diagnostician
     monkeypatch.setattr(Diagnostician, "judge", fake_judge)
 
     card = await SelfEvaluator().evaluate(traps)

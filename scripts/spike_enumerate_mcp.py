@@ -2,7 +2,7 @@
 
 Run this FIRST, before any Phase-2 feature work. It connects to the live
 @arizeai/phoenix-mcp server and dumps every tool name + input schema so the
-intended surface in cassandra/phoenix_mcp.py (_TOOLS) can be reconciled with
+intended surface in cassandra_ai/phoenix_mcp.py (_TOOLS) can be reconciled with
 reality. This single check de-risks the whole build.
 
 Usage:
@@ -17,7 +17,7 @@ import asyncio
 import json
 from pathlib import Path
 
-from cassandra.phoenix_mcp import PhoenixMCP
+from cassandra_ai.phoenix_mcp import PhoenixMCP
 
 OUT = Path("spike_output")
 
@@ -38,7 +38,7 @@ async def main() -> None:
         print(f"  - {t['name']}: {t['description']}")
     print(f"\nProjects reachable: {json.dumps(projects)[:300]}")
     print(f"\nFull schema written to {OUT / 'phoenix_mcp_tools.json'}")
-    print("\nNEXT: reconcile cassandra/phoenix_mcp.py:_TOOLS and normalize_span() "
+    print("\nNEXT: reconcile cassandra_ai/phoenix_mcp.py:_TOOLS and normalize_span() "
           "with the names/schemas above, then remove SPIKE-RECONCILE markers.")
 
 

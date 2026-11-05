@@ -12,7 +12,7 @@ import sys
 
 _COMMANDS = """\
 commands:
-  dashboard    run the dashboard + SSE cockpit (default port 8085)
+  dashboard    run the dashboard + SSE cockpit from a source checkout (default port 8085)
   run          drive one full end-to-end supervision cycle
   scan         check exported chat logs for answers no tool backed (no Phoenix needed)
   gate         CI prompt-regression gate (fails when a prompt edit drops the pass rate)
@@ -23,6 +23,28 @@ Run `cassandra <command> --help` for command-specific options.
 """
 
 _SUBCOMMANDS = {"dashboard", "run", "scan", "gate", "pr", "mcp"}
+
+_DASHBOARD_FROM_SOURCE = """\
+The dashboard and the ShopBot demo agent run from a source checkout; the PyPI package
+installs only the `cassandra_ai` library and this CLI. To run them:
+  git clone https://github.com/SirjanSingh/cassandra && cd cassandra
+  pip install -e ".[full]"
+  cassandra dashboard"""
+
+
+def _dashboard_available() -> bool:
+    """True when the source-checkout `dashboard` app is importable.
+
+    The wheel ships only `cassandra_ai` (top-level `dashboard`/`patient` packages squatted
+    generic import names), so a pip install has no dashboard. Checked up front: otherwise
+    uvicorn fails later with an opaque "Could not import module" error.
+    """
+    import importlib.util
+
+    try:
+        return importlib.util.find_spec("dashboard.main") is not None
+    except ModuleNotFoundError:  # no top-level `dashboard` package at all
+        return False
 
 
 def _make_stdout_safe() -> None:
@@ -46,9 +68,9 @@ def _scan(args: argparse.Namespace) -> int:
     import json
     from pathlib import Path
 
-    from cassandra.config import get_settings
-    from cassandra.grounding import GroundingSpec
-    from cassandra import scan as scan_mod
+    from cassandra_ai.config import get_settings
+    from cassandra_ai.grounding import GroundingSpec
+    from cassandra_ai import scan as scan_mod
 
     spec_path = args.spec or get_settings().grounding_spec_file
     if not spec_path:
@@ -86,7 +108,7 @@ def main(argv: list[str] | None = None) -> None:
         _main(argv)
     except ModuleNotFoundError as e:
         root = (e.name or "").split(".")[0]
-        if not root or root in {"cassandra", "patient", "dashboard"}:
+        if not root or root in {"cassandra_ai", "patient", "dashboard"}:
             raise  # our own code is broken: show the real traceback
         print(f"This command needs the full install (missing package: {root}):\n"
               '  pip install "cassandra-ai[full]"', file=sys.stderr)
@@ -106,7 +128,7 @@ def _main(argv: list[str] | None = None) -> None:
     )
     sub = parser.add_subparsers(dest="command")
 
-    p_dash = sub.add_parser("dashboard", help="run the dashboard + SSE cockpit")
+    p_dash = sub.add_parser("dashboard", help="run the dashboard + SSE cockpit (source checkout)")
     p_dash.add_argument("--port", type=int, default=None, help="port (default: settings)")
     p_dash.add_argument("--host", default="127.0.0.1", help="bind host (default: 127.0.0.1)")
 
@@ -136,7 +158,7 @@ def _main(argv: list[str] | None = None) -> None:
     # No subcommand (or -h/--help / unknown token) → banner + command list.
     # Never touches the heavy stack.
     if not argv or argv[0] not in _SUBCOMMANDS:
-        from cassandra.banner import print_banner
+        from cassandra_ai.banner import print_banner
         print_banner()
         parser.print_help()
         print("\n" + _COMMANDS)
@@ -147,32 +169,35 @@ def _main(argv: list[str] | None = None) -> None:
 
     if command == "mcp":
         # stdio JSON-RPC: emit NOTHING on stdout before the handshake — no banner.
-        from cassandra.mcp_server import main as mcp_main
+        from cassandra_ai.mcp_server import main as mcp_main
         mcp_main()
         return
 
     if command == "gate":
         # Pass every remaining arg straight through to gate.main; don't redefine its flags.
-        from cassandra.banner import print_banner
+        from cassandra_ai.banner import print_banner
         print_banner()
-        from cassandra.gate import main as gate_main
+        from cassandra_ai.gate import main as gate_main
         gate_main(rest)
         return
 
     if command == "dashboard":
         args = p_dash.parse_args(rest)
-        from cassandra.banner import print_banner
+        if not _dashboard_available():
+            print(_DASHBOARD_FROM_SOURCE, file=sys.stderr)
+            sys.exit(1)
+        from cassandra_ai.banner import print_banner
         print_banner()
-        from cassandra.config import get_settings
+        from cassandra_ai.config import get_settings
         port = args.port if args.port is not None else get_settings().dashboard_port
         import uvicorn
         uvicorn.run("dashboard.main:app", host=args.host, port=port)
         return
 
     if command == "run":
-        from cassandra.banner import print_banner
+        from cassandra_ai.banner import print_banner
         print_banner()
-        from cassandra.run_once import main as run_main
+        from cassandra_ai.run_once import main as run_main
         run_main()
         return
 
@@ -182,9 +207,9 @@ def _main(argv: list[str] | None = None) -> None:
 
     if command == "pr":
         args = p_pr.parse_args(rest)
-        from cassandra.banner import print_banner
+        from cassandra_ai.banner import print_banner
         print_banner()
-        from cassandra import pr as pr_mod
+        from cassandra_ai import pr as pr_mod
         inc = pr_mod.load_incident(args.incident_id)
         res = pr_mod.open_pr(
             inc,

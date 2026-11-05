@@ -9,9 +9,9 @@ from datetime import datetime, timezone
 
 import pytest
 
-from cassandra import baseline
-from cassandra.baseline import BaselinePromptError, resolve_baseline_prompt
-from cassandra.models import SpanRecord
+from cassandra_ai import baseline
+from cassandra_ai.baseline import BaselinePromptError, resolve_baseline_prompt
+from cassandra_ai.models import SpanRecord
 
 
 def _span(attributes: dict | str) -> SpanRecord:

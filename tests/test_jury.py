@@ -8,11 +8,11 @@ from __future__ import annotations
 
 from datetime import datetime, timezone
 
-from cassandra import jury, oracle
-from cassandra.config import get_settings
-from cassandra.diagnostician import Diagnostician
-from cassandra.models import FailureClass, SpanRecord, Verdict
-from cassandra.oracle import Score
+from cassandra_ai import jury, oracle
+from cassandra_ai.config import get_settings
+from cassandra_ai.diagnostician import Diagnostician
+from cassandra_ai.models import FailureClass, SpanRecord, Verdict
+from cassandra_ai.oracle import Score
 
 
 # --- pure helpers -------------------------------------------------------------
@@ -106,7 +106,7 @@ def _split_judge(monkeypatch):
             return Score(passed=temperature >= 0.8, why=f"t={temperature}")
         raise AssertionError("unexpected schema")
 
-    monkeypatch.setattr("cassandra.llm.structured", fake)
+    monkeypatch.setattr("cassandra_ai.llm.structured", fake)
 
 
 async def test_judge_panel_size_one_no_report(monkeypatch):
@@ -137,7 +137,7 @@ async def test_diagnose_sets_jury_report(monkeypatch):
         span_id="s1", trace_id="t1", project="patient-prod",
         started_at=datetime.now(timezone.utc), input_text="in", output_text="out",
     )
-    from cassandra.models import Incident
+    from cassandra_ai.models import Incident
 
     inc = await Diagnostician().diagnose(Incident.from_span(span))
     assert inc.jury is not None and inc.jury.size == 3

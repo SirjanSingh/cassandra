@@ -7,7 +7,7 @@ endpoint, no code change on their side. Input is a JSONL export, one turn per li
 
 (`input`/`user`/`message` and `output`/`reply`/`response` are accepted as aliases.)
 
-Each turn goes through the deterministic grounding rule (cassandra/grounding.py) with the
+Each turn goes through the deterministic grounding rule (cassandra_ai/grounding.py) with the
 agent's GroundingSpec. Rule-only is the default — no LLM call, the logs never leave the
 machine. With `judge=True`, only the turns the rule can't decide go to the LLM judge
 (Diagnostician.judge), mirroring the oracle cascade.

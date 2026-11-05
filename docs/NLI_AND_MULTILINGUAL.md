@@ -6,7 +6,7 @@ Plain-language design for the two additions on `feature/nli-and-hindi`.
 
 ## Why
 
-The original checker (`cassandra/grounding.py`) is a **rule** that reads the **structured
+The original checker (`cassandra_ai/grounding.py`) is a **rule** that reads the **structured
 tool ledger** (`{found:false}`). It's precise, free, and cites its evidence — but it's blind
 to **prose**. When a RAG agent answers from a *retrieved paragraph*, there's no field to
 compare, so the rule abstains and everything drops to the LLM judge (fuzzy, non-deterministic,
@@ -45,13 +45,13 @@ The rule couldn't touch that; NLI catches it. This **extends coverage from tool-
 to document-RAG agents.**
 
 ### Implementation
-- `cassandra/nli.py` — a pluggable `Verifier` interface with two backends:
+- `cassandra_ai/nli.py` — a pluggable `Verifier` interface with two backends:
   - **`TransformersNLI`** (production) — a HuggingFace cross-encoder, loaded only when
     `NLI_MODEL` is set and `sentence-transformers` is installed. English default
     `cross-encoder/nli-deberta-v3-small`; set a multilingual checkpoint for Hindi.
   - **`HeuristicNLI`** (offline dev/test stub) — lexical overlap + generic negation cues.
     Deliberately simple and honest about being approximate; **not** the production path.
-- `cassandra/oracle.py` — `score_case(..., evidence=None)` now runs the cascade
+- `cassandra_ai/oracle.py` — `score_case(..., evidence=None)` now runs the cascade
   rule → NLI → LLM. Default `evidence=None` means every existing caller is unchanged.
 - `NLI_MODEL` in `.env.example` / `config.py`.
 

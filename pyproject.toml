@@ -1,6 +1,7 @@
 [project]
 name = "cassandra-ai"
-version = "0.3.0"
+# Single source of truth: `__version__` in cassandra_ai/__init__.py ([tool.hatch.version]).
+dynamic = ["version"]
 description = "Cassandra - the meta-agent that supervises other LLM agents through Phoenix observability"
 readme = "README.md"
 requires-python = ">=3.11"
@@ -12,61 +13,76 @@ classifiers = [
     "License :: OSI Approved :: Apache Software License",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Topic :: Software Development :: Quality Assurance",
     "Topic :: Scientific/Engineering :: Artificial Intelligence",
 ]
 # Light core: enough for the `cassandra` CLI and the offline `cassandra scan` (rule-only).
 # Everything the live pipeline needs is the `full` extra: pip install "cassandra-ai[full]".
+#
+# Version policy: floors are what the code was written against; caps sit at the next major
+# above the versions verified to pass the test suite, so a breaking upstream release can't
+# silently break a fresh install (mcp 2.x did exactly that to 0.3.0).
 dependencies = [
-    "pydantic>=2.9.0",
-    "pydantic-settings>=2.6.0",
-    "python-dotenv>=1.0.0",           # config.py loads .env
+    "pydantic>=2.9.0,<3",
+    "pydantic-settings>=2.6.0,<3",
+    "python-dotenv>=1.0.0,<2",        # config.py loads .env
 ]
 
 [project.urls]
 Homepage = "https://github.com/SirjanSingh/cassandra"
 Repository = "https://github.com/SirjanSingh/cassandra"
+Changelog = "https://github.com/SirjanSingh/cassandra/blob/main/CHANGELOG.md"
 
 [project.scripts]
 # Unified CLI: banner + `dashboard` / `run` / `scan` / `gate` / `pr` / `mcp` subcommands.
-cassandra = "cassandra.cli:main"
+cassandra = "cassandra_ai.cli:main"
 # Cassandra's own MCP server — publishes the supervision tools over stdio so any
 # agent/IDE (Claude Desktop, Cursor) can call them.
-cassandra-mcp = "cassandra.mcp_server:main"
+cassandra-mcp = "cassandra_ai.mcp_server:main"
 # CI prompt regression gate — fails the build when a prompt edit drops the pass rate.
-cassandra-gate = "cassandra.gate:main"
+cassandra-gate = "cassandra_ai.gate:main"
 
 [project.optional-dependencies]
-# The full supervision pipeline, dashboard, MCP server, CI gate, and `scan --judge`.
+# The full supervision pipeline, MCP server, CI gate, and `scan --judge`.
 full = [
-    # Reasoning core + orchestration (mandatory stack)
-    "google-genai>=0.3.0",            # Gemini 3 client
-    "google-adk>=0.1.0",              # Agent Builder / ADK (LoopAgent, SequentialAgent)
-    # Partner MCP (required integration)
-    "mcp>=1.2.0",                     # Model Context Protocol client for @arizeai/phoenix-mcp
+    # Reasoning core
+    "google-genai>=0.3.0,<3",         # Gemini client
+    # Partner MCP (required integration). mcp 2.x removed `mcp.server.fastmcp`, which
+    # mcp_server.py imports; stay on 1.x until the server is migrated to MCPServer.
+    "mcp>=1.2.0,<2",                  # Model Context Protocol client for @arizeai/phoenix-mcp
     # LLM backends (llm.py precedence: OpenAI/OpenRouter key -> else Vertex Gemini)
-    "openai>=1.50.0",
+    "openai>=1.50.0,<4",
     # The Patient instrumentation
-    "openinference-instrumentation>=0.1.0",
+    "openinference-instrumentation>=0.1.0,<1",
     # Cassandra's own self-tracing into the cassandra-meta project (instrumentation.py)
-    "openinference-instrumentation-openai>=0.1.0",
-    "opentelemetry-sdk>=1.27.0",
-    "opentelemetry-exporter-otlp>=1.27.0",
-    # Dashboard
-    "fastapi>=0.115.0",
-    "uvicorn[standard]>=0.32.0",
-    "sse-starlette>=2.1.0",
+    "openinference-instrumentation-openai>=0.1.0,<1",
+    "opentelemetry-sdk>=1.27.0,<2",
+    "opentelemetry-exporter-otlp>=1.27.0,<2",
+    # Dashboard (runs from a source checkout; see `cassandra dashboard`)
+    "fastapi>=0.115.0,<1",
+    "uvicorn[standard]>=0.32.0,<1",
+    "sse-starlette>=2.1.0,<4",
     # State + infra
-    "google-cloud-firestore>=2.19.0",
-    "google-cloud-secret-manager>=2.20.0",
-    "httpx>=0.27.0",
+    "google-cloud-firestore>=2.19.0,<3",
+    "google-cloud-secret-manager>=2.20.0,<3",
+    "httpx>=0.27.0,<1",
+]
+# The ADK runtime envelope (LoopAgent wrapper for Vertex AI Agent Engine; only
+# `loop_agent.build_adk_agent()` and deploy/agent_engine.py import it). Kept out of `full`
+# because google-adk 2.13 caps opentelemetry-api at <=1.44, which blocks the fix for
+# CVE-2026-114603 (fixed in opentelemetry-api 1.45.1).
+adk = [
+    "cassandra-ai[full]",
+    "google-adk>=0.1.0,<3",
 ]
 dev = [
-    "cassandra-ai[full]",
-    "pytest>=8.3.0",
-    "pytest-asyncio>=0.24.0",
-    "ruff>=0.7.0",
-    "mypy>=1.13.0",
+    "cassandra-ai[full,adk]",
+    "pytest>=8.3.0,<10",
+    "pytest-asyncio>=0.24.0,<2",
+    # Pinned so lint/type results are reproducible across machines.
+    "ruff==0.17.3",
+    "mypy==2.4.1",
 ]
 
 [tool.ruff]
@@ -81,17 +97,23 @@ testpaths = ["tests"]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
+[tool.hatch.version]
+path = "cassandra_ai/__init__.py"
+
+# Only our namespaced package ships. `patient/` (the ShopBot demo agent) and `dashboard/`
+# run from a source checkout; shipping them as top-level packages squatted generic import
+# names in users' environments (0.3.0 also shipped `cassandra`, which collides with
+# cassandra-driver).
 [tool.hatch.build.targets.wheel]
-packages = ["patient", "cassandra", "dashboard"]
+packages = ["cassandra_ai"]
 
 # Without an explicit allowlist, hatchling's sdist vacuums the whole tree (node_modules,
 # .claude/, .vscode/, internal planning docs). Ship only the source + packaging metadata.
 [tool.hatch.build.targets.sdist]
 include = [
-    "/cassandra",
-    "/patient",
-    "/dashboard",
+    "/cassandra_ai",
     "/README.md",
+    "/CHANGELOG.md",
     "/LICENSE",
     "/pyproject.toml",
     "/.env.example",

@@ -12,7 +12,7 @@ from opentelemetry.sdk.resources import Resource
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
 
-from cassandra.config import get_settings
+from cassandra_ai.config import get_settings
 
 _INITIALIZED = False
 

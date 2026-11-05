@@ -1,4 +1,4 @@
-"""NLI layer (cassandra/nli.py) + its oracle integration (Layer 2 of the cascade).
+"""NLI layer (cassandra_ai/nli.py) + its oracle integration (Layer 2 of the cascade).
 
 Offline: the heuristic stub is exercised directly; the oracle integration uses a
 mocked verifier so the routing logic (rule → NLI → LLM) is what's under test, not a
@@ -7,7 +7,7 @@ real model.
 
 from __future__ import annotations
 
-from cassandra import nli, oracle
+from cassandra_ai import nli, oracle
 
 
 # --- the offline heuristic stub ------------------------------------------------
@@ -63,8 +63,8 @@ async def test_oracle_nli_contradiction_fails_without_llm(monkeypatch):
     async def boom(*a, **k):
         raise AssertionError("LLM must not be called when NLI decides")
 
-    monkeypatch.setattr("cassandra.llm.structured", boom)
-    monkeypatch.setattr("cassandra.nli.check_claim", _mock(nli.CONTRADICTION))
+    monkeypatch.setattr("cassandra_ai.llm.structured", boom)
+    monkeypatch.setattr("cassandra_ai.nli.check_claim", _mock(nli.CONTRADICTION))
     score = await oracle.score_case("q", "expected", "answer", None, evidence="a passage")
     assert score.passed is False and "nli" in score.why.lower()
 
@@ -73,17 +73,17 @@ async def test_oracle_nli_entailment_passes_without_llm(monkeypatch):
     async def boom(*a, **k):
         raise AssertionError("LLM must not be called when NLI decides")
 
-    monkeypatch.setattr("cassandra.llm.structured", boom)
-    monkeypatch.setattr("cassandra.nli.check_claim", _mock(nli.ENTAILMENT))
+    monkeypatch.setattr("cassandra_ai.llm.structured", boom)
+    monkeypatch.setattr("cassandra_ai.nli.check_claim", _mock(nli.ENTAILMENT))
     score = await oracle.score_case("q", "expected", "answer", None, evidence="a passage")
     assert score.passed is True and "nli" in score.why.lower()
 
 
 async def test_oracle_no_evidence_skips_nli(monkeypatch):
     # No evidence -> NLI is skipped and the LLM judge is used (default single judge).
-    monkeypatch.setattr("cassandra.nli.check_claim",
+    monkeypatch.setattr("cassandra_ai.nli.check_claim",
                         lambda *a: (_ for _ in ()).throw(AssertionError("NLI must not run without evidence")))
-    monkeypatch.setattr("cassandra.llm.structured",
+    monkeypatch.setattr("cassandra_ai.llm.structured",
                         lambda *a, **k: _passed())
     score = await oracle.score_case("q", "expected", "answer", None)
     assert score.passed is True
@@ -94,7 +94,7 @@ async def _passed():
 
 
 async def test_oracle_neutral_nli_falls_through_to_llm(monkeypatch):
-    monkeypatch.setattr("cassandra.nli.check_claim", _mock(nli.NEUTRAL))
-    monkeypatch.setattr("cassandra.llm.structured", lambda *a, **k: _passed())
+    monkeypatch.setattr("cassandra_ai.nli.check_claim", _mock(nli.NEUTRAL))
+    monkeypatch.setattr("cassandra_ai.llm.structured", lambda *a, **k: _passed())
     score = await oracle.score_case("q", "expected", "answer", None, evidence="a passage")
     assert score.passed is True and "llm" in score.why.lower()

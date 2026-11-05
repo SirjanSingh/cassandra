@@ -4,8 +4,8 @@ from datetime import datetime, timezone
 
 import pytest
 
-from cassandra import mcp_server
-from cassandra.models import (
+from cassandra_ai import mcp_server
+from cassandra_ai.models import (
     DatasetExample,
     ExperimentResult,
     FailureClass,

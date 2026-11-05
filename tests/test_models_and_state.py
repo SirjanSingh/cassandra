@@ -2,8 +2,8 @@
 
 from datetime import datetime, timezone
 
-from cassandra.models import ExperimentResult, Incident, SpanRecord
-from cassandra.state import LocalState
+from cassandra_ai.models import ExperimentResult, Incident, SpanRecord
+from cassandra_ai.state import LocalState
 
 
 def _span(sid: str) -> SpanRecord:
