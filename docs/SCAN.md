@@ -6,7 +6,7 @@
 - **Nothing leaves your machine** in the default mode. It's a rule check with no LLM.
 
 ```bash
-pip install cassandra-ai
+pip install "git+https://github.com/SirjanSingh/cassandra.git@feature/nli-and-hindi"   # not on PyPI yet
 cassandra scan logs.jsonl --spec spec.json
 # -> 8 of 50 answers stated a fact no tool backed (9 not checkable). Report: scan_report.md
 ```

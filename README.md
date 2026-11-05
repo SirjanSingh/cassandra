@@ -106,11 +106,12 @@ flowchart TB
 
 ## Quickstart (pip)
 
-Cassandra is on PyPI. `pip install` gives you the unified `cassandra` CLI (banner + the
-`dashboard` / `run` / `gate` / `mcp` subcommands):
+Cassandra is not on PyPI yet (the distribution name `cassandra-ai` is reserved in
+`pyproject.toml` but unpublished). Install straight from GitHub to get the unified
+`cassandra` CLI (banner + the `dashboard` / `run` / `scan` / `gate` / `mcp` subcommands):
 
 ```bash
-pip install cassandra-ai        # import package stays `cassandra`
+pip install "git+https://github.com/SirjanSingh/cassandra.git@feature/nli-and-hindi"   # import package stays `cassandra`
 cassandra                       # banner + command list
 ```
 
