@@ -115,6 +115,27 @@ def test_cli_scan_writes_report(tmp_path, capsys):
     assert json.loads(js.read_text(encoding="utf-8"))[0]["status"] == "unsupported"
 
 
+def test_cli_points_light_installs_at_the_full_extra(monkeypatch, capsys):
+    """A command needing the pipeline stack, run on a light install, prints the fix."""
+    def missing():
+        raise ModuleNotFoundError("No module named 'openai'", name="openai")
+
+    monkeypatch.setattr("cassandra.run_once.main", missing)
+    with pytest.raises(SystemExit) as e:
+        cli.main(["run"])
+    assert e.value.code == 1
+    assert 'pip install "cassandra-ai[full]"' in capsys.readouterr().err
+
+
+def test_cli_does_not_mask_missing_internal_modules(monkeypatch):
+    def broken():
+        raise ModuleNotFoundError("No module named 'cassandra.nope'", name="cassandra.nope")
+
+    monkeypatch.setattr("cassandra.run_once.main", broken)
+    with pytest.raises(ModuleNotFoundError):
+        cli.main(["run"])
+
+
 def test_cli_scan_requires_a_spec(tmp_path, monkeypatch, capsys):
     monkeypatch.setattr("cassandra.config.get_settings",
                         lambda: type("S", (), {"grounding_spec_file": None})())

@@ -25,7 +25,7 @@ Week 2–3 of [30_DAY_PLAN.md](30_DAY_PLAN.md). The goal is 2–3 real bots scan
 > I'd like to run it on your bot for free:
 > - You send ~50 exported conversations (question, answer, tool calls). Redacted is fine.
 > - I send back a one-page report: your percentage, plus the worst examples with the exact missing tool call.
-> - It runs offline with no LLM, and the data is deleted afterwards. Or you can run the open-source tool yourself and I'll help with the 15-minute setup.
+> - It runs offline with no LLM, and the data is deleted afterwards. Or you can run it yourself (`pip install cassandra-ai`) and I'll help with the 15-minute setup.
 >
 > All I ask in return is 15 minutes of honest feedback on whether the report was useful.
 >

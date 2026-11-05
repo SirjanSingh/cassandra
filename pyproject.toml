@@ -1,6 +1,6 @@
 [project]
 name = "cassandra-ai"
-version = "0.2.0"
+version = "0.3.0"
 description = "Cassandra - the meta-agent that supervises other LLM agents through Phoenix observability"
 readme = "README.md"
 requires-python = ">=3.11"
@@ -15,7 +15,30 @@ classifiers = [
     "Topic :: Software Development :: Quality Assurance",
     "Topic :: Scientific/Engineering :: Artificial Intelligence",
 ]
+# Light core: enough for the `cassandra` CLI and the offline `cassandra scan` (rule-only).
+# Everything the live pipeline needs is the `full` extra: pip install "cassandra-ai[full]".
 dependencies = [
+    "pydantic>=2.9.0",
+    "pydantic-settings>=2.6.0",
+    "python-dotenv>=1.0.0",           # config.py loads .env
+]
+
+[project.urls]
+Homepage = "https://github.com/SirjanSingh/cassandra"
+Repository = "https://github.com/SirjanSingh/cassandra"
+
+[project.scripts]
+# Unified CLI: banner + `dashboard` / `run` / `scan` / `gate` / `pr` / `mcp` subcommands.
+cassandra = "cassandra.cli:main"
+# Cassandra's own MCP server — publishes the supervision tools over stdio so any
+# agent/IDE (Claude Desktop, Cursor) can call them.
+cassandra-mcp = "cassandra.mcp_server:main"
+# CI prompt regression gate — fails the build when a prompt edit drops the pass rate.
+cassandra-gate = "cassandra.gate:main"
+
+[project.optional-dependencies]
+# The full supervision pipeline, dashboard, MCP server, CI gate, and `scan --judge`.
+full = [
     # Reasoning core + orchestration (mandatory stack)
     "google-genai>=0.3.0",            # Gemini 3 client
     "google-adk>=0.1.0",              # Agent Builder / ADK (LoopAgent, SequentialAgent)
@@ -36,27 +59,10 @@ dependencies = [
     # State + infra
     "google-cloud-firestore>=2.19.0",
     "google-cloud-secret-manager>=2.20.0",
-    "pydantic>=2.9.0",
-    "pydantic-settings>=2.6.0",
-    "python-dotenv>=1.0.0",           # config.py loads .env (was only transitive before)
     "httpx>=0.27.0",
 ]
-
-[project.urls]
-Homepage = "https://github.com/SirjanSingh/cassandra"
-Repository = "https://github.com/SirjanSingh/cassandra"
-
-[project.scripts]
-# Unified CLI: banner + `dashboard` / `run` / `gate` / `mcp` subcommands.
-cassandra = "cassandra.cli:main"
-# Cassandra's own MCP server — publishes the supervision tools over stdio so any
-# agent/IDE (Claude Desktop, Cursor) can call them.
-cassandra-mcp = "cassandra.mcp_server:main"
-# CI prompt regression gate — fails the build when a prompt edit drops the pass rate.
-cassandra-gate = "cassandra.gate:main"
-
-[project.optional-dependencies]
 dev = [
+    "cassandra-ai[full]",
     "pytest>=8.3.0",
     "pytest-asyncio>=0.24.0",
     "ruff>=0.7.0",

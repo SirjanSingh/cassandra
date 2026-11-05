@@ -106,14 +106,16 @@ flowchart TB
 
 ## Quickstart (pip)
 
-Cassandra is not on PyPI yet (the distribution name `cassandra-ai` is declared in
-`pyproject.toml` but unpublished). Install straight from GitHub to get the unified
-`cassandra` CLI (banner + the `dashboard` / `run` / `scan` / `gate` / `mcp` subcommands):
+Two installs, depending on what you need (the import package stays `cassandra`):
 
 ```bash
-pip install "git+https://github.com/SirjanSingh/cassandra.git@feature/nli-and-hindi"   # import package stays `cassandra`
-cassandra                       # banner + command list
+pip install cassandra-ai            # light: the CLI + offline `cassandra scan` (3 small deps)
+pip install "cassandra-ai[full]"    # everything: live pipeline, dashboard, gate, pr, mcp
+cassandra                           # banner + command list
 ```
+
+The light install is enough to scan exported logs (see [docs/SCAN.md](docs/SCAN.md)). Any
+command that needs the full stack tells you to add `[full]` instead of crashing.
 
 **v0.1 is dev-audience, not turnkey** — a fresh install still needs a few things wired up:
 
@@ -216,7 +218,7 @@ Click the badge (it prompts for your key and registers the server), or add a ser
 ```
 
 ```bash
-pip install -e .
+pip install -e ".[full]"
 cassandra-mcp                 # or: python -m cassandra.mcp_server
 ```
 

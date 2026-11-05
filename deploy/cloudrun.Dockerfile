@@ -25,7 +25,7 @@ COPY patient ./patient
 COPY dashboard ./dashboard
 # The React frontend (served at /; the single-file cockpit stays at /cockpit).
 COPY --from=webbuild /web/dist ./web/dist
-RUN pip install --upgrade pip && pip install .
+RUN pip install --upgrade pip && pip install ".[full]"
 
 # Run as a non-root user (Cloud Run best practice; nothing here needs root).
 RUN useradd --create-home --uid 1001 appuser && chown -R appuser /app

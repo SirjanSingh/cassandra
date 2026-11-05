@@ -15,7 +15,7 @@ commands:
   dashboard    run the dashboard + SSE cockpit (default port 8085)
   run          drive one full end-to-end supervision cycle
   scan         check exported chat logs for answers no tool backed (no Phoenix needed)
-  gate        CI prompt-regression gate (fails when a prompt edit drops the pass rate)
+  gate         CI prompt-regression gate (fails when a prompt edit drops the pass rate)
   pr           open the proven prompt fix for an incident as a GitHub pull request
   mcp          run Cassandra's MCP server over stdio (for Claude Desktop / Cursor)
 
@@ -79,6 +79,21 @@ def _scan(args: argparse.Namespace) -> int:
 
 
 def main(argv: list[str] | None = None) -> None:
+    """Entry point. A light install (`pip install cassandra-ai`) only carries what the CLI
+    and the offline `scan` need; any command that reaches for the pipeline's stack gets a
+    one-line fix instead of a traceback."""
+    try:
+        _main(argv)
+    except ModuleNotFoundError as e:
+        root = (e.name or "").split(".")[0]
+        if not root or root in {"cassandra", "patient", "dashboard"}:
+            raise  # our own code is broken: show the real traceback
+        print(f"This command needs the full install (missing package: {root}):\n"
+              '  pip install "cassandra-ai[full]"', file=sys.stderr)
+        sys.exit(1)
+
+
+def _main(argv: list[str] | None = None) -> None:
     argv = sys.argv[1:] if argv is None else argv
 
     if not argv or argv[0] != "mcp":  # mcp owns stdout for JSON-RPC — leave it alone

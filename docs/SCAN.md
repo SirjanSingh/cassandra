@@ -6,7 +6,7 @@
 - **Nothing leaves your machine** in the default mode. It's a rule check with no LLM.
 
 ```bash
-pip install "git+https://github.com/SirjanSingh/cassandra.git@feature/nli-and-hindi"   # not on PyPI yet
+pip install cassandra-ai   # light install: a few seconds, 3 small dependencies
 cassandra scan logs.jsonl --spec spec.json
 # -> 8 of 50 answers stated a fact no tool backed (9 not checkable). Report: scan_report.md
 ```
@@ -85,7 +85,7 @@ Every key in `claim_extractors` must appear in some lookup's `claims` (or `field
 | `--out report.md` | Report path (default `scan_report.md`) |
 | `--json results.json` | Also write per-turn verdicts |
 | `--top N` | Examples in the report (default 10) |
-| `--judge` | Send *only* not-checkable turns to the LLM judge. Calls your configured LLM, so those turns leave the machine. |
+| `--judge` | Send *only* not-checkable turns to the LLM judge. Calls your configured LLM, so those turns leave the machine. Needs `pip install "cassandra-ai[full]"`. |
 
 ## Known limits
 

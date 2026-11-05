@@ -17,16 +17,13 @@ Full architecture: see `docs/CODEBASE_MAP.md` and `docs/SYSTEM_DESIGN.md` in the
 
 ## 2. Install
 
-You were given `cassandra_ai-0.2.0-py3-none-any.whl` (attached to the GitHub release).
-
 ```bash
 python -m venv .venv           # Python 3.11 or 3.12
 # Windows:  .venv\Scripts\activate      macOS/Linux:  source .venv/bin/activate
-pip install cassandra_ai-0.2.0-py3-none-any.whl
+pip install "cassandra-ai[full]"   # the full pipeline; plain `cassandra-ai` is the light scan-only install
 ```
 
-> The import package is `cassandra`; the distribution is `cassandra-ai`. Installing the wheel
-> pulls its dependencies from real PyPI normally.
+> The import package is `cassandra`; the distribution is `cassandra-ai`.
 
 ## 3. Smoke test (no keys, no infra — 1 minute)
 

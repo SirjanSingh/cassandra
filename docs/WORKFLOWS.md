@@ -7,7 +7,7 @@ The common thread: a production failure becomes a dataset, the dataset becomes a
 ## Prerequisites
 
 ```bash
-pip install -e .
+pip install -e ".[full]"
 cp .env.example .env    # set OPENAI_API_KEY (or Gemini/Vertex), Phoenix URL + key
 ```
 
