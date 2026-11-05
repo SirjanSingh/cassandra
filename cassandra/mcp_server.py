@@ -5,6 +5,7 @@ around and *publishes* Cassandra's supervision capabilities as MCP tools, so any
 agent or IDE (Claude Desktop, Cursor, …) can call them:
 
     diagnose          - LLM-as-judge verdict on one agent turn (raw text, no Phoenix)
+    diagnose_jury     - same, but a PANEL of judges: verdict + agreement + dissent
     synthesize_evals  - turn a failure into an adversarial eval set (raw text)
     propose_patch     - rewrite a system prompt to close a failure, with a unified diff
     gate_prompt       - CI regression gate: score a prompt vs eval cases, pass/block
@@ -14,6 +15,7 @@ agent or IDE (Claude Desktop, Cursor, …) can call them:
                          into Phoenix via the partner MCP
 
     self_evaluate     - grade Cassandra's own diagnostic accuracy vs ground truth
+    prepare_fix_pr    - draft the GitHub PR (title/branch/body) for a handled incident
 
 The composable tools are provider-agnostic (no Phoenix required); supervise_latest is
 the headline tool that exercises the whole partner-MCP surface and now also returns a
@@ -51,6 +53,26 @@ async def diagnose(
     """
     v = await Diagnostician().judge(customer_input, agent_output, tool_calls)
     return {**v.model_dump(), "is_failure": v.is_failure}
+
+
+@mcp.tool()
+async def diagnose_jury(
+    customer_input: str, agent_output: str, tool_calls: str = "", jurors: int = 3
+) -> dict:
+    """Judge one agent turn with a PANEL of `jurors` LLM judges (majority vote).
+
+    Runs `jurors` independent inferences (spread over temperature) and aggregates,
+    so the verdict carries an agreement score and any dissent — a calibrated answer
+    to "how sure is the judge?" that a single `diagnose` call can't give.
+    Returns {failure_class, confidence, rationale, is_failure, jury: {size,
+    agreement, votes, dissent}}.
+    """
+    v, report = await Diagnostician().judge_panel(
+        customer_input, agent_output, tool_calls, size=max(1, jurors)
+    )
+    out = {**v.model_dump(), "is_failure": v.is_failure}
+    out["jury"] = report.model_dump() if report else {"size": 1, "agreement": 1.0}
+    return out
 
 
 @mcp.tool()
@@ -176,6 +198,22 @@ async def self_evaluate() -> dict:
         "accuracy": card.accuracy,
         "per_class": card.per_class,
     }
+
+
+@mcp.tool()
+async def prepare_fix_pr(incident_id: str) -> dict:
+    """Draft the pull request for an already-supervised incident (no side effects).
+
+    Reads reports/<incident_id>.json (written by a completed supervision cycle) and
+    returns the exact PR {title, branch, body} that `cassandra pr <id> --push` would
+    open. This is intentionally a DRAFT only — opening the PR is an outward-facing
+    action left to the explicit CLI, so no agent pushes to GitHub on its own.
+    """
+    from .pr import build_pr_content, load_incident
+
+    content = build_pr_content(load_incident(incident_id))
+    return {**content.model_dump(), "note": "draft only — run `cassandra pr "
+            f"{incident_id} --push` to open it."}
 
 
 def _report(inc: Incident) -> dict[str, Any]:

@@ -23,7 +23,12 @@ The contract (also documented in cassandra/patient_client.py):
     POST /chat
       body:    {"message": str, "session_id": str, "system_override": str?}
       headers: X-Cassandra-Token: <REPLAY_SHARED_SECRET>
-      reply:   {"reply": str, "total_tokens": int, "latency_ms": int}
+      reply:   {"reply": str, "total_tokens": int, "latency_ms": int,
+                "tool_calls": [{"name", "args", "result"}, ...]?}
+
+`tool_calls` is optional but strongly recommended: return your agent's tool ledger
+(name/args/result per call) and Cassandra scores eval/replay/red-team/gate runs with
+its deterministic grounding oracle instead of an LLM judge (see GROUNDING_SPEC_FILE).
 
 Two non-negotiable rules this template already implements:
 

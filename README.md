@@ -104,9 +104,53 @@ flowchart TB
     clients -->|"cassandra-mcp tools"| cassandra
 ```
 
+## Quickstart (pip)
+
+Two installs, depending on what you need (the import package stays `cassandra`):
+
+```bash
+pip install cassandra-ai            # light: the CLI + offline `cassandra scan` (3 small deps)
+pip install "cassandra-ai[full]"    # everything: live pipeline, dashboard, gate, pr, mcp
+cassandra                           # banner + command list
+```
+
+The light install is enough to scan exported logs (see [docs/SCAN.md](docs/SCAN.md)). Any
+command that needs the full stack tells you to add `[full]` instead of crashing.
+
+**v0.1 is dev-audience, not turnkey** — a fresh install still needs a few things wired up:
+
+- **Python 3.11+**
+- **An LLM key.** Backend is chosen by env (`cassandra/llm.py` precedence): `OPENAI_API_KEY`
+  → OpenAI; else `GEMINI_API_KEY` starting `sk-or-` → OpenRouter; else Vertex Gemini.
+- **A Phoenix instance** — [Phoenix Cloud](https://phoenix.arize.com) or local:
+  `docker run -p 6006:6006 arizephoenix/phoenix` (set `PHOENIX_*` env accordingly).
+- **Node / npx** — the Phoenix MCP surface shells out to `npx @arizeai/phoenix-mcp`.
+- **An agent to supervise.** The bundled demo Patient (ShopBot) is source-only; bring your
+  own via the "Bring your own agent" guide in `docs/WORKFLOWS.md`.
+
+Minimal `.env` (see `.env.example` for all keys):
+
+```bash
+GEMINI_API_KEY=...              # or OPENAI_API_KEY / Vertex config
+PHOENIX_COLLECTOR_ENDPOINT=http://localhost:6006
+```
+
+| Command | What it does |
+|---------|--------------|
+| `cassandra` | Print the banner + list of commands. |
+| `cassandra dashboard [--port N] [--host H]` | Run the dashboard + SSE cockpit (default port 8085). |
+| `cassandra run` | Drive one full end-to-end supervision cycle. |
+| `cassandra scan logs.jsonl --spec spec.json` | Check exported chat logs for answers no tool backed. Rule-only, no LLM, no Phoenix (`--judge` adds the LLM for undecided turns). See [docs/SCAN.md](docs/SCAN.md). |
+| `cassandra gate ...` | CI prompt-regression gate (args pass through to `cassandra-gate`). |
+| `cassandra mcp` | Run Cassandra's MCP server over stdio (Claude Desktop / Cursor). |
+
+> pip users get the self-contained cockpit (`dashboard/ui/index.html`) served at `/cockpit`
+> and at `/` (the React `web/` UI is built only in the Docker image, not shipped in the wheel).
+
 ## See it work
 
-A live cockpit. You type a customer message; the victim agent (**"the Patient"** — a
+The from-source path (clone the repo — gives you the Patient demo + editable code). A live
+cockpit: you type a customer message; the victim agent (**"the Patient"** — a
 deliberately fragile ShopBot) confidently invents a refund policy. Seconds later Cassandra
 catches it in the trace feed and the full pipeline plays out on screen: the diagnosis, the
 causal chain, the synthesized attack set, baseline-vs-candidate pass rates, the prompt diff,
@@ -174,7 +218,7 @@ Click the badge (it prompts for your key and registers the server), or add a ser
 ```
 
 ```bash
-pip install -e .
+pip install -e ".[full]"
 cassandra-mcp                 # or: python -m cassandra.mcp_server
 ```
 
@@ -205,6 +249,24 @@ postmortem with the diagnosis, severity, root-cause chain, baseline-vs-candidate
 the prompt diff, before/after replay evidence, and the red-team table. File it as a GitHub
 issue (`gh issue create --body-file reports/<id>.md`), drop it in Slack, or attach it to the
 PR that applies the patch. The `supervise_latest` MCP tool returns the same markdown.
+
+## The faithfulness cascade (rule → NLI → LLM) + multilingual
+
+The pass/fail verdict runs a **three-layer cascade**, cheapest and most reproducible first
+(`cassandra/oracle.py`):
+
+1. **Rule** (`grounding.py`) — deterministic check over the structured tool ledger; cites the
+   exact tool call. Free, reproducible, no model.
+2. **NLI** (`nli.py`) — for free-text **RAG** evidence a regex can't parse, a cross-encoder
+   entailment model asks "does the retrieved passage support this claim?" No LLM, no hardcoded
+   knowledge, and **language-agnostic** (point `NLI_MODEL` at a multilingual checkpoint).
+3. **LLM judge** — last resort, only when neither layer above can decide.
+
+Because the rule reads *facts* (a ₹ amount, a date), it catches hallucinations in **Hindi with
+zero extra model** — try the 🇮🇳 Hindi agent in `demo/mock-bot-integration.html`. This is the
+basis for a **data-sovereign, multilingual** posture (nothing leaves your VPC; works in Indian
+languages) that US SaaS + English-LLM-judge tools can't match. Design details:
+[`docs/NLI_AND_MULTILINGUAL.md`](docs/NLI_AND_MULTILINGUAL.md).
 
 ## Built with
 
@@ -238,6 +300,9 @@ cassandra/
 │   ├── diagnostician.py  #   LLM-as-judge → annotate span + severity
 │   ├── rootcause.py      #   culprit + causal chain + fix strategy
 │   ├── synthesizer.py    #   adversarial dataset → Phoenix dataset
+│   ├── grounding.py      #   deterministic faithfulness rule (Layer 1) — cites the tool call
+│   ├── nli.py            #   NLI/entailment (Layer 2) — verifies free-text RAG evidence
+│   ├── oracle.py         #   the pass/fail cascade: rule → NLI → LLM (one scoring contract)
 │   ├── evaluator.py      #   live baseline vs. candidate scoring + efficiency
 │   ├── patcher.py        #   prompt patch → Phoenix prompt version + diff
 │   ├── replay.py         #   re-run the original failing input on the patch

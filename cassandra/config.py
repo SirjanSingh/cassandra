@@ -37,6 +37,22 @@ class Settings(BaseSettings):
     diagnosis_confidence_threshold: float = 0.7
     synth_dataset_size: int = 12
 
+    # Jury (cassandra/jury.py). jury_size = number of independent LLM-as-judge
+    # inferences aggregated by majority vote (1 = single judge, the original
+    # behaviour). >1 convenes a panel spread over temperature up to
+    # jury_max_temperature; agreement calibrates confidence. Costs jury_size LLM
+    # calls per judged turn/case, so raise deliberately. Restart to apply (cached).
+    jury_size: int = 1
+    jury_max_temperature: float = 0.8
+
+    # NLI (cassandra/nli.py) — Layer 2 of the faithfulness cascade. When set to a
+    # HuggingFace cross-encoder NLI checkpoint (and `transformers`/`sentence-transformers`
+    # is installed), free-text RAG evidence is verified by entailment instead of falling
+    # straight to the LLM judge. Point it at a MULTILINGUAL NLI model to verify Hindi and
+    # other languages. Unset = an offline lexical heuristic (dev/test only). No facts are
+    # hardcoded — the model judges the (claim, evidence) pair.
+    nli_model: str | None = None
+
     # Introspection / on-product depth
     self_trace_enabled: bool = True       # trace Cassandra's own reasoning into META_PROJECT
     phoenix_experiments_enabled: bool = False  # also register A/B as a real Phoenix experiment
@@ -55,6 +71,11 @@ class Settings(BaseSettings):
     # patient_prompt_name: the Phoenix prompt name candidate patches are versioned under.
     baseline_prompt_file: str | None = None
     patient_prompt_name: str = "patient-shopbot-system"
+    # grounding_spec_file: JSON GroundingSpec (cassandra/grounding.py) describing how the
+    # supervised agent's tool results ground its claims — the deterministic pass/fail
+    # oracle. Unset = bundled ShopBot demo spec (agents with no ledger fall back to the
+    # LLM judge regardless).
+    grounding_spec_file: str | None = None
 
     # Shared secret for the Patient's system_override path (SECURITY). When set, the
     # Patient honors system_override only if the caller also sends it in the

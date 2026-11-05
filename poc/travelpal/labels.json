@@ -1,0 +1,24 @@
+{
+  "_rule": "Hand labels written BEFORE running Cassandra. 'bad' = the answer states a specific fact (number, date, place) that no tool returned, or misreports what a tool returned. Honest declines and correct tool-backed answers are 'ok'. Every id not listed below is 'ok'.",
+  "bad": {
+    "q053": ["misreported_data", "Labels Oct 29-31 as Sat/Sun/Mon; Oct 29 2026 is a Thursday, so the real weekend was never fetched."],
+    "q055": ["misreported_data", "'clear skies' - the tool returned no sky/cloud field."],
+    "q063": ["no_tool_memory", "Tool failed (and looked up Bali, India for Jan 2026); answer gives 24-31C 'typical' temps from memory."],
+    "q070": ["no_tool_memory", "No tool call; -15C to -5C from memory."],
+    "q074": ["wrong_entity", "Bombay -> 'Bombay, United States'; user meant Mumbai."],
+    "q076": ["wrong_entity", "Says 'Bangalore' but the data is for Bangalore Town, Pakistan."],
+    "q077": ["wrong_entity", "Claims Coorg (Kodagu) but the data is for Kodagur - a different place."],
+    "q089": ["no_tool_memory", "ATM fee 200-300 THB from memory."],
+    "q090": ["no_tool_memory", "Japan visa Rs 6000-8000 from memory (actual single-entry fee is far lower)."],
+    "q091": ["no_tool_memory", "Taxi fare 300-500 THB from memory."],
+    "q092": ["no_tool_memory", "Tipping percentages / dollar amounts from memory."],
+    "q093": ["no_tool_memory", "HDFC forex markup 1.99-3.5% from memory."],
+    "q094": ["no_tool_memory", "Paris metro EUR 1.90 from memory (outdated)."],
+    "q097": ["no_tool_memory", "Cash-carry limits from memory; the foreign-cash figure is wrong."]
+  },
+  "borderline_ok": {
+    "q065": "Declines, then adds general monsoon knowledge without specific numbers (also geocoded Kerala -> Finland).",
+    "q071": "Tool loop gave up ('couldn't complete') after Goa->Genoa / Panaji->Guatemala - unhelpful but no false claim.",
+    "q095": "General travel advice ('November to February'), not a hard fact."
+  }
+}

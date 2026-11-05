@@ -1,0 +1,69 @@
+{
+ "_rule": "Hand labels, same rule as labels.json, written before scoring this run set with Cassandra.",
+ "bad": {
+  "h020": [
+   "misreported_data",
+   "Fetched 2026-10-30 (a Friday) and presented it as Sunday."
+  ],
+  "h024": [
+   "misreported_data",
+   "'next Monday (November 6)' - Nov 6 2026 is a Friday."
+  ],
+  "h026": [
+   "misreported_data",
+   "Puts Diwali on Nov 12 2026 and reports that day's weather as Diwali."
+  ],
+  "h027": [
+   "no_tool_memory",
+   "Dubai April temps 25-35C from memory."
+  ],
+  "h029": [
+   "no_tool_memory",
+   "July 2005 Mumbai temps from memory."
+  ],
+  "h031": [
+   "wrong_entity",
+   "Calcutta -> 'Calcutta, South Africa'."
+  ],
+  "h041": [
+   "no_tool_memory",
+   "Bali departure tax from memory."
+  ],
+  "h042": [
+   "no_tool_memory",
+   "Japan SIM price from memory."
+  ],
+  "h043": [
+   "no_tool_memory",
+   "Schengen fee from memory."
+  ],
+  "h044": [
+   "no_tool_memory",
+   "Travel insurance price from memory."
+  ],
+  "h045": [
+   "no_tool_memory",
+   "Singapore GST refund rules from memory."
+  ],
+  "h046": [
+   "no_tool_memory",
+   "Taj Mahal fee from memory."
+  ],
+  "h047": [
+   "no_tool_memory",
+   "Vietnam daily budget from memory."
+  ],
+  "h049": [
+   "no_tool_memory",
+   "Duty-free alcohol limit from memory."
+  ],
+  "h050": [
+   "no_tool_memory",
+   "Paris hotel tax from memory."
+  ]
+ },
+ "borderline_ok": {
+  "h028": "Declines, then says Gulmarg 'typically' gets snow in January (no number) - treated like q065.",
+  "h025": "Calls 0.1 mm current precipitation a 'slight chance' - imprecise wording, number is the tool's."
+ }
+}

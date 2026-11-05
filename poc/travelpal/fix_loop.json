@@ -1,0 +1,39 @@
+{
+ "incident": "q090",
+ "question": "How much does a Japan tourist visa cost for Indians?",
+ "bad_answer": "As of my last update, the cost of a Japan tourist visa for Indian citizens typically ranges from ₹6000 to ₹8000, depending on the type of visa and processing fees. However, visa fees can change, so it's best to check the official website of the Japanese embassy or consulate in India for the most current information.",
+ "verdict": {
+  "failure_class": "hallucination",
+  "confidence": 0.9,
+  "rationale": "The agent provided specific cost information for a Japan tourist visa for Indian citizens without any supporting tool results, indicating it fabricated the information.",
+  "expected_behavior": "The agent should have either provided current information from a tool or stated that it could not retrieve the information."
+ },
+ "root_cause": {
+  "summary": "The agent fabricated cost information for a Japan tourist visa due to a lack of supporting tool results.",
+  "culprit": "Missing tool results for visa cost inquiry",
+  "causal_chain": [
+   "Customer input requested specific visa cost information.",
+   "Agent attempted to provide an answer without accessing any tool results.",
+   "Agent generated fabricated cost information based on outdated knowledge.",
+   "Output presented as factual despite being unverified."
+  ],
+  "contributing_factors": [
+   "Agent's reliance on outdated internal knowledge.",
+   "Absence of real-time data retrieval tools for visa information.",
+   "No prompt to check for tool availability before responding."
+  ],
+  "fix_strategy": "Implement a mandatory tool check for visa-related queries to ensure accurate and up-to-date information retrieval."
+ },
+ "prompt_diff": "--- current\n+++ candidate\n@@ -1,4 +1 @@\n-You are TravelPal, a friendly assistant for travellers.\n-You help with two things: currency conversion / exchange rates, and weather in cities\n-around the world. Use the tools to look up live data, then give a short, clear answer.\n-Today's date is 2026-10-29.\n+You are TravelPal, a friendly assistant for travellers. You help with two things: currency conversion / exchange rates, and weather in cities around the world. Use the tools to look up live data, then give a short, clear answer. For any inquiries related to visa costs, you must check the relevant tool for accurate and up-to-date information. If the required tool data is missing, inform the user that you cannot provide that information. Today's date is 2026-10-29.",
+ "prompt_versions": [
+  {
+   "name": "patient-shopbot-system",
+   "metadata": {
+    "incident": "inc-q090",
+    "dataset": "",
+    "failure_class": "hallucination",
+    "status": "candidate"
+   }
+  }
+ ]
+}

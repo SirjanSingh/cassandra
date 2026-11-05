@@ -1,24 +1,25 @@
 {
-  "inputs": [
-    {
-      "id": "gemini_api_key",
-      "type": "promptString",
-      "description": "Gemini API key (free at aistudio.google.com) - powers diagnose/synthesize/patch",
-      "password": true
-    }
-  ],
-  "servers": {
-    "cassandra": {
-      "type": "stdio",
-      "command": "cassandra-mcp",
-      "env": {
-        "GEMINI_API_KEY": "${input:gemini_api_key}",
-        "GOOGLE_GENAI_USE_VERTEXAI": "false",
-        "GEMINI_MODEL": "gemini-2.5-flash",
-        "PHOENIX_BASE_URL": "http://localhost:6006",
-        "PHOENIX_API_KEY": "local",
-        "PATIENT_ENDPOINT": "http://localhost:8082/chat"
-      }
-    }
-  }
+	"servers": {
+		"cassandra": {
+			"type": "stdio",
+			"command": "${workspaceFolder}/.venv/Scripts/python.exe",
+			"args": ["-m", "cassandra.mcp_server"],
+			"env": {
+				"GEMINI_API_KEY": "${input:gemini_api_key}",
+				"GOOGLE_GENAI_USE_VERTEXAI": "false",
+				"GEMINI_MODEL": "gemini-2.5-flash",
+				"PHOENIX_BASE_URL": "http://localhost:6006",
+				"PHOENIX_API_KEY": "local",
+				"PATIENT_ENDPOINT": "http://localhost:8082/chat"
+			}
+		}
+	},
+	"inputs": [
+		{
+			"id": "gemini_api_key",
+			"type": "promptString",
+			"description": "Gemini API key (free at aistudio.google.com) - powers diagnose/synthesize/patch",
+			"password": true
+		}
+	]
 }

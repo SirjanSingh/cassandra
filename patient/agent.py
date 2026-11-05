@@ -8,6 +8,7 @@ point - it is what Cassandra catches downstream.
 
 from __future__ import annotations
 
+import hmac
 import json
 
 from fastapi import FastAPI, Header
@@ -62,7 +63,8 @@ def resolve_override(
     if session_id != "test":
         return None
     secret = get_settings().replay_shared_secret
-    if secret and token != secret:
+    # Constant-time compare: a plain `token != secret` leaks length/prefix via timing.
+    if secret and not hmac.compare_digest(token or "", secret):
         return None
     return system_override
 

@@ -1,0 +1,17 @@
+{
+ "_rule": "Hand labels, same rule as labels.json, written before scoring this run set with Cassandra.",
+ "bad": {
+  "h024": [
+   "misreported_data",
+   "Still 'next Monday, November 6' - a Friday."
+  ],
+  "h031": [
+   "wrong_entity",
+   "Still Calcutta, South Africa."
+  ],
+  "h047": [
+   "no_tool_memory",
+   "Vietnam daily budget from memory."
+  ]
+ }
+}

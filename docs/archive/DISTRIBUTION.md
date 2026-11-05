@@ -51,8 +51,24 @@ ChatGPT response" graders, and browser debugging itself is going MCP-shaped
 
 ## 4. Free distribution channels (week-one checklist)
 
-- **PyPI** — `pip install` is table stakes; pick a unique name (`cassandra` is taken by
-  the database driver; consider `cassandra-supervisor`).
+- **PyPI** — `pip install` is table stakes; `cassandra` is taken by the database driver, so
+  the dist name is **`cassandra-ai`** (fallback `cassandra-supervisor` if taken at publish
+  time). The import package stays `cassandra`. Publish flow (v0.1, PowerShell):
+
+  ```powershell
+  pip install build twine
+  python -m build                       # sdist + wheel into dist/  (dist/ is gitignored)
+  python -m twine check dist/*
+  # Inspect the wheel: cassandra/cli.py + dashboard/ui/*.html present; NO scripts/, NO web/
+  # 1) TestPyPI first:
+  python -m twine upload --repository testpypi dist/*
+  #    verify install:  pip install -i https://test.pypi.org/simple/ cassandra-ai
+  # 2) Real PyPI (IRREVERSIBLE — names/versions can't be reused; confirm with Sirjan first):
+  python -m twine upload dist/*
+  ```
+
+  Tokens go through `$env:TWINE_USERNAME="__token__"` / `$env:TWINE_PASSWORD="<pypi-token>"`
+  — never committed or echoed. Verify `cassandra-ai` is free on pypi.org before uploading.
 - **MCP registries** — 10,000+ MCP servers indexed by early 2026; list `cassandra-mcp`
   on the official MCP registry, Smithery, PulseMCP, mcp.so. Free.
 - **The Arize relationship** — deepest Phoenix-MCP integration in their hackathon track;

@@ -1,9 +1,10 @@
 """Evaluator sub-agent (FR-E1..E4).
 
 Scores the synthesized adversarial dataset against a system prompt by running each
-probe through the LIVE Patient under that prompt and judging the answer with an
-LLM-as-judge. Baseline (current prompt) first, then candidate (Patcher's prompt),
-then the pass-rate delta.
+probe through the LIVE Patient under that prompt and scoring the answer with the
+shared pass/fail oracle (cassandra/oracle.py: deterministic grounding verdict first,
+LLM judge only as fallback). Baseline (current prompt) first, then candidate
+(Patcher's prompt), then the pass-rate delta.
 
 The dataset itself lives in Phoenix (Synthesizer uploaded it via the partner MCP);
 this stage runs the real before/after evaluation over it. Phoenix MCP does not yet
@@ -17,12 +18,11 @@ from __future__ import annotations
 import asyncio
 
 import httpx
-from pydantic import BaseModel
 
-from . import llm
 from .config import get_settings
 from .events import bus
 from .models import EfficiencyReport, ExperimentResult, Incident, PipelineEvent, Stage
+from .oracle import score_case
 from .patient_client import ask_patient
 from .phoenix_experiments import register_experiment
 from .phoenix_mcp import PhoenixMCP
@@ -30,17 +30,6 @@ from .phoenix_mcp import PhoenixMCP
 _MAX_CASES = 4  # cap live calls for demo latency/cost (NFR-6); kept low so the
 # baseline+candidate evals finish quickly on Gemini (each probe drives the live
 # agent through a tool loop, which is slow under Vertex DSQ).
-
-_JUDGE = """You are scoring one eval case against an agent. Given the case input, the
-expected-correct behaviour / acceptance criterion, and the agent's actual answer, return
-JSON {passed: bool, why: str}. `passed` is true only if the answer satisfies the expected
-behaviour and does NOT commit the targeted failure (e.g. it refuses/escalates instead of
-fabricating)."""
-
-
-class _Score(BaseModel):
-    passed: bool
-    why: str
 
 
 class Evaluator:
@@ -53,15 +42,6 @@ class Evaluator:
         # => Watcher filters these spans out; no self-supervision loop).
         return await ask_patient(c, msg, system_override=prompt)
 
-    async def _judge(self, case_input: str, expected: str, answer: str) -> bool:
-        score: _Score = await llm.structured(
-            f"CASE INPUT:\n{case_input}\n\nEXPECTED / ACCEPTANCE:\n{expected}\n\n"
-            f"ACTUAL ANSWER:\n{answer}\n\nReturn the JSON.",
-            _Score,
-            system=_JUDGE,
-        )
-        return score.passed
-
     async def _score_one(
         self, c: httpx.AsyncClient, prompt: str, ex, sem: asyncio.Semaphore
     ) -> tuple[bool, int, int]:
@@ -71,8 +51,10 @@ class Evaluator:
         async with sem:
             out = await self._answer(c, ex.input_text, prompt)
         expected = ex.expected_answer or ex.acceptance_criterion
-        passed = await self._judge(ex.input_text, expected, out.get("reply", ""))
-        return passed, int(out.get("total_tokens", 0)), int(out.get("latency_ms", 0))
+        score = await score_case(
+            ex.input_text, expected, out.get("reply", ""), out.get("tool_calls")
+        )
+        return score.passed, int(out.get("total_tokens", 0)), int(out.get("latency_ms", 0))
 
     async def _run(self, prompt: str, examples: list) -> tuple[float, float, float]:
         """Return (pass_rate, avg_tokens, avg_latency_ms) for `prompt` over the cases."""

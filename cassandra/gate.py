@@ -1,8 +1,10 @@
 """CI prompt regression gate: prompts are code, so test them like code.
 
 `cassandra-gate` scores a system prompt against an eval dataset by running every
-case through the live agent and judging each answer with the same LLM-as-judge the
-Evaluator uses, then exits non-zero if the pass rate is below the threshold. Drop it
+case through the live agent and scoring each answer with the same pass/fail oracle
+the Evaluator uses (cassandra/oracle.py: deterministic grounding verdict when the
+agent reports its tool ledger, LLM judge as fallback), then exits non-zero if the
+pass rate is below the threshold. Drop it
 into GitHub Actions (see examples/github-actions-prompt-gate.yml) and every prompt
 edit gets regression-tested before it ships, exactly like a unit test suite.
 
@@ -22,10 +24,9 @@ from pathlib import Path
 import httpx
 from pydantic import BaseModel, Field, computed_field
 
-from . import llm
 from .config import get_settings
-from .evaluator import _JUDGE, _Score
 from .models import DatasetExample
+from .oracle import Score, score_case
 from .patient_client import ask_patient
 
 
@@ -53,20 +54,16 @@ class GateResult(BaseModel):
         return self.pass_rate >= self.threshold
 
 
-async def _ask_agent(c: httpx.AsyncClient, endpoint: str, message: str, prompt: str) -> str:
-    """Run one case through the live agent under the prompt being gated."""
-    out = await ask_patient(c, message, system_override=prompt, endpoint=endpoint)
-    return out.get("reply", "")
+async def _ask_agent(c: httpx.AsyncClient, endpoint: str, message: str, prompt: str) -> dict:
+    """Run one case through the live agent; full response so the ledger is scoreable."""
+    return await ask_patient(c, message, system_override=prompt, endpoint=endpoint)
 
 
-async def _judge_case(case: DatasetExample, reply: str) -> _Score:
-    """Judge one answer with the Evaluator's LLM-as-judge (single source of truth)."""
+async def _judge_case(case: DatasetExample, out: dict) -> Score:
+    """Score one answer with the shared pass/fail oracle (single source of truth)."""
     expected = case.expected_answer or case.acceptance_criterion
-    return await llm.structured(
-        f"CASE INPUT:\n{case.input_text}\n\nEXPECTED / ACCEPTANCE:\n{expected}\n\n"
-        f"ACTUAL ANSWER:\n{reply}\n\nReturn the JSON.",
-        _Score,
-        system=_JUDGE,
+    return await score_case(
+        case.input_text, expected, out.get("reply", ""), out.get("tool_calls")
     )
 
 
@@ -82,11 +79,14 @@ async def run_gate(
     results: list[CaseResult] = []
     async with httpx.AsyncClient(timeout=300) as c:
         for case in cases:
-            reply = await _ask_agent(c, endpoint, case.input_text, prompt)
-            score = await _judge_case(case, reply)
+            out = await _ask_agent(c, endpoint, case.input_text, prompt)
+            score = await _judge_case(case, out)
             results.append(
                 CaseResult(
-                    input_text=case.input_text, passed=score.passed, why=score.why, reply=reply
+                    input_text=case.input_text,
+                    passed=score.passed,
+                    why=score.why,
+                    reply=out.get("reply", ""),
                 )
             )
     n = len(results)

@@ -34,3 +34,4 @@ Thumbs.db
 
 # Auto-generated incident postmortems
 reports/
+poc/ragtruth/data/

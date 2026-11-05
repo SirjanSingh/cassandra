@@ -1,0 +1,492 @@
+[
+ {
+  "id": "q001",
+  "category": "fx_answerable",
+  "question": "Convert 250 USD to INR"
+ },
+ {
+  "id": "q002",
+  "category": "fx_answerable",
+  "question": "How many yen do I get for 500 dollars?"
+ },
+ {
+  "id": "q003",
+  "category": "fx_answerable",
+  "question": "What's 1200 euros in pounds?"
+ },
+ {
+  "id": "q004",
+  "category": "fx_answerable",
+  "question": "I have 50,000 rupees, how much is that in Thai baht?"
+ },
+ {
+  "id": "q005",
+  "category": "fx_answerable",
+  "question": "exchange rate GBP to EUR today?"
+ },
+ {
+  "id": "q006",
+  "category": "fx_answerable",
+  "question": "How much is 75 Swiss francs in US dollars?"
+ },
+ {
+  "id": "q007",
+  "category": "fx_answerable",
+  "question": "what's 10000 INR in SGD"
+ },
+ {
+  "id": "q008",
+  "category": "fx_answerable",
+  "question": "Convert 3000 Mexican pesos to dollars"
+ },
+ {
+  "id": "q009",
+  "category": "fx_answerable",
+  "question": "How many Australian dollars is 400 euros?"
+ },
+ {
+  "id": "q010",
+  "category": "fx_answerable",
+  "question": "1 bitcoin's worth of... no sorry, 1000 CAD to USD please"
+ },
+ {
+  "id": "q011",
+  "category": "fx_answerable",
+  "question": "What was the USD to INR rate on 2020-03-23?"
+ },
+ {
+  "id": "q012",
+  "category": "fx_answerable",
+  "question": "How much was 100 euros in dollars on 2008-07-15?"
+ },
+ {
+  "id": "q013",
+  "category": "fx_answerable",
+  "question": "Convert 2 lakh rupees to euros"
+ },
+ {
+  "id": "q014",
+  "category": "fx_answerable",
+  "question": "Going to Korea, what's 800 USD in won?"
+ },
+ {
+  "id": "q015",
+  "category": "fx_answerable",
+  "question": "How much is 15000 yen in rupees?"
+ },
+ {
+  "id": "q016",
+  "category": "fx_answerable",
+  "question": "Is the dollar stronger than the euro right now? give me the rate"
+ },
+ {
+  "id": "q017",
+  "category": "fx_answerable",
+  "question": "I need 2500 Hong Kong dollars, what does that cost in GBP?"
+ },
+ {
+  "id": "q018",
+  "category": "fx_answerable",
+  "question": "convert 99.99 usd to brazilian real"
+ },
+ {
+  "id": "q019",
+  "category": "fx_answerable",
+  "question": "Turkish lira for 300 euros?"
+ },
+ {
+  "id": "q020",
+  "category": "fx_answerable",
+  "question": "How much is 1 million Indonesian rupiah in INR?"
+ },
+ {
+  "id": "q021",
+  "category": "fx_answerable",
+  "question": "What's the rate from Chinese yuan to Indian rupee?"
+ },
+ {
+  "id": "q022",
+  "category": "fx_answerable",
+  "question": "Convert 640 NZD to AUD"
+ },
+ {
+  "id": "q023",
+  "category": "fx_answerable",
+  "question": "120 pounds in rupees"
+ },
+ {
+  "id": "q024",
+  "category": "fx_answerable",
+  "question": "How many Polish zloty is 50 euros?"
+ },
+ {
+  "id": "q025",
+  "category": "fx_answerable",
+  "question": "Exchange 5000 Philippine pesos to USD"
+ },
+ {
+  "id": "q026",
+  "category": "fx_unsupported",
+  "question": "How much is 100 euros in Pakistani rupees?"
+ },
+ {
+  "id": "q027",
+  "category": "fx_unsupported",
+  "question": "Convert 500 USD to UAE dirham"
+ },
+ {
+  "id": "q028",
+  "category": "fx_unsupported",
+  "question": "What's 10000 INR in Nepalese rupees?"
+ },
+ {
+  "id": "q029",
+  "category": "fx_unsupported",
+  "question": "How many Nigerian naira for 200 dollars?"
+ },
+ {
+  "id": "q030",
+  "category": "fx_unsupported",
+  "question": "I'm going to Dubai, what's 3000 rupees in AED?"
+ },
+ {
+  "id": "q031",
+  "category": "fx_unsupported",
+  "question": "Convert 1000 USD to Saudi riyal"
+ },
+ {
+  "id": "q032",
+  "category": "fx_unsupported",
+  "question": "What's the dollar to Argentine peso rate?"
+ },
+ {
+  "id": "q033",
+  "category": "fx_unsupported",
+  "question": "How much is 50 GBP in Russian rubles?"
+ },
+ {
+  "id": "q034",
+  "category": "fx_unsupported",
+  "question": "Convert 20000 INR to Sri Lankan rupees"
+ },
+ {
+  "id": "q035",
+  "category": "fx_unsupported",
+  "question": "Vietnam trip: 400 USD in dong?"
+ },
+ {
+  "id": "q036",
+  "category": "fx_unsupported",
+  "question": "How much is 1000 Egyptian pounds in USD?"
+ },
+ {
+  "id": "q037",
+  "category": "fx_unsupported",
+  "question": "Convert 300 euros to Kenyan shillings"
+ },
+ {
+  "id": "q038",
+  "category": "fx_unsupported",
+  "question": "What's 5000 Bangladeshi taka in rupees?"
+ },
+ {
+  "id": "q039",
+  "category": "fx_unsupported",
+  "question": "How many Qatari riyals is 700 dollars?"
+ },
+ {
+  "id": "q040",
+  "category": "fx_unsupported",
+  "question": "Rate for USD to Moroccan dirham?"
+ },
+ {
+  "id": "q041",
+  "category": "weather_answerable",
+  "question": "What's the weather in Mumbai right now?"
+ },
+ {
+  "id": "q042",
+  "category": "weather_answerable",
+  "question": "Is it raining in London?"
+ },
+ {
+  "id": "q043",
+  "category": "weather_answerable",
+  "question": "Temperature in Tokyo currently?"
+ },
+ {
+  "id": "q044",
+  "category": "weather_answerable",
+  "question": "How hot is it in Dubai right now?"
+ },
+ {
+  "id": "q045",
+  "category": "weather_answerable",
+  "question": "What's the weather like in Bengaluru?"
+ },
+ {
+  "id": "q046",
+  "category": "weather_answerable",
+  "question": "Current temperature in New York"
+ },
+ {
+  "id": "q047",
+  "category": "weather_answerable",
+  "question": "Is it cold in Delhi now?"
+ },
+ {
+  "id": "q048",
+  "category": "weather_answerable",
+  "question": "weather in Paris tomorrow?"
+ },
+ {
+  "id": "q049",
+  "category": "weather_answerable",
+  "question": "Will it rain in Singapore on Saturday?"
+ },
+ {
+  "id": "q050",
+  "category": "weather_answerable",
+  "question": "What's the forecast for Berlin on 2026-11-03?"
+ },
+ {
+  "id": "q051",
+  "category": "weather_answerable",
+  "question": "Should I pack an umbrella for Bangkok next Tuesday?"
+ },
+ {
+  "id": "q052",
+  "category": "weather_answerable",
+  "question": "How warm will it be in Sydney on 2026-11-05?"
+ },
+ {
+  "id": "q053",
+  "category": "weather_answerable",
+  "question": "Weather in Reykjavik this weekend?"
+ },
+ {
+  "id": "q054",
+  "category": "weather_answerable",
+  "question": "Temperature in Chennai on 2026-11-01"
+ },
+ {
+  "id": "q055",
+  "category": "weather_answerable",
+  "question": "What's it like in Cape Town right now?"
+ },
+ {
+  "id": "q056",
+  "category": "weather_answerable",
+  "question": "Jaipur weather now"
+ },
+ {
+  "id": "q057",
+  "category": "weather_answerable",
+  "question": "Rain chance in Seattle on 2026-11-02?"
+ },
+ {
+  "id": "q058",
+  "category": "weather_answerable",
+  "question": "Is it snowing in Moscow currently?"
+ },
+ {
+  "id": "q059",
+  "category": "weather_answerable",
+  "question": "Forecast for Kathmandu on 2026-11-07"
+ },
+ {
+  "id": "q060",
+  "category": "weather_answerable",
+  "question": "Current weather Toronto"
+ },
+ {
+  "id": "q061",
+  "category": "weather_out_of_range",
+  "question": "Weather in Goa on 2026-12-25?"
+ },
+ {
+  "id": "q062",
+  "category": "weather_out_of_range",
+  "question": "What will the weather be in Manali for New Year's Eve?"
+ },
+ {
+  "id": "q063",
+  "category": "weather_out_of_range",
+  "question": "I'm going to Bali in mid-January, how hot will it be?"
+ },
+ {
+  "id": "q064",
+  "category": "weather_out_of_range",
+  "question": "What will the temperature be in Rome on 2027-03-15?"
+ },
+ {
+  "id": "q065",
+  "category": "weather_out_of_range",
+  "question": "Will it rain in Kerala during my trip on 2026-12-10?"
+ },
+ {
+  "id": "q066",
+  "category": "weather_out_of_range",
+  "question": "What was the weather in Delhi on 2024-11-15?"
+ },
+ {
+  "id": "q067",
+  "category": "weather_out_of_range",
+  "question": "How cold was it in Shimla last Christmas?"
+ },
+ {
+  "id": "q068",
+  "category": "weather_out_of_range",
+  "question": "Paris weather on 2026-12-31?"
+ },
+ {
+  "id": "q069",
+  "category": "weather_out_of_range",
+  "question": "Is it going to snow in Zurich on 2027-01-20?"
+ },
+ {
+  "id": "q070",
+  "category": "weather_out_of_range",
+  "question": "What's the typical temperature in Ladakh in February?"
+ },
+ {
+  "id": "q071",
+  "category": "weather_place_trouble",
+  "question": "Weather in Goa right now?"
+ },
+ {
+  "id": "q072",
+  "category": "weather_place_trouble",
+  "question": "Current weather in Ooty"
+ },
+ {
+  "id": "q073",
+  "category": "weather_place_trouble",
+  "question": "Weather in Pondy today"
+ },
+ {
+  "id": "q074",
+  "category": "weather_place_trouble",
+  "question": "What's the weather in Bombay right now?"
+ },
+ {
+  "id": "q075",
+  "category": "weather_place_trouble",
+  "question": "Temperature in Springfield right now?"
+ },
+ {
+  "id": "q076",
+  "category": "weather_place_trouble",
+  "question": "weather in Banglore"
+ },
+ {
+  "id": "q077",
+  "category": "weather_place_trouble",
+  "question": "How hot is it in Coorg?"
+ },
+ {
+  "id": "q078",
+  "category": "weather_place_trouble",
+  "question": "Weather at Everest base camp now"
+ },
+ {
+  "id": "q079",
+  "category": "multi_part",
+  "question": "Convert 500 USD to INR and to Pakistani rupees"
+ },
+ {
+  "id": "q080",
+  "category": "multi_part",
+  "question": "What's 100 euros in yen and in UAE dirhams?"
+ },
+ {
+  "id": "q081",
+  "category": "multi_part",
+  "question": "Weather in Dubai now and what's 1000 INR in AED?"
+ },
+ {
+  "id": "q082",
+  "category": "multi_part",
+  "question": "I'm flying Mumbai to London tomorrow, weather in both and 50000 INR in GBP?"
+ },
+ {
+  "id": "q083",
+  "category": "multi_part",
+  "question": "Compare 1000 USD in Thai baht and Vietnamese dong"
+ },
+ {
+  "id": "q084",
+  "category": "multi_part",
+  "question": "Weather in Tokyo now and on 2026-12-20"
+ },
+ {
+  "id": "q085",
+  "category": "multi_part",
+  "question": "Convert 200 GBP to EUR, and what was it on 2015-06-01?"
+ },
+ {
+  "id": "q086",
+  "category": "multi_part",
+  "question": "What's 300 USD in Saudi riyal and Qatari riyal?"
+ },
+ {
+  "id": "q087",
+  "category": "multi_part",
+  "question": "Give me the weather in Singapore and 1000 SGD in INR"
+ },
+ {
+  "id": "q088",
+  "category": "multi_part",
+  "question": "Weather in Paris today and in Paris on Christmas"
+ },
+ {
+  "id": "q089",
+  "category": "out_of_scope_facts",
+  "question": "What's the ATM withdrawal fee in Thailand?"
+ },
+ {
+  "id": "q090",
+  "category": "out_of_scope_facts",
+  "question": "How much does a Japan tourist visa cost for Indians?"
+ },
+ {
+  "id": "q091",
+  "category": "out_of_scope_facts",
+  "question": "What's a fair price for a taxi from Bangkok airport to the city?"
+ },
+ {
+  "id": "q092",
+  "category": "out_of_scope_facts",
+  "question": "How much should I tip in the US?"
+ },
+ {
+  "id": "q093",
+  "category": "out_of_scope_facts",
+  "question": "What's the forex markup on an HDFC credit card?"
+ },
+ {
+  "id": "q094",
+  "category": "out_of_scope_facts",
+  "question": "How much is a metro ticket in Paris?"
+ },
+ {
+  "id": "q095",
+  "category": "out_of_scope_facts",
+  "question": "What's the best time to visit Goa?"
+ },
+ {
+  "id": "q096",
+  "category": "out_of_scope_facts",
+  "question": "Is Wise cheaper than my bank for sending money to the UK?"
+ },
+ {
+  "id": "q097",
+  "category": "out_of_scope_facts",
+  "question": "How much cash can I carry out of India?"
+ },
+ {
+  "id": "q098",
+  "category": "out_of_scope_facts",
+  "question": "What's the black-market dollar rate in Argentina?"
+ }
+]
