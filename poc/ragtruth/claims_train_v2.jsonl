@@ -1,0 +1,300 @@
+{"id": "12025", "unsupported": [], "n_claims": 6}
+{"id": "16201", "unsupported": [], "n_claims": 5}
+{"id": "14347", "unsupported": [{"claim": "Three examples of unearned revenue include advance payments for airline or railroad tickets, prepayment for a subscription service, and deposits received by a hotel for future reservations.", "status": "not_in_source", "evidence": "The passages provide examples of unearned revenue (airline tickets and railroad tickets) but do not mention subscription services or hotel deposits."}, {"claim": "Prepayment for a subscription service is an example of unearned revenue.", "status": "not_in_source", "evidence": "The passages do not mention subscription services."}, {"claim": "Deposits received by a hotel for future reservations are an example of unearned revenue.", "status": "not_in_source", "evidence": "The passages do not mention hotel deposits."}], "n_claims": 5}
+{"id": "13086", "unsupported": [{"claim": "Place your mashed potatoes in a medium bowl.", "status": "not_in_source", "evidence": "The passages do not specify that the potatoes should be mashed before placing them in a bowl."}, {"claim": "Stir in cooked onions, cheese, salt, pepper, and bacon.", "status": "not_in_source", "evidence": "The source does not mention cheese or bacon in the context of making potato cakes."}], "n_claims": 7}
+{"id": "16801", "unsupported": [{"claim": "There is no specific information about the current weather in Mallorca.", "status": "not_in_source", "evidence": "The passages do not provide current weather information."}, {"claim": "There is no specific information about the weather in other seasons.", "status": "not_in_source", "evidence": "The passages do not provide detailed information about weather in seasons other than spring, summer, and winter."}], "n_claims": 7}
+{"id": "16927", "unsupported": [{"claim": "Preheat the oven to the specified temperature mentioned in passage 1.", "status": "not_in_source", "evidence": "The passages do not mention a specific temperature for preheating."}], "n_claims": 5}
+{"id": "12996", "unsupported": [], "n_claims": 9}
+{"id": "15829", "unsupported": [{"claim": "Serve the sloppy joes on buns or rolls.", "status": "not_in_source", "evidence": "The source does not mention serving on buns or rolls."}], "n_claims": 9}
+{"id": "13609", "unsupported": [{"claim": "Remove from the microwave and enjoy.", "status": "not_in_source", "evidence": "The source does not mention removing from the microwave or enjoying."}], "n_claims": 8}
+{"id": "17695", "unsupported": [{"claim": "Fold the foil to create a packet and seal it.", "status": "not_in_source", "evidence": "The passages do not mention folding the foil to create a packet."}, {"claim": "Grill the foil packets for a few minutes until the zucchini is tender and cooked.", "status": "not_in_source", "evidence": "The passages do not specify grilling the foil packets or the cooking time."}], "n_claims": 11}
+{"id": "16213", "unsupported": [{"claim": "Positioning strategy refers to the approach a company takes to communicate and establish its unique selling proposition (USP) or differentiate itself from competitors.", "status": "not_in_source", "evidence": "The source does not define positioning strategy as such."}, {"claim": "Marketing strategy encompasses a broader set of activities aimed at achieving specific marketing objectives.", "status": "not_in_source", "evidence": "The source does not provide a definition or description of marketing strategy."}, {"claim": "Positioning is a part of marketing strategy, but it is not the whole strategy itself.", "status": "not_in_source", "evidence": "The source does not explicitly state this relationship."}, {"claim": "Positioning strategy is a subset of marketing strategy that focuses on communicating a company's unique attributes.", "status": "not_in_source", "evidence": "The source does not explicitly state that positioning strategy is a subset of marketing strategy."}], "n_claims": 9}
+{"id": "17214", "unsupported": [{"claim": "To set up an Outlook rule to delay sending email, first launch Outlook and click the Home tab at the top of the window.", "status": "not_in_source", "evidence": "The source does not mention launching Outlook or clicking the Home tab."}, {"claim": "Then click the New Email button in the New section of the ribbon.", "status": "not_in_source", "evidence": "The source does not mention clicking the New Email button."}, {"claim": "Click the Options tab at the top of the message window and then click the Delay Delivery button in the More Options section of the window.", "status": "not_in_source", "evidence": "The source does not mention clicking the Options tab or the Delay Delivery button in this context."}, {"claim": "Check the box to the left of Do not deliver before in the Delivery Options section of the window and select the date and time at which you want the email to be sent.", "status": "not_in_source", "evidence": "The source does not mention checking the box or selecting a date and time in this context."}, {"claim": "Click the Close button and fill in all the details for the email, then click the Send button.", "status": "not_in_source", "evidence": "The source does not mention filling in details or clicking the Send button in this context."}], "n_claims": 9}
+{"id": "13051", "unsupported": [], "n_claims": 3}
+{"id": "16728", "unsupported": [], "n_claims": 4}
+{"id": "13788", "unsupported": [{"claim": "Spin the egg on that surface; if it spins easily, it's done.", "status": "not_in_source", "evidence": "The source does not mention spinning the egg or that it indicates doneness."}], "n_claims": 4}
+{"id": "16225", "unsupported": [{"claim": "You need an ice cream maker to make frozen yogurt.", "status": "not_in_source", "evidence": "passage 2 and passage 3 mention an ice cream maker, but passage 1 does not."}, {"claim": "The recipe is for healthy frozen yogurt.", "status": "not_in_source", "evidence": "The passages do not specify that the frozen yogurt is healthy."}], "n_claims": 6}
+{"id": "14580", "unsupported": [{"claim": "A C corporation is taxed separately from its owners.", "status": "not_in_source", "evidence": "The source does not explicitly state that C corporations are taxed separately from their owners."}], "n_claims": 5}
+{"id": "13585", "unsupported": [{"claim": "You can convert it to hours and minutes if needed.", "status": "not_in_source", "evidence": "The passages do not mention converting the result to hours and minutes."}, {"claim": "The passages provided do not explicitly mention how to calculate time on Excel.", "status": "contradicted", "evidence": "passage 2 and passage 3 provide explicit instructions on calculating time differences."}], "n_claims": 5}
+{"id": "12024", "unsupported": [], "n_claims": 6}
+{"id": "16884", "unsupported": [{"claim": "At 12am, the weather will be partly cloudy with a temperature of 55 degrees, a 41% chance of rain and 11 mph winds from the South.", "status": "contradicted", "evidence": "passage 2: 12am:The Hinesburg, VT forecast for Apr 15 is 55 degrees and Partly cloudy. There is 41 percentage chance of rain and 11 mph winds from the South."}], "n_claims": 4}
+{"id": "14833", "unsupported": [{"claim": "The effect of railroads in Texas was that it led to the growth and development of the state.", "status": "not_in_source", "evidence": "The passages do not provide specific details on the overall impact of railroads on Texas."}, {"claim": "The railroads allowed for increased transportation of goods and people.", "status": "not_in_source", "evidence": "The passages do not provide specific details on transportation effects."}, {"claim": "The railroads facilitated economic expansion and population growth.", "status": "not_in_source", "evidence": "The passages do not provide specific details on economic expansion or population growth."}], "n_claims": 9}
+{"id": "17587", "unsupported": [], "n_claims": 8}
+{"id": "12924", "unsupported": [], "n_claims": 8}
+{"id": "17317", "unsupported": [], "n_claims": 11}
+{"id": "12361", "unsupported": [{"claim": "Some physical properties of magnesium include being a silver-grey metal, melting at 840°C, boiling at 1484°C, and having a density of 1540 kg/m^3.", "status": "not_in_source", "evidence": "Passage 3 describes physical properties of calcium, not magnesium."}, {"claim": "Magnesium is a conductor of electricity but a poor one compared to most other metals.", "status": "not_in_source", "evidence": "Passage 2 does not provide specific physical properties for magnesium."}, {"claim": "Magnesium can react with oxygen, water, dolomite, magnesium carbonate, and magnesium sulfate.", "status": "not_in_source", "evidence": "Passage 2 does not specify magnesium's reactions with these substances."}], "n_claims": 13}
+{"id": "16243", "unsupported": [{"claim": "Teaching is a career that involves working with children.", "status": "not_in_source", "evidence": "Not mentioned in the passages."}, {"claim": "Child psychology is a career that involves working with children.", "status": "not_in_source", "evidence": "Not mentioned in the passages."}, {"claim": "Child care is a career that involves working with children.", "status": "not_in_source", "evidence": "Not mentioned in the passages."}], "n_claims": 4}
+{"id": "16620", "unsupported": [], "n_claims": 3}
+{"id": "14574", "unsupported": [{"claim": "Once you have a sewing machine, you can start practicing sewing.", "status": "not_in_source", "evidence": "The source does not explicitly state this."}, {"claim": "Ironing is also a crucial part of the tailoring process.", "status": "not_in_source", "evidence": "The source mentions ironing but does not state it is crucial to tailoring."}], "n_claims": 8}
+{"id": "14556", "unsupported": [{"claim": "C corporations are subject to double taxation, where the corporation pays taxes on its profits and the shareholders also pay taxes on the distributed dividends.", "status": "not_in_source", "evidence": "The source does not mention double taxation or that shareholders pay taxes on distributed dividends."}], "n_claims": 5}
+{"id": "17659", "unsupported": [], "n_claims": 10}
+{"id": "14881", "unsupported": [], "n_claims": 9}
+{"id": "13057", "unsupported": [{"claim": "This may include unusual behavior, unknown apps, or changes in settings.", "status": "not_in_source", "evidence": "The source does not specify what signs to look for regarding cell phone spy software."}], "n_claims": 7}
+{"id": "12679", "unsupported": [], "n_claims": 10}
+{"id": "14941", "unsupported": [], "n_claims": 7}
+{"id": "14202", "unsupported": [{"claim": "Add water to the bottom of the pan.", "status": "contradicted", "evidence": "do not cover the pork shoulder or add any liquid to the roasting pan."}, {"claim": "Cover it tightly with aluminum foil.", "status": "contradicted", "evidence": "do not cover the pork shoulder."}], "n_claims": 10}
+{"id": "12991", "unsupported": [], "n_claims": 8}
+{"id": "14118", "unsupported": [], "n_claims": 4}
+{"id": "14533", "unsupported": [{"claim": "Use any liquid laundry detergent and follow the instructions on the bottle.", "status": "not_in_source", "evidence": "The source does not provide specific instructions on using liquid laundry detergent."}, {"claim": "Load the dirty clothes into the washing machine, making sure not to overload it.", "status": "not_in_source", "evidence": "The source does not mention loading the washing machine or overloading."}, {"claim": "Set the appropriate water temperature and cycle based on the clothing type.", "status": "not_in_source", "evidence": "The source does not provide instructions on setting the washing machine's water temperature or cycle."}, {"claim": "Add the detergent and start the washing machine.", "status": "not_in_source", "evidence": "The source does not mention adding detergent or starting the washing machine."}, {"claim": "Once the washing cycle is complete, transfer the clothes to the dryer or hang them to air dry.", "status": "not_in_source", "evidence": "The source does not mention transferring clothes to the dryer or air drying."}], "n_claims": 10}
+{"id": "12415", "unsupported": [{"claim": "If the dough seems too dry, you can add a little more squash.", "status": "not_in_source", "evidence": "The source does not mention adding more squash if the dough is too dry."}, {"claim": "This dough can then be used to make butternut squash pasta.", "status": "not_in_source", "evidence": "The source does not explicitly state that the dough is used to make butternut squash pasta."}], "n_claims": 10}
+{"id": "16021", "unsupported": [{"claim": "If someone cries at a sad movie, it could mean that they are emotionally moved or empathetic towards the characters and storyline.", "status": "not_in_source", "evidence": "The passages do not provide information about the emotional response or empathy related to crying at movies."}], "n_claims": 1}
+{"id": "16729", "unsupported": [], "n_claims": 2}
+{"id": "16680", "unsupported": [{"claim": "Some enter diapause, a period of suspended development.", "status": "not_in_source", "evidence": "The source does not mention diapause in relation to eggs."}, {"claim": "They can live through freezing temperatures well below 32 degrees F.", "status": "not_in_source", "evidence": "The source does not specify that eggs can survive freezing temperatures."}, {"claim": "They do this by converting glycogen to sorbitol and glycerol, which act as a natural anti-freeze.", "status": "not_in_source", "evidence": "The source does not specify that this process applies to eggs."}], "n_claims": 5}
+{"id": "15798", "unsupported": [], "n_claims": 4}
+{"id": "16500", "unsupported": [{"claim": "The law, including its amendments, is designed to regulate and control substances that can lead to drug abuse.", "status": "not_in_source", "evidence": "The source does not provide information about the purpose of the law or its amendments."}], "n_claims": 4}
+{"id": "14539", "unsupported": [], "n_claims": 6}
+{"id": "17521", "unsupported": [], "n_claims": 7}
+{"id": "13615", "unsupported": [{"claim": "Replace the drain plug and fill the transmission with new transmission fluid.", "status": "not_in_source", "evidence": "passage 3 does not mention replacing the drain plug after draining."}], "n_claims": 9}
+{"id": "13656", "unsupported": [], "n_claims": 11}
+{"id": "17713", "unsupported": [], "n_claims": 4}
+{"id": "12973", "unsupported": [], "n_claims": 7}
+{"id": "12204", "unsupported": [{"claim": "Return the browned roast to the pot and add 1/2 cup red wine, thyme sprigs, chopped garlic, beef broth, and a bay leaf.", "status": "not_in_source", "evidence": "passage 2 mentions adding red wine, thyme sprigs, chopped garlic, beef broth, and bay leaf, but does not specify 1/2 cup of red wine or the exact order of adding ingredients."}, {"claim": "Continue to cook the roast, basting it with the pot's liquid every half-hour or so for 3 1/2 to 4 hours.", "status": "contradicted", "evidence": "passage 2 states to cook for 1 1/2 hours, not 3 1/2 to 4 hours."}], "n_claims": 10}
+{"id": "13579", "unsupported": [], "n_claims": 7}
+{"id": "14262", "unsupported": [], "n_claims": 7}
+{"id": "14059", "unsupported": [], "n_claims": 5}
+{"id": "12822", "unsupported": [], "n_claims": 5}
+{"id": "16944", "unsupported": [], "n_claims": 5}
+{"id": "16290", "unsupported": [], "n_claims": 7}
+{"id": "15246", "unsupported": [], "n_claims": 5}
+{"id": "16998", "unsupported": [], "n_claims": 9}
+{"id": "12564", "unsupported": [], "n_claims": 6}
+{"id": "17419", "unsupported": [], "n_claims": 8}
+{"id": "15019", "unsupported": [], "n_claims": 7}
+{"id": "13728", "unsupported": [], "n_claims": 8}
+{"id": "15631", "unsupported": [{"claim": "These steps assume that the pop-up bar is caused by unwanted software or malware.", "status": "not_in_source", "evidence": "The source does not explicitly state that these steps assume the pop-up bar is caused by unwanted software or malware."}], "n_claims": 10}
+{"id": "14586", "unsupported": [], "n_claims": 11}
+{"id": "12499", "unsupported": [], "n_claims": 11}
+{"id": "12091", "unsupported": [], "n_claims": 2}
+{"id": "17635", "unsupported": [], "n_claims": 4}
+{"id": "16644", "unsupported": [], "n_claims": 2}
+{"id": "17227", "unsupported": [], "n_claims": 5}
+{"id": "14413", "unsupported": [], "n_claims": 4}
+{"id": "17461", "unsupported": [], "n_claims": 3}
+{"id": "15421", "unsupported": [], "n_claims": 9}
+{"id": "15330", "unsupported": [], "n_claims": 5}
+{"id": "17436", "unsupported": [], "n_claims": 6}
+{"id": "15348", "unsupported": [], "n_claims": 8}
+{"id": "15577", "unsupported": [], "n_claims": 3}
+{"id": "14298", "unsupported": [], "n_claims": 8}
+{"id": "12906", "unsupported": [], "n_claims": 7}
+{"id": "13147", "unsupported": [], "n_claims": 10}
+{"id": "14977", "unsupported": [], "n_claims": 5}
+{"id": "16800", "unsupported": [], "n_claims": 7}
+{"id": "15636", "unsupported": [], "n_claims": 3}
+{"id": "14070", "unsupported": [], "n_claims": 7}
+{"id": "12817", "unsupported": [], "n_claims": 3}
+{"id": "12169", "unsupported": [], "n_claims": 5}
+{"id": "14317", "unsupported": [{"claim": "Building connections with investment bankers can be beneficial.", "status": "not_in_source", "evidence": "The source does not mention building connections with investment bankers."}, {"claim": "Seeking internships can be beneficial.", "status": "not_in_source", "evidence": "The source does not mention seeking internships."}], "n_claims": 10}
+{"id": "17731", "unsupported": [], "n_claims": 9}
+{"id": "13284", "unsupported": [], "n_claims": 7}
+{"id": "13777", "unsupported": [], "n_claims": 2}
+{"id": "17137", "unsupported": [], "n_claims": 15}
+{"id": "12474", "unsupported": [], "n_claims": 11}
+{"id": "12655", "unsupported": [{"claim": "Transfer the browned roast to the slow cooker.", "status": "not_in_source", "evidence": "The source does not explicitly state to transfer the browned roast to the slow cooker."}], "n_claims": 10}
+{"id": "16285", "unsupported": [{"claim": "There are seven 'I am' statements in John's Gospel.", "status": "not_in_source", "evidence": "The passages do not provide the complete list of seven statements."}, {"claim": "The order of the seven 'I am' statements is provided in the answer.", "status": "not_in_source", "evidence": "The passages do not contain the complete order of all seven statements."}], "n_claims": 5}
+{"id": "15349", "unsupported": [{"claim": "A sore swollen eye can be caused by styes.", "status": "not_in_source", "evidence": "passage 1 does not mention styes as a cause of a sore swollen eye."}], "n_claims": 7}
+{"id": "12271", "unsupported": [{"claim": "Accounts receivable will increase the company's cash.", "status": "not_in_source", "evidence": "The source does not state this explicitly."}], "n_claims": 7}
+{"id": "13776", "unsupported": [], "n_claims": 4}
+{"id": "3169", "unsupported": [{"claim": "Boardwine used a turkey baster to impregnate a friend.", "status": "contradicted", "evidence": "Joyce Bruce had used his sperm and a turkey baster to get pregnant."}], "n_claims": 7}
+{"id": "1279", "unsupported": [], "n_claims": 6}
+{"id": "2868", "unsupported": [], "n_claims": 5}
+{"id": "1998", "unsupported": [], "n_claims": 6}
+{"id": "1158", "unsupported": [{"claim": "The couple were remembered as loving and passionate people.", "status": "not_in_source", "evidence": "The source does not provide a direct characterization of the couple as 'loving and passionate people'."}], "n_claims": 5}
+{"id": "366", "unsupported": [], "n_claims": 7}
+{"id": "14899", "unsupported": [], "n_claims": 8}
+{"id": "13584", "unsupported": [], "n_claims": 7}
+{"id": "5515", "unsupported": [], "n_claims": 7}
+{"id": "17646", "unsupported": [], "n_claims": 5}
+{"id": "162", "unsupported": [{"claim": "There are doubts over whether the deal will be effective due to previous failed attempts.", "status": "not_in_source", "evidence": "The source does not mention doubts over effectiveness due to previous attempts."}, {"claim": "The deal prevents the International Atomic Energy Agency (IAEA) from inspecting military sites without notice.", "status": "not_in_source", "evidence": "The source questions whether the IAEA will be allowed to inspect military sites without warning, but does not state that it prevents this."}], "n_claims": 10}
+{"id": "3421", "unsupported": [{"claim": "Friends and fans were shocked by Hernandez's involvement in the murder case.", "status": "not_in_source", "evidence": "The source does not mention friends and fans being shocked."}, {"claim": "The case remains open and no one has been charged in the double homicide.", "status": "not_in_source", "evidence": "The source states Hernandez faces charges but does not confirm the case remains open or that no one has been charged."}], "n_claims": 18}
+{"id": "4057", "unsupported": [], "n_claims": 5}
+{"id": "4554", "unsupported": [], "n_claims": 5}
+{"id": "240", "unsupported": [], "n_claims": 5}
+{"id": "325", "unsupported": [], "n_claims": 5}
+{"id": "5436", "unsupported": [], "n_claims": 7}
+{"id": "3486", "unsupported": [{"claim": "More than 4,718 people were injured.", "status": "not_in_source", "evidence": "The source does not provide a specific number of injured people."}, {"claim": "This is the worst earthquake in Nepal in 80 years.", "status": "not_in_source", "evidence": "The source does not mention the historical context of the earthquake."}], "n_claims": 9}
+{"id": "133", "unsupported": [], "n_claims": 8}
+{"id": "3517", "unsupported": [], "n_claims": 11}
+{"id": "1483", "unsupported": [], "n_claims": 15}
+{"id": "2641", "unsupported": [{"claim": "This decision has sparked outrage and calls for reform of the trademark law.", "status": "not_in_source", "evidence": "The source does not mention outrage or calls for reform."}, {"claim": "The Slants' case highlights the need for consistency and fair treatment in trademark registration.", "status": "not_in_source", "evidence": "The source does not explicitly state this."}, {"claim": "The Slants' case emphasizes the importance of protecting freedom of expression and combating racial discrimination.", "status": "not_in_source", "evidence": "The source does not explicitly state this."}], "n_claims": 15}
+{"id": "5323", "unsupported": [], "n_claims": 6}
+{"id": "5580", "unsupported": [{"claim": "The medal's eligibility has been renewed retroactively from January 1, 2021, and will continue through December 31, 2024.", "status": "contradicted", "evidence": "the medal's eligibility has been renewed retroactive to January 1 and will continue through December 31, 2024."}], "n_claims": 5}
+{"id": "2143", "unsupported": [{"claim": "Salvador is seeking money for his role in the fight.", "status": "contradicted", "evidence": "Salvador insists he is not seeking money."}, {"claim": "Salvador had a direct connection to Roach before meeting Moonves.", "status": "contradicted", "evidence": "he was driven more by his passion to see the fight happen than any real connection to Roach."}, {"claim": "Salvador's son was not skeptical of his father's plan.", "status": "contradicted", "evidence": "Elijah, who was skeptical of his father's plan."}, {"claim": "Salvador's involvement was purely for financial gain.", "status": "contradicted", "evidence": "Salvador insists he is not seeking money."}, {"claim": "Salvador's son was supportive of his father's plan.", "status": "contradicted", "evidence": "Elijah, who was skeptical of his father's plan."}, {"claim": "Salvador's connection to Roach was strong and influential.", "status": "contradicted", "evidence": "he was driven more by his passion to see the fight happen than any real connection to Roach."}, {"claim": "Salvador's son was involved in the negotiations.", "status": "not_in_source", "evidence": "The source does not mention Salvador's son being involved in the negotiations."}, {"claim": "Salvador's role was minimal and not impactful.", "status": "contradicted", "evidence": "Salvador helped set up a meeting between Moonves, Roach and himself."}, {"claim": "Salvador's actions were purely opportunistic.", "status": "contradicted", "evidence": "driven more by his passion to see the fight happen."}, {"claim": "Salvador's involvement was trivial and unrecognized.", "status": "contradicted", "evidence": "Salvador's role in making the fight happen garnered media attention."}, {"claim": "Salvador's actions were not appreciated by the boxing community.", "status": "contradicted", "evidence": "Promoter Bob Arum said Salvador 'got his 10 minutes of fame,' though he called Salvador 'a really nice guy.'"}], "n_claims": 29}
+{"id": "3876", "unsupported": [{"claim": "The Eastern US is set to enjoy warm, dry weather on 24 and 25 October.", "status": "not_in_source", "evidence": "The source does not specify the dates as 24 and 25 October."}], "n_claims": 7}
+{"id": "5340", "unsupported": [], "n_claims": 7}
+{"id": "3199", "unsupported": [], "n_claims": 7}
+{"id": "2779", "unsupported": [{"claim": "The government detained Gao in April 2014 and aired her confession on national television ahead of the 25th anniversary of the Tiananmen Square crackdown.", "status": "contradicted", "evidence": "Beijing police detained Gao in late April of last year -- ahead of the sensitive 25th anniversary of the Tiananmen Square crackdown."}], "n_claims": 8}
+{"id": "3672", "unsupported": [], "n_claims": 6}
+{"id": "468", "unsupported": [], "n_claims": 13}
+{"id": "2820", "unsupported": [], "n_claims": 8}
+{"id": "2850", "unsupported": [{"claim": "The death toll is expected to be around 800, making it the deadliest known shipwreck of migrants in the Mediterranean.", "status": "not_in_source", "evidence": "The source does not provide a specific death toll or state that it is the deadliest known shipwreck."}], "n_claims": 8}
+{"id": "2809", "unsupported": [], "n_claims": 10}
+{"id": "1782", "unsupported": [], "n_claims": 7}
+{"id": "3708", "unsupported": [], "n_claims": 4}
+{"id": "3552", "unsupported": [{"claim": "It is now largely under ISIS control, despite the best efforts of the US-led airstrikes.", "status": "not_in_source", "evidence": "The source does not state that Ramadi is now largely under ISIS control."}], "n_claims": 5}
+{"id": "1944", "unsupported": [], "n_claims": 5}
+{"id": "4897", "unsupported": [], "n_claims": 9}
+{"id": "2538", "unsupported": [], "n_claims": 6}
+{"id": "2988", "unsupported": [], "n_claims": 11}
+{"id": "2754", "unsupported": [], "n_claims": 6}
+{"id": "1896", "unsupported": [{"claim": "The earthquake is the worst to hit the region in many years.", "status": "not_in_source", "evidence": "The source does not specify that this is the worst in many years."}], "n_claims": 12}
+{"id": "4944", "unsupported": [], "n_claims": 5}
+{"id": "3373", "unsupported": [{"claim": "The case has sparked outrage and calls for justice.", "status": "not_in_source", "evidence": "The source does not mention outrage or calls for justice."}], "n_claims": 10}
+{"id": "3126", "unsupported": [], "n_claims": 6}
+{"id": "3030", "unsupported": [{"claim": "The report does not highlight the fact that the majority of these migrants are Muslim.", "status": "not_in_source", "evidence": "The source does not mention the religion of the migrants."}, {"claim": "The report does not mention the fact that the Italian Prime Minister Renzi has threatened to give all the migrants visas to travel to other European countries.", "status": "not_in_source", "evidence": "The source does not mention Italian Prime Minister Renzi or any threats regarding visas."}, {"claim": "The Dublin Regulation states that refugees must apply for asylum in the first safe country they land in.", "status": "not_in_source", "evidence": "The source does not mention the Dublin Regulation."}], "n_claims": 6}
+{"id": "2611", "unsupported": [], "n_claims": 5}
+{"id": "5574", "unsupported": [], "n_claims": 6}
+{"id": "3522", "unsupported": [], "n_claims": 7}
+{"id": "4879", "unsupported": [], "n_claims": 7}
+{"id": "5533", "unsupported": [], "n_claims": 6}
+{"id": "4783", "unsupported": [], "n_claims": 5}
+{"id": "1122", "unsupported": [], "n_claims": 6}
+{"id": "4488", "unsupported": [], "n_claims": 10}
+{"id": "1626", "unsupported": [], "n_claims": 9}
+{"id": "2982", "unsupported": [], "n_claims": 12}
+{"id": "3571", "unsupported": [{"claim": "The incident has sparked outrage and protests.", "status": "not_in_source", "evidence": "The article does not mention protests."}], "n_claims": 12}
+{"id": "5377", "unsupported": [], "n_claims": 9}
+{"id": "1627", "unsupported": [], "n_claims": 14}
+{"id": "198", "unsupported": [], "n_claims": 5}
+{"id": "3439", "unsupported": [], "n_claims": 14}
+{"id": "4723", "unsupported": [], "n_claims": 6}
+{"id": "4873", "unsupported": [], "n_claims": 8}
+{"id": "5466", "unsupported": [], "n_claims": 7}
+{"id": "1320", "unsupported": [], "n_claims": 7}
+{"id": "4236", "unsupported": [], "n_claims": 11}
+{"id": "3175", "unsupported": [], "n_claims": 10}
+{"id": "4290", "unsupported": [], "n_claims": 8}
+{"id": "2281", "unsupported": [], "n_claims": 9}
+{"id": "3397", "unsupported": [], "n_claims": 11}
+{"id": "750", "unsupported": [{"claim": "Further charges may be added as the investigation continues", "status": "not_in_source", "evidence": "The source mentions detectives are awaiting information to determine if additional charges are warranted, but does not state that further charges may be added."}], "n_claims": 5}
+{"id": "667", "unsupported": [], "n_claims": 5}
+{"id": "1686", "unsupported": [], "n_claims": 7}
+{"id": "1957", "unsupported": [], "n_claims": 7}
+{"id": "1549", "unsupported": [], "n_claims": 6}
+{"id": "2592", "unsupported": [], "n_claims": 8}
+{"id": "5022", "unsupported": [], "n_claims": 8}
+{"id": "4321", "unsupported": [], "n_claims": 7}
+{"id": "3217", "unsupported": [], "n_claims": 11}
+{"id": "2232", "unsupported": [], "n_claims": 7}
+{"id": "3403", "unsupported": [{"claim": "The video also shows a passenger in Scott's car, who has been identified as a co-worker and friend.", "status": "contradicted", "evidence": "The passenger's identity was not given in a police report obtained by CNN, but another officer responding to the incident said in the report that the passenger was detained."}, {"claim": "The release of the video has raised questions about what exactly happened during the incident.", "status": "not_in_source", "evidence": "The source does not state that the release of the video raised questions."}], "n_claims": 13}
+{"id": "5353", "unsupported": [{"claim": "Ridge's reaction to his father's declining health is yet to be seen", "status": "not_in_source", "evidence": "The source does not specify Ridge's reaction."}], "n_claims": 4}
+{"id": "2838", "unsupported": [], "n_claims": 5}
+{"id": "1189", "unsupported": [], "n_claims": 12}
+{"id": "5568", "unsupported": [], "n_claims": 5}
+{"id": "3498", "unsupported": [], "n_claims": 6}
+{"id": "150", "unsupported": [], "n_claims": 7}
+{"id": "2131", "unsupported": [], "n_claims": 6}
+{"id": "19", "unsupported": [], "n_claims": 18}
+{"id": "5094", "unsupported": [], "n_claims": 6}
+{"id": "2899", "unsupported": [], "n_claims": 10}
+{"id": "4824", "unsupported": [{"claim": "Other Genoa City residents watch with mixed feelings.", "status": "not_in_source", "evidence": "The source states that many people of Genoa City question Diane and Jack’s relationship, but does not specify mixed feelings."}], "n_claims": 8}
+{"id": "3361", "unsupported": [], "n_claims": 14}
+{"id": "1885", "unsupported": [], "n_claims": 7}
+{"id": "2917", "unsupported": [], "n_claims": 14}
+{"id": "4045", "unsupported": [{"claim": "The storyline explores whether Heather wants Daniel back and if Lily can maintain their relationship.", "status": "not_in_source", "evidence": "The source does not explicitly state that the storyline explores these themes."}], "n_claims": 7}
+{"id": "4836", "unsupported": [], "n_claims": 7}
+{"id": "10140", "unsupported": [], "n_claims": 10}
+{"id": "5437", "unsupported": [], "n_claims": 7}
+{"id": "3799", "unsupported": [{"claim": "Viewers have mixed opinions on whether Ashley should repair her marriage with Tucker.", "status": "not_in_source", "evidence": "The source does not mention viewers' opinions being mixed."}], "n_claims": 6}
+{"id": "3426", "unsupported": [], "n_claims": 10}
+{"id": "805", "unsupported": [{"claim": "Chokalingam's revelation has sparked a debate about affirmative action and the privileges associated with being a minority candidate.", "status": "not_in_source", "evidence": "The source does not explicitly state that his revelation sparked a debate."}, {"claim": "Critics argue that Chokalingam's experience actually disproves his claim that African-Americans receive special treatment.", "status": "not_in_source", "evidence": "The source does not mention critics arguing this."}, {"claim": "Chokalingam's case raises questions about the effectiveness and fairness of affirmative action programs.", "status": "not_in_source", "evidence": "The source does not explicitly state that his case raises questions about effectiveness and fairness."}, {"claim": "Chokalingam's decision to pose as a black applicant has sparked a larger conversation about affirmative action, diversity, and the challenges faced by underrepresented communities in various fields.", "status": "not_in_source", "evidence": "The source does not explicitly state that his decision sparked a larger conversation."}], "n_claims": 14}
+{"id": "11311", "unsupported": [{"claim": "It is known for its lively nightlife and dive bar atmosphere.", "status": "not_in_source", "evidence": "The source does not explicitly state this."}, {"claim": "The bar offers a variety of amenities, including pool tables and a sports bar area.", "status": "not_in_source", "evidence": "The source mentions categories but does not specify amenities."}, {"claim": "Overall, Break Time is a popular local bar in Goleta, providing a fun and inviting environment for customers to enjoy drinks, play pool, and socialize.", "status": "not_in_source", "evidence": "The source does not provide this summary."}], "n_claims": 13}
+{"id": "3973", "unsupported": [], "n_claims": 11}
+{"id": "8790", "unsupported": [{"claim": "The restaurant also hosts events such as art shows.", "status": "not_in_source", "evidence": "The source does not mention hosting events."}], "n_claims": 8}
+{"id": "5982", "unsupported": [], "n_claims": 12}
+{"id": "11365", "unsupported": [{"claim": "IHOP is open from 6:00 AM to 8:00 PM on Tuesday, Wednesday, Thursday, and Saturday, and from 8:00 AM to 8:00 PM on Friday and Sunday.", "status": "contradicted", "evidence": "source states IHOP is closed on Mondays, but the answer does not mention this."}, {"claim": "IHOP provides free WiFi and offers takeout services.", "status": "contradicted", "evidence": "source states WiFi is not available."}], "n_claims": 15}
+{"id": "5863", "unsupported": [], "n_claims": 16}
+{"id": "6156", "unsupported": [{"claim": "It is open seven days a week from 7:00 am until midnight.", "status": "contradicted", "evidence": "Source states hours are from 7:00 am to 0:00 am, which is not midnight."}], "n_claims": 9}
+{"id": "11316", "unsupported": [{"claim": "The restaurant is open seven days a week.", "status": "contradicted", "evidence": "The source states specific hours for each day, with Monday and Sunday having different hours."}], "n_claims": 14}
+{"id": "7177", "unsupported": [], "n_claims": 15}
+{"id": "7969", "unsupported": [], "n_claims": 12}
+{"id": "8335", "unsupported": [{"claim": "The business is open from 5:00 PM to 8:00 PM on weekdays and 5:00 PM to 9:00 PM on weekends.", "status": "contradicted", "evidence": "SOURCE states it is open Tuesday to Sunday from 5:00 PM to 8:00 PM or 9:00 PM, but Monday hours are 0:00-0:00."}], "n_claims": 16}
+{"id": "6145", "unsupported": [], "n_claims": 16}
+{"id": "10248", "unsupported": [], "n_claims": 11}
+{"id": "9439", "unsupported": [], "n_claims": 17}
+{"id": "9984", "unsupported": [], "n_claims": 11}
+{"id": "7110", "unsupported": [{"claim": "The restaurant has received mixed reviews.", "status": "contradicted", "evidence": "Source includes one 5-star review, one 4-star review, and one 2-star review, which does not indicate mixed reviews."}], "n_claims": 9}
+{"id": "6300", "unsupported": [], "n_claims": 13}
+{"id": "9534", "unsupported": [], "n_claims": 10}
+{"id": "7188", "unsupported": [], "n_claims": 12}
+{"id": "8874", "unsupported": [{"claim": "The ambiance is casual.", "status": "not_in_source", "evidence": "The source does not specify the ambiance as casual."}], "n_claims": 12}
+{"id": "7903", "unsupported": [{"claim": "Choppa Poke offers free WiFi and has outdoor seating.", "status": "contradicted", "evidence": "Source states there is no outdoor seating."}], "n_claims": 12}
+{"id": "9684", "unsupported": [], "n_claims": 10}
+{"id": "9612", "unsupported": [], "n_claims": 11}
+{"id": "9457", "unsupported": [{"claim": "Zaffiro used to be a popular Italian eatery.", "status": "not_in_source", "evidence": "Source does not state it was popular."}, {"claim": "Customers had mixed experiences at Zaffiro.", "status": "not_in_source", "evidence": "Source does not state mixed experiences."}], "n_claims": 17}
+{"id": "9673", "unsupported": [{"claim": "It is also suitable for groups and has free Wi-Fi available.", "status": "contradicted", "evidence": "{'attributes': {'RestaurantsGoodForGroups': True, 'WiFi': 'no'}}"}], "n_claims": 14}
+{"id": "8965", "unsupported": [{"claim": "The business operates from 10:30 am to 11:00 pm on weekdays and from 10:30 am to midnight on weekends.", "status": "contradicted", "evidence": "{'hours': {'Monday': '10:30-23:0', 'Tuesday': '10:30-1:0', 'Wednesday': '10:30-23:0', 'Thursday': '10:30-23:0', 'Friday': '10:30-0:0', 'Saturday': '10:30-0:0', 'Sunday': '10:30-0:0'}}"}], "n_claims": 13}
+{"id": "10242", "unsupported": [], "n_claims": 8}
+{"id": "10896", "unsupported": [], "n_claims": 9}
+{"id": "11160", "unsupported": [], "n_claims": 11}
+{"id": "11262", "unsupported": [], "n_claims": 14}
+{"id": "10795", "unsupported": [], "n_claims": 14}
+{"id": "7273", "unsupported": [], "n_claims": 13}
+{"id": "8845", "unsupported": [{"claim": "The business is open from 8:00 AM to 8:00 PM on Tuesday, Wednesday, Thursday, and Saturday, and from 8:00 AM to 2:00 PM on Friday and Sunday.", "status": "contradicted", "evidence": "The source states that it is closed on Mondays, but the answer incorrectly states it is open on Sunday."}], "n_claims": 14}
+{"id": "8713", "unsupported": [], "n_claims": 14}
+{"id": "8226", "unsupported": [{"claim": "The cafe does not offer valet or street parking, but validates parking.", "status": "contradicted", "evidence": "{'BusinessParking': {'garage': False, 'street': False, 'validated': True, 'lot': False, 'valet': True}} (It offers valet parking.)"}], "n_claims": 12}
+{"id": "9006", "unsupported": [], "n_claims": 11}
+{"id": "10903", "unsupported": [], "n_claims": 14}
+{"id": "10495", "unsupported": [], "n_claims": 15}
+{"id": "9547", "unsupported": [{"claim": "The business is open from 9:00 AM to 3:00 PM on weekdays, from 9:00 AM to 3:00 PM on Saturdays, and from 10:00 AM to 2:00 PM on Sundays.", "status": "contradicted", "evidence": "Source states it is open Monday 0:00-0:00, which is not correct."}], "n_claims": 14}
+{"id": "8868", "unsupported": [], "n_claims": 8}
+{"id": "7873", "unsupported": [], "n_claims": 12}
+{"id": "10501", "unsupported": [], "n_claims": 12}
+{"id": "7584", "unsupported": [], "n_claims": 14}
+{"id": "8875", "unsupported": [], "n_claims": 12}
+{"id": "8262", "unsupported": [{"claim": "Goleta Red Distilling Company is known for its wide range of offerings.", "status": "not_in_source", "evidence": "The source does not specify that it is known for a wide range of offerings."}, {"claim": "The distillery reflects high-quality offerings and excellent customer service.", "status": "not_in_source", "evidence": "The source does not explicitly state this."}], "n_claims": 10}
+{"id": "5988", "unsupported": [], "n_claims": 10}
+{"id": "9817", "unsupported": [{"claim": "The restaurant is open from Tuesday to Sunday, with operating hours from 11:00 AM to 9:00 PM.", "status": "contradicted", "evidence": "{'hours': {'Monday': '0:0-0:0', 'Tuesday': '11:0-21:0', 'Wednesday': '11:0-21:0', 'Thursday': '11:0-21:0', 'Friday': '11:0-21:0', 'Saturday': '11:0-21:0', 'Sunday': '11:0-21:0'}}"}], "n_claims": 9}
+{"id": "10963", "unsupported": [], "n_claims": 12}
+{"id": "9535", "unsupported": [{"claim": "The restaurant operates from 11:00 AM to 9:00 PM on weekdays and extends its hours to 10:00 PM on Fridays and Saturdays.", "status": "contradicted", "evidence": "Source states hours: Tuesday 14:00-21:00, Wednesday-Thursday 11:00-21:00, Friday-Saturday 11:00-22:00, Sunday 11:00-21:00, and closed on Monday."}, {"claim": "It is closed on Mondays, except during special occasions.", "status": "not_in_source", "evidence": "Source states it is closed on Monday without mention of special occasions."}], "n_claims": 16}
+{"id": "7344", "unsupported": [], "n_claims": 8}
+{"id": "6889", "unsupported": [], "n_claims": 16}
+{"id": "7644", "unsupported": [], "n_claims": 13}
+{"id": "6612", "unsupported": [], "n_claims": 9}
+{"id": "10261", "unsupported": [{"claim": "It also welcomes groups and provides free WiFi to its customers.", "status": "contradicted", "evidence": "{'attributes': {'RestaurantsGoodForGroups': true, 'WiFi': 'no'}}"}], "n_claims": 12}
+{"id": "9643", "unsupported": [], "n_claims": 5}
+{"id": "10980", "unsupported": [{"claim": "It operates from 5pm to 9pm on weekdays and until 10pm on Saturdays.", "status": "contradicted", "evidence": "The source states it operates from 17:00 to 21:00 on Tuesday, Wednesday, Thursday, and Friday, and until 22:00 on Saturday."}, {"claim": "It offers a variety of Japanese cuisines.", "status": "not_in_source", "evidence": "The source does not specify the variety of cuisines offered."}], "n_claims": 9}
+{"id": "10182", "unsupported": [], "n_claims": 13}
+{"id": "11610", "unsupported": [], "n_claims": 12}
+{"id": "7711", "unsupported": [], "n_claims": 15}
+{"id": "5922", "unsupported": [], "n_claims": 4}
+{"id": "10338", "unsupported": [], "n_claims": 12}
+{"id": "8869", "unsupported": [{"claim": "The ambience of the restaurant is casual.", "status": "not_in_source", "evidence": "The source does not provide any information about the ambience."}, {"claim": "The restaurant has received mixed reviews.", "status": "contradicted", "evidence": "All reviews provided are negative."}], "n_claims": 15}
+{"id": "6132", "unsupported": [], "n_claims": 8}
+{"id": "11335", "unsupported": [], "n_claims": 15}
+{"id": "9979", "unsupported": [], "n_claims": 13}
+{"id": "11772", "unsupported": [{"claim": "The restaurant operates from 5 PM onwards throughout the week, with extended hours on Fridays and Saturdays.", "status": "contradicted", "evidence": "SOURCE states hours for Tuesday to Sunday, with Monday being 0:0-0:0."}], "n_claims": 15}
+{"id": "8167", "unsupported": [], "n_claims": 17}
+{"id": "9354", "unsupported": [], "n_claims": 11}
+{"id": "10398", "unsupported": [], "n_claims": 11}
+{"id": "6954", "unsupported": [], "n_claims": 11}
+{"id": "8160", "unsupported": [], "n_claims": 11}
+{"id": "10278", "unsupported": [], "n_claims": 11}
+{"id": "6666", "unsupported": [], "n_claims": 10}
+{"id": "10165", "unsupported": [], "n_claims": 11}
+{"id": "11413", "unsupported": [], "n_claims": 12}
+{"id": "6144", "unsupported": [], "n_claims": 9}
+{"id": "6991", "unsupported": [], "n_claims": 14}
+{"id": "11227", "unsupported": [], "n_claims": 14}
+{"id": "10927", "unsupported": [], "n_claims": 12}
+{"id": "6390", "unsupported": [], "n_claims": 12}
+{"id": "6330", "unsupported": [], "n_claims": 9}
+{"id": "7824", "unsupported": [], "n_claims": 8}
+{"id": "9228", "unsupported": [], "n_claims": 11}
+{"id": "11173", "unsupported": [], "n_claims": 14}
+{"id": "9168", "unsupported": [], "n_claims": 10}
+{"id": "8628", "unsupported": [{"claim": "Customers appreciate Arch Rock for its memorable dining experiences and friendly staff.", "status": "not_in_source", "evidence": "The source does not provide a general statement about customer appreciation."}], "n_claims": 9}
+{"id": "8538", "unsupported": [], "n_claims": 6}
+{"id": "10123", "unsupported": [{"claim": "The restaurant also serves desserts and has a café vibe.", "status": "not_in_source", "evidence": "source does not mention a café vibe."}, {"claim": "On Fridays and Saturdays, it has extended hours until 2:30 AM, providing late-night dining options.", "status": "contradicted", "evidence": "source states it closes at 2:30 PM on Fridays and Saturdays."}], "n_claims": 16}
+{"id": "10993", "unsupported": [], "n_claims": 13}
+{"id": "7549", "unsupported": [], "n_claims": 11}
+{"id": "11761", "unsupported": [], "n_claims": 16}
+{"id": "6331", "unsupported": [], "n_claims": 16}
+{"id": "7303", "unsupported": [], "n_claims": 15}
+{"id": "9672", "unsupported": [], "n_claims": 14}
+{"id": "11425", "unsupported": [], "n_claims": 9}
+{"id": "10716", "unsupported": [{"claim": "Reds Bin 211 has received mixed reviews from customers.", "status": "contradicted", "evidence": "Reviews indicate both positive and negative feedback, not mixed."}], "n_claims": 11}
+{"id": "9061", "unsupported": [], "n_claims": 10}
+{"id": "10086", "unsupported": [], "n_claims": 9}
+{"id": "7309", "unsupported": [], "n_claims": 16}
+{"id": "7831", "unsupported": [], "n_claims": 15}

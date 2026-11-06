@@ -55,12 +55,56 @@ A bigger judge model helps a little: from 9% to 15% caught.
 - Any prompt tuning. The judge's prompt is written for tool-using support bots. Tuning it
   on this test split would make the numbers meaningless, so that would need the train split.
 
+## 3. Improved: claim-by-claim checking (`cassandra/faithfulness.py`)
+
+Two new checks, built after looking at the judge's misses:
+- **`value_check`** (no LLM): every clock time and number in the answer must appear in the
+  source.
+- **`claim_check`** (LLM): split the answer into single facts and check each against the
+  source. Missing or null data counts as unknown, not "no"; advice and opinion never count
+  as failures.
+
+**Method:**
+- Prompt developed on the **train** split (300 answers, 50 bad + 50 good per task).
+- One tuning round, which cut false alarms 18% → 14% and caught 46% → 41%.
+- Then frozen and run **once** on the same 900 test answers as section 2, with gpt-4o-mini.
+
+| Detector (gpt-4o-mini) | Caught (of 88 bad) | False alarms (of 812 good) | Flags that are real |
+|---|---|---|---|
+| Old whole-answer judge | 8 (9%) | 39 (4.8%) | 17% |
+| `value_check` only | 8 (9%) | 16 (2.0%) | 33% |
+| **`claim_check`** | **38 (43%)** | 121 (14.9%) | **24%** |
+| either | 43 (49%) | 132 (16.3%) | 25% |
+
+Data → text, where 72 of the 88 errors are: `claim_check` caught 32 of 72 (44%), with 23%
+false alarms.
+
+**What this means:**
+- **Recall:** checking claim by claim catches about **5× more** bad answers than the old
+  judge (9% → 43%).
+- **Precision:** a flag is also more likely to be real (17% → 24%).
+- **Still noisy.** Only ~10% of answers are bad, so about 3 of every 4 flags are false
+  alarms. Use it to build a human review queue, not to block answers automatically.
+- **Possible label gaps.** Some "false alarms" on train were real errors the annotators
+  missed, for example "preheat to 450°F" when the source says 250°F. They are still counted
+  as false alarms; we did not relabel anything.
+- **`value_check` is cheap and quiet** but rarely fires, because most errors here are
+  yes/no attribute claims ("no WiFi") rather than numbers.
+
+**Not yet tried:**
+- gpt-4o or a reasoning model as the claim checker.
+- A second pass that re-checks only the flagged claims to cut false alarms.
+
 ## Reproduce
 
 ```bash
 python -m poc.ragtruth.run_judge                                   # 900, configured model
 python -m poc.ragtruth.run_judge --sample 250 --judge-model gpt-4o --out verdicts_gpt4o_sample.jsonl
+python -m poc.ragtruth.run_claims --split train --per-task 50 --out claims_train_v2.jsonl   # tuning
+python -m poc.ragtruth.run_claims --split test --out claims_test.jsonl                      # final
 ```
+
+`claims_train_v1.jsonl` is the run before the one tuning round, kept for the record.
 
 `--judge-model` exists because exporting `OPENAI_MODEL` in the shell does **not** work:
 `cassandra/config.py` calls `load_dotenv(override=True)`, so `.env` wins.

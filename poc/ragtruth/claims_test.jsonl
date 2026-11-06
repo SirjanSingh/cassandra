@@ -1,0 +1,900 @@
+{"id": "120", "unsupported": [], "n_claims": 3}
+{"id": "24", "unsupported": [], "n_claims": 4}
+{"id": "138", "unsupported": [], "n_claims": 6}
+{"id": "25", "unsupported": [], "n_claims": 6}
+{"id": "121", "unsupported": [], "n_claims": 10}
+{"id": "54", "unsupported": [], "n_claims": 6}
+{"id": "66", "unsupported": [], "n_claims": 6}
+{"id": "67", "unsupported": [], "n_claims": 9}
+{"id": "139", "unsupported": [], "n_claims": 10}
+{"id": "144", "unsupported": [], "n_claims": 3}
+{"id": "42", "unsupported": [], "n_claims": 7}
+{"id": "43", "unsupported": [], "n_claims": 13}
+{"id": "55", "unsupported": [], "n_claims": 14}
+{"id": "211", "unsupported": [], "n_claims": 6}
+{"id": "205", "unsupported": [], "n_claims": 8}
+{"id": "210", "unsupported": [], "n_claims": 7}
+{"id": "204", "unsupported": [], "n_claims": 7}
+{"id": "145", "unsupported": [], "n_claims": 9}
+{"id": "180", "unsupported": [], "n_claims": 10}
+{"id": "247", "unsupported": [], "n_claims": 10}
+{"id": "270", "unsupported": [], "n_claims": 7}
+{"id": "246", "unsupported": [], "n_claims": 10}
+{"id": "271", "unsupported": [], "n_claims": 12}
+{"id": "181", "unsupported": [], "n_claims": 12}
+{"id": "354", "unsupported": [], "n_claims": 3}
+{"id": "355", "unsupported": [], "n_claims": 3}
+{"id": "312", "unsupported": [], "n_claims": 5}
+{"id": "330", "unsupported": [], "n_claims": 4}
+{"id": "313", "unsupported": [], "n_claims": 7}
+{"id": "331", "unsupported": [], "n_claims": 4}
+{"id": "408", "unsupported": [], "n_claims": 4}
+{"id": "409", "unsupported": [], "n_claims": 6}
+{"id": "348", "unsupported": [], "n_claims": 7}
+{"id": "349", "unsupported": [], "n_claims": 10}
+{"id": "432", "unsupported": [], "n_claims": 10}
+{"id": "433", "unsupported": [{"claim": "The trial will continue as the jury weighs the decision of whether Tsarnaev deserves the death penalty.", "status": "not_in_source", "evidence": "The source does not explicitly state that the trial will continue or that the jury will weigh the decision of the death penalty."}], "n_claims": 13}
+{"id": "481", "unsupported": [], "n_claims": 6}
+{"id": "480", "unsupported": [], "n_claims": 6}
+{"id": "462", "unsupported": [], "n_claims": 5}
+{"id": "582", "unsupported": [], "n_claims": 9}
+{"id": "444", "unsupported": [], "n_claims": 11}
+{"id": "463", "unsupported": [], "n_claims": 8}
+{"id": "588", "unsupported": [], "n_claims": 11}
+{"id": "583", "unsupported": [], "n_claims": 12}
+{"id": "540", "unsupported": [], "n_claims": 9}
+{"id": "445", "unsupported": [{"claim": "The event had its highs and lows, with some standout moments.", "status": "not_in_source", "evidence": "The source does not summarize the event in this way."}, {"claim": "Overall, the 50th ACM Awards had its ups and downs.", "status": "not_in_source", "evidence": "The source does not summarize the event in this way."}, {"claim": "It was a memorable and significant milestone for the country music community.", "status": "not_in_source", "evidence": "The source does not summarize the event in this way."}], "n_claims": 19}
+{"id": "601", "unsupported": [], "n_claims": 6}
+{"id": "541", "unsupported": [], "n_claims": 15}
+{"id": "600", "unsupported": [], "n_claims": 8}
+{"id": "589", "unsupported": [], "n_claims": 14}
+{"id": "642", "unsupported": [], "n_claims": 5}
+{"id": "619", "unsupported": [], "n_claims": 8}
+{"id": "612", "unsupported": [], "n_claims": 10}
+{"id": "618", "unsupported": [], "n_claims": 9}
+{"id": "613", "unsupported": [], "n_claims": 8}
+{"id": "607", "unsupported": [], "n_claims": 12}
+{"id": "606", "unsupported": [], "n_claims": 10}
+{"id": "690", "unsupported": [], "n_claims": 7}
+{"id": "654", "unsupported": [], "n_claims": 8}
+{"id": "643", "unsupported": [], "n_claims": 12}
+{"id": "727", "unsupported": [], "n_claims": 4}
+{"id": "691", "unsupported": [], "n_claims": 8}
+{"id": "726", "unsupported": [], "n_claims": 5}
+{"id": "721", "unsupported": [], "n_claims": 5}
+{"id": "655", "unsupported": [], "n_claims": 18}
+{"id": "720", "unsupported": [], "n_claims": 6}
+{"id": "774", "unsupported": [], "n_claims": 8}
+{"id": "834", "unsupported": [], "n_claims": 5}
+{"id": "775", "unsupported": [], "n_claims": 6}
+{"id": "840", "unsupported": [], "n_claims": 4}
+{"id": "835", "unsupported": [], "n_claims": 6}
+{"id": "841", "unsupported": [], "n_claims": 6}
+{"id": "852", "unsupported": [], "n_claims": 3}
+{"id": "877", "unsupported": [], "n_claims": 6}
+{"id": "876", "unsupported": [], "n_claims": 5}
+{"id": "853", "unsupported": [], "n_claims": 5}
+{"id": "960", "unsupported": [], "n_claims": 8}
+{"id": "882", "unsupported": [{"claim": "The graffiti dates back to almost 100 years and includes names, addresses, and military details of soldiers from Australia, the US, and the UK.", "status": "not_in_source", "evidence": "The source does not specify that the graffiti includes addresses."}], "n_claims": 6}
+{"id": "883", "unsupported": [], "n_claims": 6}
+{"id": "961", "unsupported": [], "n_claims": 13}
+{"id": "924", "unsupported": [], "n_claims": 7}
+{"id": "906", "unsupported": [], "n_claims": 10}
+{"id": "996", "unsupported": [], "n_claims": 8}
+{"id": "907", "unsupported": [], "n_claims": 13}
+{"id": "925", "unsupported": [{"claim": "Overall, his project aims to show that rejection is not something to fear, but rather a stepping stone towards success.", "status": "not_in_source", "evidence": "The source does not explicitly state this conclusion."}], "n_claims": 12}
+{"id": "1111", "unsupported": [], "n_claims": 4}
+{"id": "1051", "unsupported": [], "n_claims": 5}
+{"id": "1050", "unsupported": [], "n_claims": 7}
+{"id": "1110", "unsupported": [], "n_claims": 4}
+{"id": "1104", "unsupported": [], "n_claims": 8}
+{"id": "1152", "unsupported": [{"claim": "A family of four from Delaware are in a critical condition or recovering.", "status": "not_in_source", "evidence": "The source states the father is unable to talk or move, and the two boys are in critical condition, but does not confirm the mother's condition as recovering."}, {"claim": "His two teenage sons are in comas.", "status": "not_in_source", "evidence": "The source states the boys are in critical condition but does not specify they are in comas."}], "n_claims": 8}
+{"id": "997", "unsupported": [], "n_claims": 10}
+{"id": "1105", "unsupported": [], "n_claims": 11}
+{"id": "1153", "unsupported": [], "n_claims": 11}
+{"id": "1170", "unsupported": [], "n_claims": 6}
+{"id": "1236", "unsupported": [], "n_claims": 5}
+{"id": "1350", "unsupported": [], "n_claims": 6}
+{"id": "1171", "unsupported": [], "n_claims": 7}
+{"id": "1182", "unsupported": [], "n_claims": 9}
+{"id": "1237", "unsupported": [], "n_claims": 6}
+{"id": "1351", "unsupported": [], "n_claims": 8}
+{"id": "1338", "unsupported": [], "n_claims": 9}
+{"id": "1339", "unsupported": [{"claim": "The increasing number of migrants attempting the dangerous journey across the Mediterranean has led to concerns about the safety and security of migrants, as well as the strain on European countries as they struggle to accommodate and process incoming migrants.", "status": "not_in_source", "evidence": "The source does not explicitly mention concerns about the strain on European countries."}], "n_claims": 11}
+{"id": "1183", "unsupported": [], "n_claims": 11}
+{"id": "1518", "unsupported": [], "n_claims": 4}
+{"id": "1584", "unsupported": [], "n_claims": 4}
+{"id": "1476", "unsupported": [], "n_claims": 7}
+{"id": "1566", "unsupported": [], "n_claims": 7}
+{"id": "1519", "unsupported": [], "n_claims": 6}
+{"id": "1585", "unsupported": [], "n_claims": 5}
+{"id": "1512", "unsupported": [], "n_claims": 8}
+{"id": "1567", "unsupported": [{"claim": "Hill's legacy will be remembered for her strength, courage, and ability to inspire others.", "status": "not_in_source", "evidence": "The source does not explicitly state this summary claim."}], "n_claims": 9}
+{"id": "1513", "unsupported": [{"claim": "Easter is a complex holiday with religious and cultural significance, celebrated differently worldwide.", "status": "not_in_source", "evidence": "The source does not explicitly state this summary claim."}], "n_claims": 11}
+{"id": "1477", "unsupported": [], "n_claims": 11}
+{"id": "1453", "unsupported": [], "n_claims": 15}
+{"id": "1452", "unsupported": [], "n_claims": 12}
+{"id": "1620", "unsupported": [], "n_claims": 4}
+{"id": "1621", "unsupported": [], "n_claims": 5}
+{"id": "1602", "unsupported": [], "n_claims": 7}
+{"id": "1603", "unsupported": [], "n_claims": 9}
+{"id": "1644", "unsupported": [], "n_claims": 8}
+{"id": "1674", "unsupported": [], "n_claims": 5}
+{"id": "1675", "unsupported": [], "n_claims": 9}
+{"id": "1596", "unsupported": [], "n_claims": 9}
+{"id": "1645", "unsupported": [], "n_claims": 12}
+{"id": "1597", "unsupported": [{"claim": "His passing marks the end of an era.", "status": "not_in_source", "evidence": "The source does not state that his passing marks the end of an era."}], "n_claims": 17}
+{"id": "1681", "unsupported": [], "n_claims": 10}
+{"id": "1698", "unsupported": [], "n_claims": 10}
+{"id": "1680", "unsupported": [], "n_claims": 10}
+{"id": "1728", "unsupported": [], "n_claims": 8}
+{"id": "1746", "unsupported": [], "n_claims": 5}
+{"id": "1890", "unsupported": [], "n_claims": 6}
+{"id": "1825", "unsupported": [], "n_claims": 6}
+{"id": "1699", "unsupported": [], "n_claims": 14}
+{"id": "1824", "unsupported": [], "n_claims": 5}
+{"id": "1986", "unsupported": [], "n_claims": 3}
+{"id": "1747", "unsupported": [], "n_claims": 8}
+{"id": "1962", "unsupported": [], "n_claims": 6}
+{"id": "1987", "unsupported": [{"claim": "The video went viral online.", "status": "not_in_source", "evidence": "The source does not mention the video going viral."}], "n_claims": 4}
+{"id": "1963", "unsupported": [], "n_claims": 9}
+{"id": "1729", "unsupported": [], "n_claims": 16}
+{"id": "1891", "unsupported": [], "n_claims": 12}
+{"id": "2064", "unsupported": [], "n_claims": 9}
+{"id": "2136", "unsupported": [], "n_claims": 3}
+{"id": "2118", "unsupported": [{"claim": "Renner highlighted Hawkeye's lesser-known skills and talents.", "status": "not_in_source", "evidence": "The source mentions his talents but does not specifically state he highlighted lesser-known skills."}], "n_claims": 4}
+{"id": "2244", "unsupported": [], "n_claims": 4}
+{"id": "2245", "unsupported": [], "n_claims": 5}
+{"id": "2166", "unsupported": [], "n_claims": 5}
+{"id": "2137", "unsupported": [{"claim": "The character, originally a Caucasian former supermodel, will be played by Munn, who is of Asian descent.", "status": "not_in_source", "evidence": "The source mentions Psylocke's change from a Caucasian former supermodel to a Japanese ninja but does not state Munn's descent."}], "n_claims": 4}
+{"id": "2119", "unsupported": [], "n_claims": 4}
+{"id": "2250", "unsupported": [], "n_claims": 4}
+{"id": "2167", "unsupported": [{"claim": "The video is guaranteed to be the most awesome thing you see today.", "status": "not_in_source", "evidence": "The phrase 'guaranteed to be the most awesome thing you see today' is not found in the source."}, {"claim": "The song is an intricate and informative lecture on the enormity of the Universe fashioned into a bewitching and highly amusing pop song.", "status": "not_in_source", "evidence": "This specific description of the song is not included in the source."}], "n_claims": 8}
+{"id": "2065", "unsupported": [], "n_claims": 10}
+{"id": "2238", "unsupported": [], "n_claims": 8}
+{"id": "2239", "unsupported": [], "n_claims": 10}
+{"id": "2442", "unsupported": [], "n_claims": 3}
+{"id": "2443", "unsupported": [], "n_claims": 5}
+{"id": "2370", "unsupported": [], "n_claims": 6}
+{"id": "2251", "unsupported": [], "n_claims": 6}
+{"id": "2371", "unsupported": [], "n_claims": 7}
+{"id": "2454", "unsupported": [], "n_claims": 6}
+{"id": "2424", "unsupported": [{"claim": "The book will bring to light issues raised over the efficiency and ethics of the Clintons' charitable operations.", "status": "not_in_source", "evidence": "The source does not state that the book will bring to light issues specifically over efficiency and ethics."}], "n_claims": 6}
+{"id": "2455", "unsupported": [], "n_claims": 6}
+{"id": "2358", "unsupported": [], "n_claims": 9}
+{"id": "2466", "unsupported": [], "n_claims": 5}
+{"id": "2359", "unsupported": [], "n_claims": 11}
+{"id": "2425", "unsupported": [], "n_claims": 12}
+{"id": "2484", "unsupported": [], "n_claims": 3}
+{"id": "2604", "unsupported": [], "n_claims": 3}
+{"id": "2652", "unsupported": [], "n_claims": 5}
+{"id": "2485", "unsupported": [{"claim": "The excitement around quadruple rainbows continues to grow.", "status": "not_in_source", "evidence": "The source does not mention excitement around quadruple rainbows specifically."}], "n_claims": 7}
+{"id": "2467", "unsupported": [], "n_claims": 11}
+{"id": "2653", "unsupported": [], "n_claims": 6}
+{"id": "2605", "unsupported": [], "n_claims": 7}
+{"id": "2664", "unsupported": [{"claim": "Freshman Justise Winslow led Duke with 19 points while national freshman of the year Jahlil Okafor had 18 points, 10 of which came in the first half.", "status": "not_in_source", "evidence": "The source states Winslow led Duke with 19 points and Okafor had 18 points, but does not specify that Okafor's 10 points came in the first half."}], "n_claims": 6}
+{"id": "2533", "unsupported": [], "n_claims": 7}
+{"id": "2665", "unsupported": [], "n_claims": 10}
+{"id": "2670", "unsupported": [], "n_claims": 9}
+{"id": "2892", "unsupported": [], "n_claims": 5}
+{"id": "2736", "unsupported": [], "n_claims": 7}
+{"id": "2796", "unsupported": [{"claim": "Sally Kohn argues that such a stunt would help Clinton to be seen as a ‘populist fighter for the middle class’.", "status": "not_in_source", "evidence": "The source does not mention Sally Kohn's argument."}, {"claim": "The stunt would be a way of ‘highlighting important problems and inspiring solutions’.", "status": "not_in_source", "evidence": "The source does not quote this phrase or directly attribute it to Kohn."}, {"claim": "The stunt could change the public perception of Clinton from a wealthy woman ‘out of touch with ordinary Americans’ to a ‘woman of the people’.", "status": "not_in_source", "evidence": "The source discusses perceptions of Clinton but does not use these exact phrases."}], "n_claims": 6}
+{"id": "2532", "unsupported": [], "n_claims": 16}
+{"id": "2893", "unsupported": [], "n_claims": 7}
+{"id": "2671", "unsupported": [], "n_claims": 12}
+{"id": "2874", "unsupported": [{"claim": "Captures of women are a part of this strategy, using them as slaves and wives, and forcing them to convert to Islam.", "status": "not_in_source", "evidence": "The source does not explicitly state that captures of women are used as wives or that they are forced to convert to Islam."}], "n_claims": 7}
+{"id": "3144", "unsupported": [], "n_claims": 4}
+{"id": "2797", "unsupported": [{"claim": "Clinton's announcement would demonstrate her commitment to fighting for the middle class.", "status": "not_in_source", "evidence": "The source does not explicitly state that her announcement would demonstrate commitment to fighting for the middle class."}], "n_claims": 10}
+{"id": "2737", "unsupported": [], "n_claims": 13}
+{"id": "3078", "unsupported": [], "n_claims": 7}
+{"id": "2875", "unsupported": [], "n_claims": 11}
+{"id": "3079", "unsupported": [], "n_claims": 13}
+{"id": "3768", "unsupported": [{"claim": "The saga continues on CBS and Paramount Plus.", "status": "not_in_source", "evidence": "The source does not mention where to watch the show."}], "n_claims": 6}
+{"id": "3145", "unsupported": [], "n_claims": 8}
+{"id": "3769", "unsupported": [], "n_claims": 6}
+{"id": "3636", "unsupported": [], "n_claims": 5}
+{"id": "3606", "unsupported": [], "n_claims": 9}
+{"id": "3246", "unsupported": [], "n_claims": 8}
+{"id": "3810", "unsupported": [], "n_claims": 7}
+{"id": "3247", "unsupported": [], "n_claims": 11}
+{"id": "3558", "unsupported": [], "n_claims": 9}
+{"id": "3607", "unsupported": [], "n_claims": 11}
+{"id": "3637", "unsupported": [], "n_claims": 12}
+{"id": "3559", "unsupported": [], "n_claims": 12}
+{"id": "3811", "unsupported": [], "n_claims": 7}
+{"id": "3883", "unsupported": [], "n_claims": 5}
+{"id": "3882", "unsupported": [], "n_claims": 5}
+{"id": "3859", "unsupported": [], "n_claims": 7}
+{"id": "3913", "unsupported": [], "n_claims": 5}
+{"id": "3912", "unsupported": [], "n_claims": 6}
+{"id": "3870", "unsupported": [], "n_claims": 5}
+{"id": "3865", "unsupported": [], "n_claims": 8}
+{"id": "3871", "unsupported": [], "n_claims": 7}
+{"id": "3858", "unsupported": [], "n_claims": 10}
+{"id": "3936", "unsupported": [], "n_claims": 8}
+{"id": "3864", "unsupported": [], "n_claims": 7}
+{"id": "3937", "unsupported": [], "n_claims": 6}
+{"id": "3948", "unsupported": [], "n_claims": 10}
+{"id": "4032", "unsupported": [], "n_claims": 5}
+{"id": "4026", "unsupported": [], "n_claims": 6}
+{"id": "4008", "unsupported": [], "n_claims": 5}
+{"id": "4015", "unsupported": [], "n_claims": 7}
+{"id": "3949", "unsupported": [], "n_claims": 7}
+{"id": "4050", "unsupported": [], "n_claims": 8}
+{"id": "4033", "unsupported": [], "n_claims": 7}
+{"id": "4014", "unsupported": [], "n_claims": 5}
+{"id": "4009", "unsupported": [], "n_claims": 7}
+{"id": "3979", "unsupported": [], "n_claims": 10}
+{"id": "3978", "unsupported": [], "n_claims": 10}
+{"id": "4027", "unsupported": [], "n_claims": 12}
+{"id": "4116", "unsupported": [], "n_claims": 6}
+{"id": "4051", "unsupported": [], "n_claims": 5}
+{"id": "4194", "unsupported": [], "n_claims": 6}
+{"id": "4207", "unsupported": [], "n_claims": 5}
+{"id": "4117", "unsupported": [], "n_claims": 8}
+{"id": "4074", "unsupported": [], "n_claims": 7}
+{"id": "4075", "unsupported": [], "n_claims": 7}
+{"id": "4218", "unsupported": [], "n_claims": 9}
+{"id": "4063", "unsupported": [{"claim": "Chase Young is five years younger than their current defensive end Emmanuel Ogbah.", "status": "not_in_source", "evidence": "The source does not provide the ages of Young or Ogbah."}], "n_claims": 9}
+{"id": "4195", "unsupported": [], "n_claims": 7}
+{"id": "4206", "unsupported": [], "n_claims": 12}
+{"id": "4062", "unsupported": [], "n_claims": 8}
+{"id": "4219", "unsupported": [], "n_claims": 10}
+{"id": "4338", "unsupported": [], "n_claims": 6}
+{"id": "4296", "unsupported": [], "n_claims": 4}
+{"id": "4260", "unsupported": [], "n_claims": 5}
+{"id": "4345", "unsupported": [], "n_claims": 6}
+{"id": "4339", "unsupported": [], "n_claims": 7}
+{"id": "4344", "unsupported": [], "n_claims": 6}
+{"id": "4261", "unsupported": [], "n_claims": 7}
+{"id": "4225", "unsupported": [], "n_claims": 7}
+{"id": "4440", "unsupported": [], "n_claims": 6}
+{"id": "4297", "unsupported": [], "n_claims": 6}
+{"id": "4224", "unsupported": [], "n_claims": 10}
+{"id": "4441", "unsupported": [], "n_claims": 11}
+{"id": "4470", "unsupported": [], "n_claims": 7}
+{"id": "4471", "unsupported": [], "n_claims": 5}
+{"id": "4476", "unsupported": [], "n_claims": 5}
+{"id": "4572", "unsupported": [], "n_claims": 6}
+{"id": "4747", "unsupported": [{"claim": "Moore is excited to join the winning mindset of Coach Epperson and the Lady Lions at Freed-Hardeman University.", "status": "not_in_source", "evidence": "The source does not explicitly state Moore's excitement about joining the winning mindset of Coach Epperson and the Lady Lions."}], "n_claims": 5}
+{"id": "4746", "unsupported": [], "n_claims": 5}
+{"id": "4584", "unsupported": [], "n_claims": 5}
+{"id": "4531", "unsupported": [], "n_claims": 6}
+{"id": "4525", "unsupported": [], "n_claims": 6}
+{"id": "4573", "unsupported": [], "n_claims": 7}
+{"id": "4530", "unsupported": [], "n_claims": 6}
+{"id": "4477", "unsupported": [{"claim": "The full list of canceled routes can be found in the source.", "status": "not_in_source", "evidence": "The source does not state that the full list can be found in the source; it only provides the list."}], "n_claims": 7}
+{"id": "4585", "unsupported": [], "n_claims": 8}
+{"id": "4524", "unsupported": [], "n_claims": 4}
+{"id": "4776", "unsupported": [], "n_claims": 6}
+{"id": "4800", "unsupported": [], "n_claims": 7}
+{"id": "4795", "unsupported": [{"claim": "Fans are curious to see what will happen with Chelsea's character, including her relationship with Billy and her new job at Marchetti.", "status": "not_in_source", "evidence": "As for what lies ahead for Chelsea when she returns, that remains to be seen."}], "n_claims": 6}
+{"id": "4842", "unsupported": [], "n_claims": 5}
+{"id": "4801", "unsupported": [], "n_claims": 5}
+{"id": "5016", "unsupported": [], "n_claims": 5}
+{"id": "4843", "unsupported": [], "n_claims": 7}
+{"id": "4794", "unsupported": [{"claim": "Egan's character Chelsea was written out of the soap opera to accommodate her pregnancy.", "status": "not_in_source", "evidence": "The source does not state that Chelsea was written out to accommodate her pregnancy."}, {"claim": "It is anticipated that Chelsea's return will involve her new job at Marchetti and her relationship with Billy.", "status": "not_in_source", "evidence": "The source does not confirm that her return will specifically involve these elements."}], "n_claims": 8}
+{"id": "4950", "unsupported": [], "n_claims": 8}
+{"id": "4777", "unsupported": [], "n_claims": 7}
+{"id": "5017", "unsupported": [], "n_claims": 7}
+{"id": "4951", "unsupported": [], "n_claims": 6}
+{"id": "5196", "unsupported": [], "n_claims": 5}
+{"id": "5059", "unsupported": [], "n_claims": 6}
+{"id": "5034", "unsupported": [], "n_claims": 5}
+{"id": "5083", "unsupported": [], "n_claims": 6}
+{"id": "5274", "unsupported": [], "n_claims": 5}
+{"id": "5275", "unsupported": [], "n_claims": 6}
+{"id": "5082", "unsupported": [], "n_claims": 6}
+{"id": "5388", "unsupported": [], "n_claims": 8}
+{"id": "5389", "unsupported": [], "n_claims": 6}
+{"id": "5035", "unsupported": [], "n_claims": 8}
+{"id": "5197", "unsupported": [], "n_claims": 8}
+{"id": "5058", "unsupported": [], "n_claims": 8}
+{"id": "5526", "unsupported": [], "n_claims": 5}
+{"id": "5479", "unsupported": [], "n_claims": 8}
+{"id": "5413", "unsupported": [], "n_claims": 6}
+{"id": "5478", "unsupported": [], "n_claims": 9}
+{"id": "5412", "unsupported": [], "n_claims": 5}
+{"id": "5527", "unsupported": [{"claim": "Fans are left wondering if she will succeed.", "status": "not_in_source", "evidence": "The source does not mention fans wondering about Brooke's success."}], "n_claims": 7}
+{"id": "5563", "unsupported": [], "n_claims": 7}
+{"id": "5562", "unsupported": [], "n_claims": 6}
+{"id": "5682", "unsupported": [], "n_claims": 12}
+{"id": "5670", "unsupported": [], "n_claims": 11}
+{"id": "5671", "unsupported": [], "n_claims": 7}
+{"id": "5683", "unsupported": [], "n_claims": 14}
+{"id": "5688", "unsupported": [], "n_claims": 11}
+{"id": "5820", "unsupported": [], "n_claims": 11}
+{"id": "5731", "unsupported": [{"claim": "The business has received mixed reviews from customers.", "status": "not_in_source", "evidence": "The source does not state that reviews are mixed."}], "n_claims": 10}
+{"id": "5821", "unsupported": [], "n_claims": 15}
+{"id": "5736", "unsupported": [{"claim": "Taffy's Pizza is a popular local eatery.", "status": "not_in_source", "evidence": "Source does not state popularity."}, {"claim": "The restaurant is open from Tuesday to Sunday.", "status": "contradicted", "evidence": "Source states hours for Monday as 0:0-0:0."}], "n_claims": 14}
+{"id": "5730", "unsupported": [], "n_claims": 15}
+{"id": "5826", "unsupported": [], "n_claims": 10}
+{"id": "5737", "unsupported": [], "n_claims": 18}
+{"id": "5760", "unsupported": [], "n_claims": 18}
+{"id": "5761", "unsupported": [], "n_claims": 11}
+{"id": "5689", "unsupported": [], "n_claims": 16}
+{"id": "5827", "unsupported": [{"claim": "It features a bar with a selection of cocktails.", "status": "not_in_source", "evidence": "The source does not specifically mention a bar or cocktails."}], "n_claims": 13}
+{"id": "5850", "unsupported": [], "n_claims": 10}
+{"id": "6024", "unsupported": [{"claim": "The restaurant operates from 7:30 am to 1:30 pm from Wednesday to Friday, and until 2 pm on Saturdays and Sundays.", "status": "contradicted", "evidence": "Source states hours for Wednesday to Friday are 7:30-13:30, and Saturday and Sunday are 7:30-14:00."}], "n_claims": 8}
+{"id": "6048", "unsupported": [], "n_claims": 11}
+{"id": "6138", "unsupported": [], "n_claims": 12}
+{"id": "6139", "unsupported": [], "n_claims": 17}
+{"id": "6025", "unsupported": [], "n_claims": 15}
+{"id": "6246", "unsupported": [], "n_claims": 9}
+{"id": "5851", "unsupported": [{"claim": "The business operates from 11:30 am to 7:30 pm on weekdays and from 11:30 am to 8:00 pm on weekends.", "status": "contradicted", "evidence": "{'hours': {'Monday': '11:30-19:30', 'Tuesday': '11:30-19:30', 'Wednesday': '11:30-19:30', 'Thursday': '11:30-19:30', 'Friday': '11:30-20:0', 'Saturday': '11:30-20:0', 'Sunday': '11:30-19:30'}}"}, {"claim": "It offers a variety of food and beer options in a convenient location.", "status": "not_in_source", "evidence": "The source does not specify the variety of food and beer options."}], "n_claims": 16}
+{"id": "6169", "unsupported": [{"claim": "The menu includes classic quesadillas, combo burritos, and soup, among other options.", "status": "not_in_source", "evidence": "The source does not specify the full menu."}, {"claim": "The operating hours are from 11:00 AM to 9:00 PM from Tuesday to Thursday and Friday to Sunday, with Monday being closed.", "status": "contradicted", "evidence": "Monday: '0:0-0:0'."}], "n_claims": 16}
+{"id": "6049", "unsupported": [], "n_claims": 18}
+{"id": "6168", "unsupported": [{"claim": "It is open from 11 AM to 9 PM on Tuesday to Friday, and until 8 PM on Saturday and Sunday.", "status": "contradicted", "evidence": "Source states it is open Monday 0:00-0:00, Tuesday to Friday 11:00-21:00, Saturday 11:00-20:00, Sunday 11:00-20:00."}], "n_claims": 11}
+{"id": "6234", "unsupported": [], "n_claims": 11}
+{"id": "6235", "unsupported": [], "n_claims": 14}
+{"id": "6276", "unsupported": [], "n_claims": 9}
+{"id": "6247", "unsupported": [], "n_claims": 8}
+{"id": "6252", "unsupported": [], "n_claims": 10}
+{"id": "6408", "unsupported": [], "n_claims": 10}
+{"id": "6546", "unsupported": [], "n_claims": 10}
+{"id": "6414", "unsupported": [{"claim": "Live Oak Cafe offers a variety of food options and services.", "status": "not_in_source", "evidence": "Source does not specify the variety of food options."}], "n_claims": 13}
+{"id": "6630", "unsupported": [{"claim": "The business operates seven days a week.", "status": "contradicted", "evidence": "Hours indicate '0:0-0:0' for all days, which suggests it is not open."}], "n_claims": 9}
+{"id": "6415", "unsupported": [], "n_claims": 11}
+{"id": "6277", "unsupported": [{"claim": "Overall, Mala Town is a Chinese restaurant in Goleta that offers a pleasant dining experience with a variety of dishes, including spicy soup noodles and mala tang.", "status": "not_in_source", "evidence": "The source does not provide a summary or conclusion about the overall experience or variety of dishes."}], "n_claims": 12}
+{"id": "6283", "unsupported": [], "n_claims": 11}
+{"id": "6253", "unsupported": [], "n_claims": 17}
+{"id": "6282", "unsupported": [], "n_claims": 10}
+{"id": "6409", "unsupported": [], "n_claims": 18}
+{"id": "6631", "unsupported": [{"claim": "The business is open seven days a week, although specific hours are not provided in the given data.", "status": "not_in_source", "evidence": "Hours are listed as '0:0-0:0' for all days, indicating it is not open."}], "n_claims": 13}
+{"id": "6547", "unsupported": [], "n_claims": 14}
+{"id": "6774", "unsupported": [{"claim": "Despite having a business rating of 5 stars, reviews are mixed.", "status": "contradicted", "evidence": "source shows one negative review and two positive reviews, indicating not all reviews are mixed."}], "n_claims": 9}
+{"id": "6763", "unsupported": [], "n_claims": 8}
+{"id": "6714", "unsupported": [], "n_claims": 11}
+{"id": "6762", "unsupported": [], "n_claims": 15}
+{"id": "6768", "unsupported": [{"claim": "The establishment operates from 11:30 AM to 2:00 AM throughout the week.", "status": "contradicted", "evidence": "source states hours are 11:30-2:00, which implies it closes at 2:00 PM, not AM."}], "n_claims": 16}
+{"id": "6684", "unsupported": [], "n_claims": 13}
+{"id": "6673", "unsupported": [], "n_claims": 11}
+{"id": "6775", "unsupported": [], "n_claims": 12}
+{"id": "6672", "unsupported": [], "n_claims": 12}
+{"id": "6715", "unsupported": [], "n_claims": 14}
+{"id": "6769", "unsupported": [{"claim": "It is a restaurant and bar that offers Irish cuisine and a vibrant nightlife experience.", "status": "not_in_source", "evidence": "The source does not explicitly state 'vibrant nightlife experience'."}, {"claim": "The establishment operates from 11:30 am to 2:00 am every day of the week.", "status": "contradicted", "evidence": "The source states hours are from 11:30-2:00, which is 11:30 am to 2:00 pm."}], "n_claims": 12}
+{"id": "6685", "unsupported": [], "n_claims": 18}
+{"id": "6858", "unsupported": [], "n_claims": 11}
+{"id": "6900", "unsupported": [], "n_claims": 9}
+{"id": "6859", "unsupported": [], "n_claims": 11}
+{"id": "6840", "unsupported": [], "n_claims": 10}
+{"id": "6901", "unsupported": [{"claim": "They operate from Tuesday to Sunday, with operating hours from 9:00 AM to 5:00 PM.", "status": "contradicted", "evidence": "{'hours': {'Monday': '0:0-0:0', 'Tuesday': '9:0-17:0', 'Wednesday': '9:0-17:0', 'Thursday': '9:0-17:0', 'Friday': '9:0-17:0', 'Saturday': '9:0-17:0', 'Sunday': '9:0-17:0'}}"}], "n_claims": 4}
+{"id": "6780", "unsupported": [], "n_claims": 5}
+{"id": "6913", "unsupported": [], "n_claims": 12}
+{"id": "6852", "unsupported": [{"claim": "The restaurant has received mixed reviews.", "status": "contradicted", "evidence": "Business stars: 3.0; reviews include both positive and negative."}], "n_claims": 14}
+{"id": "6912", "unsupported": [], "n_claims": 14}
+{"id": "6841", "unsupported": [], "n_claims": 13}
+{"id": "6781", "unsupported": [{"claim": "Overall, Neighbor Tim's BBQ offers a variety of barbecue dishes with a range of flavors.", "status": "not_in_source", "evidence": "source does not provide a summary of the variety of dishes."}], "n_claims": 19}
+{"id": "6853", "unsupported": [], "n_claims": 15}
+{"id": "6924", "unsupported": [], "n_claims": 14}
+{"id": "6930", "unsupported": [], "n_claims": 10}
+{"id": "6997", "unsupported": [{"claim": "The business has received mixed reviews from customers.", "status": "not_in_source", "evidence": "The source does not state that reviews are mixed."}], "n_claims": 10}
+{"id": "6996", "unsupported": [{"claim": "It's a spot recommended for tourists who wish to experience California's beaches.", "status": "not_in_source", "evidence": "Source does not explicitly state it is recommended for tourists."}], "n_claims": 9}
+{"id": "6978", "unsupported": [], "n_claims": 11}
+{"id": "6925", "unsupported": [{"claim": "The restaurant offers a variety of seafood dishes.", "status": "not_in_source", "evidence": "The source does not specify the variety of dishes offered."}], "n_claims": 11}
+{"id": "6919", "unsupported": [], "n_claims": 12}
+{"id": "6918", "unsupported": [], "n_claims": 10}
+{"id": "6979", "unsupported": [], "n_claims": 17}
+{"id": "6973", "unsupported": [], "n_claims": 11}
+{"id": "6972", "unsupported": [], "n_claims": 9}
+{"id": "6931", "unsupported": [], "n_claims": 16}
+{"id": "7008", "unsupported": [], "n_claims": 10}
+{"id": "7014", "unsupported": [], "n_claims": 9}
+{"id": "7003", "unsupported": [{"claim": "Overall, Peebee & Jays is known for its delicious sandwiches, although there have been some issues with certain menu items and customer service.", "status": "not_in_source", "evidence": "This is a summary conclusion not directly stated in the source."}], "n_claims": 12}
+{"id": "7020", "unsupported": [], "n_claims": 15}
+{"id": "7015", "unsupported": [{"claim": "The restaurant is open from 7:00 am to 9:00 pm from Monday to Sunday.", "status": "contradicted", "evidence": "Source states hours include 7:00 am to 9:30 pm on Friday and Saturday."}], "n_claims": 14}
+{"id": "7002", "unsupported": [], "n_claims": 11}
+{"id": "7021", "unsupported": [{"claim": "The business offers a variety of seafood dishes and American cuisine.", "status": "not_in_source", "evidence": "The source does not specify the variety of dishes offered."}], "n_claims": 13}
+{"id": "7050", "unsupported": [], "n_claims": 9}
+{"id": "7026", "unsupported": [], "n_claims": 11}
+{"id": "7027", "unsupported": [], "n_claims": 6}
+{"id": "7009", "unsupported": [{"claim": "Soho Restaurant & Music Club offers a multi-faceted experience, combining live music, delicious food, and a lively atmosphere.", "status": "not_in_source", "evidence": "The source does not explicitly state this summary."}, {"claim": "There have been some concerns raised by customers that should be addressed for a better overall experience.", "status": "not_in_source", "evidence": "The source does not explicitly state this summary."}], "n_claims": 12}
+{"id": "7033", "unsupported": [{"claim": "Denny's has received mixed reviews from customers.", "status": "contradicted", "evidence": "Source includes mostly positive reviews and one negative review."}], "n_claims": 14}
+{"id": "7062", "unsupported": [], "n_claims": 9}
+{"id": "7032", "unsupported": [], "n_claims": 11}
+{"id": "7092", "unsupported": [{"claim": "Their takeout service is especially favored by the patrons.", "status": "not_in_source", "evidence": "SOURCE does not specifically mention takeout service being favored."}], "n_claims": 11}
+{"id": "7051", "unsupported": [], "n_claims": 17}
+{"id": "7086", "unsupported": [], "n_claims": 12}
+{"id": "7063", "unsupported": [], "n_claims": 29}
+{"id": "7140", "unsupported": [], "n_claims": 9}
+{"id": "7098", "unsupported": [{"claim": "Customers have praised the tranquil setting.", "status": "not_in_source", "evidence": "Source does not explicitly mention a tranquil setting."}], "n_claims": 14}
+{"id": "7093", "unsupported": [], "n_claims": 13}
+{"id": "7087", "unsupported": [], "n_claims": 18}
+{"id": "7099", "unsupported": [], "n_claims": 13}
+{"id": "7158", "unsupported": [], "n_claims": 7}
+{"id": "7141", "unsupported": [], "n_claims": 12}
+{"id": "7152", "unsupported": [{"claim": "Vino Divino does not have outdoor seating.", "status": "not_in_source", "evidence": "OutdoorSeating attribute is null."}, {"claim": "Vino Divino does not take reservations.", "status": "not_in_source", "evidence": "RestaurantsReservations attribute is null."}], "n_claims": 20}
+{"id": "7134", "unsupported": [], "n_claims": 11}
+{"id": "7135", "unsupported": [], "n_claims": 12}
+{"id": "7153", "unsupported": [{"claim": "On Tuesdays to Sundays, it opens at 12:00 PM and closes at 6:00 PM, except for Fridays when it closes at 5:00 PM.", "status": "contradicted", "evidence": "On Monday, it is open from 0:00 to 0:00, which contradicts the claim."}], "n_claims": 13}
+{"id": "7200", "unsupported": [{"claim": "The restaurant is open from 11:00 am to 7:00 pm, Tuesday through Saturday.", "status": "contradicted", "evidence": "Source states hours are 11:00-19:00, which is 11:00 am to 7:00 pm."}], "n_claims": 10}
+{"id": "7159", "unsupported": [{"claim": "Santa Barbara Wine Therapy offers a wine-focused experience with a variety of drink options.", "status": "not_in_source", "evidence": "The source does not explicitly state this."}], "n_claims": 16}
+{"id": "7236", "unsupported": [], "n_claims": 8}
+{"id": "7278", "unsupported": [], "n_claims": 10}
+{"id": "7260", "unsupported": [], "n_claims": 9}
+{"id": "7261", "unsupported": [], "n_claims": 12}
+{"id": "7254", "unsupported": [{"claim": "It operates from 11 am till midnight from Tuesday to Sunday, with an exception on Monday when it remains closed.", "status": "contradicted", "evidence": "The source states Monday hours are 0:0-0:0, meaning it is closed all day."}], "n_claims": 11}
+{"id": "7230", "unsupported": [], "n_claims": 9}
+{"id": "7231", "unsupported": [], "n_claims": 10}
+{"id": "7212", "unsupported": [], "n_claims": 9}
+{"id": "7255", "unsupported": [{"claim": "The restaurant's hours of operation are from 11:00 AM to 8:00 PM on Tuesdays through Sundays, with Monday being closed.", "status": "contradicted", "evidence": "Source states Monday hours are 0:0-0:0, and Tuesday hours are 11:0-20:0."}], "n_claims": 13}
+{"id": "7213", "unsupported": [{"claim": "It has outdoor seating available.", "status": "contradicted", "evidence": "Source states there is no outdoor seating."}], "n_claims": 17}
+{"id": "7201", "unsupported": [], "n_claims": 15}
+{"id": "7237", "unsupported": [{"claim": "Overall, Outpost offers a diverse menu and a lively atmosphere for patrons to enjoy American cuisine, drinks, and desserts.", "status": "not_in_source", "evidence": "The source does not provide a summary or conclusion about the overall experience."}], "n_claims": 14}
+{"id": "7320", "unsupported": [], "n_claims": 9}
+{"id": "7296", "unsupported": [{"claim": "The bistro is open every day, with extended hours from Wednesday to Sunday.", "status": "contradicted", "evidence": "The source specifies different hours for each day, not open every day."}], "n_claims": 13}
+{"id": "7290", "unsupported": [], "n_claims": 9}
+{"id": "7446", "unsupported": [{"claim": "They only operate in Santa Barbara on Mondays and Thursdays, and travel to Lompoc and Vandenberg the remaining days of the week.", "status": "contradicted", "evidence": "The source states they are in Santa Barbara on Tuesdays, Wednesdays, Thursdays, and Fridays, and travel to Lompoc and Vandenberg the remaining days."}], "n_claims": 11}
+{"id": "7279", "unsupported": [{"claim": "The location of Third Window Brewing is also mentioned in the reviews.", "status": "not_in_source", "evidence": "While the source mentions it is located in 'The Mill', it does not specify that the location is mentioned in the reviews."}], "n_claims": 12}
+{"id": "7321", "unsupported": [{"claim": "Despite some mixed reviews, it remains a popular choice for customers looking for a variety of vegetarian and gluten-free options.", "status": "not_in_source", "evidence": "Source does not indicate that reviews are mixed or that it is a popular choice."}], "n_claims": 13}
+{"id": "7314", "unsupported": [], "n_claims": 14}
+{"id": "7447", "unsupported": [], "n_claims": 15}
+{"id": "7315", "unsupported": [], "n_claims": 14}
+{"id": "7291", "unsupported": [], "n_claims": 16}
+{"id": "7506", "unsupported": [], "n_claims": 8}
+{"id": "7297", "unsupported": [{"claim": "The bistro has different operating hours throughout the week, opening at 11:00 am on Mondays and Tuesdays, and closing at 4:00 pm.", "status": "contradicted", "evidence": "{'hours': {'Monday': '11:0-16:0', 'Tuesday': '11:0-16:0'}} (closes at 16:00) is correct, but the statement does not mention that it opens at 11:00 am."}], "n_claims": 15}
+{"id": "7507", "unsupported": [{"claim": "The positive reviews about the food outweigh these concerns.", "status": "not_in_source", "evidence": "The source does not provide a summary or comparison of positive and negative aspects."}], "n_claims": 17}
+{"id": "7782", "unsupported": [], "n_claims": 8}
+{"id": "7915", "unsupported": [], "n_claims": 4}
+{"id": "7950", "unsupported": [{"claim": "Their operating hours vary throughout the week.", "status": "not_in_source", "evidence": "Source provides specific hours but does not state they vary."}], "n_claims": 8}
+{"id": "7578", "unsupported": [{"claim": "Customers can enjoy a wide variety of Mexican dishes, with the Chile Relleno Burrito being a notable favorite.", "status": "not_in_source", "evidence": "The source mentions the Chile Relleno Burrito as a favorite but does not state that there is a wide variety of dishes."}, {"claim": "There are no parking options available.", "status": "contradicted", "evidence": "The source states there is a parking lot available."}], "n_claims": 11}
+{"id": "7776", "unsupported": [], "n_claims": 6}
+{"id": "7579", "unsupported": [], "n_claims": 14}
+{"id": "7596", "unsupported": [], "n_claims": 12}
+{"id": "7783", "unsupported": [], "n_claims": 14}
+{"id": "7597", "unsupported": [], "n_claims": 15}
+{"id": "7914", "unsupported": [], "n_claims": 11}
+{"id": "7777", "unsupported": [{"claim": "The reviews do not mention any positive aspects or specific strengths of the business.", "status": "not_in_source", "evidence": "The source does not provide any positive reviews or strengths."}], "n_claims": 10}
+{"id": "7951", "unsupported": [{"claim": "Overall, Santa Barbara's Wood Fired Pizza is a local business known for its tasty pizza options, especially the pesto pizza, and convenient takeout services.", "status": "not_in_source", "evidence": "This is a summary and opinion not directly supported by the source."}], "n_claims": 15}
+{"id": "7980", "unsupported": [], "n_claims": 8}
+{"id": "8076", "unsupported": [{"claim": "Its operating hours vary, but it is open every day of the week.", "status": "not_in_source", "evidence": "SOURCE provides specific hours but does not state it is open every day."}], "n_claims": 10}
+{"id": "8052", "unsupported": [], "n_claims": 13}
+{"id": "8077", "unsupported": [], "n_claims": 10}
+{"id": "8148", "unsupported": [], "n_claims": 10}
+{"id": "8053", "unsupported": [{"claim": "They also appreciated the friendly and attentive service provided by the staff.", "status": "not_in_source", "evidence": "no reviews mention friendly and attentive service."}], "n_claims": 12}
+{"id": "8149", "unsupported": [{"claim": "Montecito Confections is highly regarded for its cake and confectionery products.", "status": "not_in_source", "evidence": "The source does not explicitly state this."}, {"claim": "Overall, Montecito Confections receives positive reviews for its cakes and confectionery products, as well as for the helpful and kind service provided by its owner, Katie Teall.", "status": "not_in_source", "evidence": "The source does not explicitly state this."}], "n_claims": 13}
+{"id": "7981", "unsupported": [], "n_claims": 10}
+{"id": "8214", "unsupported": [{"claim": "The Subway branch has received mixed reviews, resulting in an overall rating of 2.5 stars.", "status": "contradicted", "evidence": "Source does not state mixed reviews; it provides specific reviews with varying ratings."}, {"claim": "There are issues with cleanliness.", "status": "not_in_source", "evidence": "Source does not mention cleanliness issues."}], "n_claims": 11}
+{"id": "8238", "unsupported": [], "n_claims": 10}
+{"id": "8215", "unsupported": [], "n_claims": 13}
+{"id": "8316", "unsupported": [], "n_claims": 9}
+{"id": "8239", "unsupported": [{"claim": "Despite not having a parking garage or valet service, there is street parking available.", "status": "not_in_source", "evidence": "SOURCE does not mention street parking availability."}], "n_claims": 14}
+{"id": "8508", "unsupported": [], "n_claims": 11}
+{"id": "8418", "unsupported": [], "n_claims": 5}
+{"id": "8317", "unsupported": [], "n_claims": 14}
+{"id": "8460", "unsupported": [], "n_claims": 9}
+{"id": "8419", "unsupported": [], "n_claims": 10}
+{"id": "8382", "unsupported": [], "n_claims": 10}
+{"id": "8473", "unsupported": [{"claim": "The restaurant does not provide outdoor seating, but takeout is available.", "status": "not_in_source", "evidence": "The source does not mention outdoor seating or takeout availability."}], "n_claims": 14}
+{"id": "8383", "unsupported": [], "n_claims": 17}
+{"id": "8556", "unsupported": [], "n_claims": 11}
+{"id": "8472", "unsupported": [], "n_claims": 12}
+{"id": "8461", "unsupported": [], "n_claims": 13}
+{"id": "8509", "unsupported": [], "n_claims": 15}
+{"id": "8664", "unsupported": [], "n_claims": 9}
+{"id": "8670", "unsupported": [], "n_claims": 7}
+{"id": "8724", "unsupported": [], "n_claims": 14}
+{"id": "8622", "unsupported": [], "n_claims": 10}
+{"id": "8623", "unsupported": [], "n_claims": 13}
+{"id": "8557", "unsupported": [], "n_claims": 14}
+{"id": "8568", "unsupported": [], "n_claims": 10}
+{"id": "8671", "unsupported": [], "n_claims": 11}
+{"id": "8665", "unsupported": [], "n_claims": 12}
+{"id": "8658", "unsupported": [{"claim": "Luna Grill is open every day of the week.", "status": "contradicted", "evidence": "{'hours': {'Monday': '0:0-0:0', 'Tuesday': '12:0-21:0', 'Wednesday': '11:0-21:0', 'Thursday': '11:0-21:0', 'Friday': '11:0-15:0', 'Saturday': '11:0-21:0', 'Sunday': '11:0-21:0'}}"}], "n_claims": 12}
+{"id": "8659", "unsupported": [{"claim": "It is open from 11:00 am to 9:00 pm from Tuesday to Sunday, with reduced hours on Fridays (11:00 am to 3:00 pm).", "status": "contradicted", "evidence": "source states it is open Tuesday 12:00-21:00 and Friday 11:00-15:00."}, {"claim": "The ambience is trendy and classy, but casual.", "status": "not_in_source", "evidence": "source does not provide specific details about ambience."}, {"claim": "The restaurant is upscale.", "status": "contradicted", "evidence": "source states upscale is false."}], "n_claims": 23}
+{"id": "8569", "unsupported": [], "n_claims": 14}
+{"id": "8730", "unsupported": [{"claim": "They are praised for their tasty and generously filled offerings.", "status": "not_in_source", "evidence": "The source does not explicitly state they are praised for being generously filled."}], "n_claims": 9}
+{"id": "8784", "unsupported": [], "n_claims": 11}
+{"id": "8766", "unsupported": [], "n_claims": 10}
+{"id": "8754", "unsupported": [{"claim": "Your Choice is a popular local Thai restaurant.", "status": "not_in_source", "evidence": "source does not state it is popular."}], "n_claims": 16}
+{"id": "8731", "unsupported": [], "n_claims": 13}
+{"id": "8785", "unsupported": [], "n_claims": 7}
+{"id": "8725", "unsupported": [], "n_claims": 14}
+{"id": "8778", "unsupported": [{"claim": "One customer review praised the food, service, and pricing of the new restaurant, Cielo, which replaced Cabo's Baja Grill & Cantina.", "status": "contradicted", "evidence": "The review states it is Cielo that has the praised food and service, not Cabo's."}], "n_claims": 15}
+{"id": "8904", "unsupported": [{"claim": "It does not have WiFi or parking facilities, but allows street parking.", "status": "contradicted", "evidence": "Source states it does not offer WiFi but allows street parking; however, it does not state that it has no parking facilities."}], "n_claims": 9}
+{"id": "8767", "unsupported": [{"claim": "The business operates from 8:00 AM to 2:00 AM every day of the week.", "status": "contradicted", "evidence": "Source states hours are from 8:00 AM to 2:00 PM."}], "n_claims": 14}
+{"id": "8779", "unsupported": [], "n_claims": 15}
+{"id": "8755", "unsupported": [], "n_claims": 16}
+{"id": "8905", "unsupported": [], "n_claims": 13}
+{"id": "9072", "unsupported": [{"claim": "Some patrons appreciate the bakery for its exquisite goods and pleasant ambiance, stating it's a delightful place for coffee or breakfast.", "status": "not_in_source", "evidence": "The source does not mention 'pleasant ambiance' or summarize reviews in this way."}, {"claim": "Others found their baked goods satisfactory and the coffee acceptable.", "status": "not_in_source", "evidence": "The source does not provide this summary of reviews."}], "n_claims": 10}
+{"id": "9000", "unsupported": [], "n_claims": 12}
+{"id": "9078", "unsupported": [], "n_claims": 10}
+{"id": "9066", "unsupported": [{"claim": "It is a unique local business that combines a beer bar and a restaurant.", "status": "not_in_source", "evidence": "Source categorizes it but does not describe it as a unique business."}], "n_claims": 11}
+{"id": "9073", "unsupported": [{"claim": "The bakery offers a variety of exquisite bakery goods for parties, holidays, and everyday enjoyment.", "status": "not_in_source", "evidence": "Source does not specify the variety or occasions for the bakery goods."}], "n_claims": 12}
+{"id": "9067", "unsupported": [], "n_claims": 11}
+{"id": "8934", "unsupported": [], "n_claims": 10}
+{"id": "9001", "unsupported": [], "n_claims": 13}
+{"id": "9156", "unsupported": [], "n_claims": 9}
+{"id": "8935", "unsupported": [], "n_claims": 12}
+{"id": "9157", "unsupported": [], "n_claims": 16}
+{"id": "9079", "unsupported": [], "n_claims": 17}
+{"id": "9522", "unsupported": [], "n_claims": 9}
+{"id": "9198", "unsupported": [], "n_claims": 9}
+{"id": "9576", "unsupported": [], "n_claims": 15}
+{"id": "9540", "unsupported": [{"claim": "Despite the mixed reviews, customers appreciate the good service and food quality.", "status": "not_in_source", "evidence": "The source does not explicitly state that customers appreciate the good service and food quality; it only mentions mixed reviews."}], "n_claims": 9}
+{"id": "9210", "unsupported": [], "n_claims": 10}
+{"id": "9541", "unsupported": [], "n_claims": 13}
+{"id": "9552", "unsupported": [{"claim": "It opens daily from 9 am till midnight or later.", "status": "contradicted", "evidence": "Source states hours as 9:00-0:00, which implies it closes at midnight, but does not specify 'or later'."}], "n_claims": 11}
+{"id": "9553", "unsupported": [{"claim": "The bar is open from 9:00 am to 12:00 am every day of the week.", "status": "contradicted", "evidence": "{'hours': {'Monday': '9:0-17:0', 'Tuesday': '9:0-0:0', 'Wednesday': '9:0-0:0', 'Thursday': '9:0-0:0', 'Friday': '9:0-0:0', 'Saturday': '9:0-0:0', 'Sunday': '9:0-0:0'}}"}], "n_claims": 11}
+{"id": "9211", "unsupported": [{"claim": "Overall, 805 Kabob provides Mediterranean cuisine in Goleta, with a focus on kebabs.", "status": "not_in_source", "evidence": "The source does not specify a focus on kebabs."}], "n_claims": 15}
+{"id": "9199", "unsupported": [], "n_claims": 12}
+{"id": "9523", "unsupported": [], "n_claims": 16}
+{"id": "9577", "unsupported": [{"claim": "Night Lizard Brewing Company offers a comfortable and relaxed atmosphere, with a focus on providing a great experience for their customers.", "status": "not_in_source", "evidence": "The source does not explicitly state this."}, {"claim": "The business also features live music and a welcoming ambience.", "status": "not_in_source", "evidence": "The source mentions music but does not describe the ambience."}], "n_claims": 13}
+{"id": "9774", "unsupported": [], "n_claims": 9}
+{"id": "9582", "unsupported": [{"claim": "It does not allow group reservations.", "status": "contradicted", "evidence": "Source states that reservations are available."}], "n_claims": 9}
+{"id": "9678", "unsupported": [], "n_claims": 10}
+{"id": "9600", "unsupported": [], "n_claims": 9}
+{"id": "9768", "unsupported": [], "n_claims": 12}
+{"id": "9679", "unsupported": [], "n_claims": 10}
+{"id": "9727", "unsupported": [{"claim": "It offers free Wi-Fi.", "status": "not_in_source", "evidence": "SOURCE states WiFi is None."}], "n_claims": 13}
+{"id": "9726", "unsupported": [], "n_claims": 12}
+{"id": "9583", "unsupported": [], "n_claims": 12}
+{"id": "9601", "unsupported": [{"claim": "Javan's is a casual dining option that competes well with other restaurants in the area in terms of quality and pricing.", "status": "not_in_source", "evidence": "Source does not mention competition or pricing."}], "n_claims": 14}
+{"id": "9775", "unsupported": [], "n_claims": 17}
+{"id": "9769", "unsupported": [], "n_claims": 14}
+{"id": "9918", "unsupported": [], "n_claims": 9}
+{"id": "9912", "unsupported": [], "n_claims": 10}
+{"id": "9876", "unsupported": [], "n_claims": 16}
+{"id": "9840", "unsupported": [], "n_claims": 10}
+{"id": "9841", "unsupported": [], "n_claims": 13}
+{"id": "9834", "unsupported": [], "n_claims": 12}
+{"id": "9870", "unsupported": [{"claim": "The restaurant is open seven days a week.", "status": "contradicted", "evidence": "The source provides specific hours for each day, indicating it is not open seven days a week at the same hours."}, {"claim": "Despite some negative feedback, the restaurant has remained popular for its food offerings and convenience.", "status": "not_in_source", "evidence": "The source does not provide information about the restaurant's popularity or convenience."}], "n_claims": 11}
+{"id": "9835", "unsupported": [{"claim": "Although the structured data does not provide information about the restaurant's operating hours, it can be inferred that they are open from Tuesday to Sunday, from 5:00 PM to 9:00 PM.", "status": "not_in_source", "evidence": "Source states hours but does not indicate any inference."}], "n_claims": 11}
+{"id": "9871", "unsupported": [{"claim": "The business operates from Monday to Friday, with extended hours on Wednesdays.", "status": "contradicted", "evidence": "Source states hours for each day, including Wednesday closing at 21:00."}, {"claim": "On weekends, it opens slightly later and closes earlier.", "status": "contradicted", "evidence": "Source states Saturday opens at 10:30 and closes at 20:30, Sunday opens at 10:30 and closes at 19:00."}], "n_claims": 12}
+{"id": "9913", "unsupported": [], "n_claims": 13}
+{"id": "9877", "unsupported": [], "n_claims": 14}
+{"id": "9919", "unsupported": [], "n_claims": 13}
+{"id": "10206", "unsupported": [], "n_claims": 10}
+{"id": "10110", "unsupported": [], "n_claims": 12}
+{"id": "10068", "unsupported": [{"claim": "However, recent reviews suggest that they have adjusted and are now back on track with their food quality.", "status": "not_in_source", "evidence": "Source does not explicitly state that they are back on track with food quality."}], "n_claims": 10}
+{"id": "9936", "unsupported": [], "n_claims": 11}
+{"id": "10014", "unsupported": [{"claim": "There have been mixed reviews about the restaurant.", "status": "not_in_source", "evidence": "Source does not explicitly state that reviews are mixed."}], "n_claims": 12}
+{"id": "10002", "unsupported": [], "n_claims": 9}
+{"id": "10015", "unsupported": [], "n_claims": 13}
+{"id": "10111", "unsupported": [], "n_claims": 15}
+{"id": "9937", "unsupported": [], "n_claims": 16}
+{"id": "10069", "unsupported": [], "n_claims": 13}
+{"id": "10207", "unsupported": [], "n_claims": 14}
+{"id": "10003", "unsupported": [{"claim": "There is no information provided about other parking options.", "status": "not_in_source", "evidence": "No mention of other parking options."}], "n_claims": 21}
+{"id": "10542", "unsupported": [], "n_claims": 10}
+{"id": "10458", "unsupported": [], "n_claims": 13}
+{"id": "10710", "unsupported": [], "n_claims": 14}
+{"id": "10350", "unsupported": [], "n_claims": 14}
+{"id": "10711", "unsupported": [], "n_claims": 13}
+{"id": "10459", "unsupported": [], "n_claims": 13}
+{"id": "10332", "unsupported": [], "n_claims": 15}
+{"id": "10543", "unsupported": [{"claim": "Comedy Hideaway offers an enjoyable and fun experience with good food, talented comics, and a casual ambiance.", "status": "not_in_source", "evidence": "Source does not explicitly mention food or ambiance details."}], "n_claims": 11}
+{"id": "10351", "unsupported": [], "n_claims": 14}
+{"id": "10362", "unsupported": [{"claim": "The Good Bar is a nightlife hotspot, famous for its cocktails.", "status": "not_in_source", "evidence": "The source does not state that it is famous for its cocktails."}], "n_claims": 13}
+{"id": "10363", "unsupported": [], "n_claims": 21}
+{"id": "10333", "unsupported": [], "n_claims": 14}
+{"id": "10878", "unsupported": [], "n_claims": 10}
+{"id": "10734", "unsupported": [], "n_claims": 9}
+{"id": "11100", "unsupported": [], "n_claims": 15}
+{"id": "10812", "unsupported": [], "n_claims": 9}
+{"id": "10879", "unsupported": [{"claim": "The business offers various Mexican dishes.", "status": "not_in_source", "evidence": "SOURCE does not specify the variety of dishes offered."}, {"claim": "It is unclear if this change has already taken place or is in progress.", "status": "not_in_source", "evidence": "SOURCE does not provide information on the current status of the business."}, {"claim": "Overall, Chilangos offers a variety of Mexican dishes, including popular items like sweet potato fries and mole sauce.", "status": "not_in_source", "evidence": "SOURCE does not confirm the variety of dishes offered."}], "n_claims": 14}
+{"id": "10818", "unsupported": [], "n_claims": 9}
+{"id": "10813", "unsupported": [], "n_claims": 10}
+{"id": "10800", "unsupported": [], "n_claims": 11}
+{"id": "10735", "unsupported": [], "n_claims": 13}
+{"id": "10801", "unsupported": [], "n_claims": 13}
+{"id": "10819", "unsupported": [], "n_claims": 18}
+{"id": "11101", "unsupported": [], "n_claims": 13}
+{"id": "11178", "unsupported": [], "n_claims": 13}
+{"id": "11442", "unsupported": [], "n_claims": 11}
+{"id": "11179", "unsupported": [], "n_claims": 7}
+{"id": "11190", "unsupported": [{"claim": "It serves authentic Mexican cuisine.", "status": "not_in_source", "evidence": "source does not specify the cuisine as 'authentic'."}], "n_claims": 14}
+{"id": "11448", "unsupported": [], "n_claims": 15}
+{"id": "11286", "unsupported": [], "n_claims": 9}
+{"id": "11292", "unsupported": [], "n_claims": 14}
+{"id": "11443", "unsupported": [], "n_claims": 15}
+{"id": "11287", "unsupported": [{"claim": "Crocodile Restaurant & Bar is a local business with a diverse range of offerings.", "status": "not_in_source", "evidence": "The source does not explicitly state that it is a local business or mention the diversity of offerings."}], "n_claims": 17}
+{"id": "11454", "unsupported": [{"claim": "It opens at 5 PM every day of the week.", "status": "contradicted", "evidence": "Hours indicate it is open Monday 0:00-0:00, Tuesday to Thursday and Sunday 17:00-21:00, and Friday and Saturday 17:00-22:00."}], "n_claims": 14}
+{"id": "11449", "unsupported": [{"claim": "Overall, El Rincon Bohemio-Goleta offers a casual dining experience with a varied menu of Mexican cuisine.", "status": "not_in_source", "evidence": "The source does not provide specific details about the menu variety."}], "n_claims": 16}
+{"id": "11191", "unsupported": [], "n_claims": 14}
+{"id": "11293", "unsupported": [], "n_claims": 11}
+{"id": "11905", "unsupported": [], "n_claims": 6}
+{"id": "12018", "unsupported": [], "n_claims": 6}
+{"id": "11520", "unsupported": [{"claim": "'The Spot' has mixed reviews with an average rating of 3.5 stars.", "status": "contradicted", "evidence": "Source does not state mixed reviews; it provides positive reviews."}], "n_claims": 8}
+{"id": "11904", "unsupported": [], "n_claims": 6}
+{"id": "11484", "unsupported": [], "n_claims": 15}
+{"id": "12012", "unsupported": [], "n_claims": 6}
+{"id": "11485", "unsupported": [{"claim": "Overall, Cafe del Sol offers a diverse menu and has received positive reviews for its ambiance and friendly staff.", "status": "not_in_source", "evidence": "Source does not provide a summary of overall ambiance or diverse menu."}], "n_claims": 14}
+{"id": "11455", "unsupported": [], "n_claims": 15}
+{"id": "12019", "unsupported": [], "n_claims": 7}
+{"id": "12013", "unsupported": [], "n_claims": 11}
+{"id": "12043", "unsupported": [], "n_claims": 12}
+{"id": "12042", "unsupported": [], "n_claims": 11}
+{"id": "11521", "unsupported": [{"claim": "It offers a variety of cuisines including Mexican, American (Traditional), Burgers, and Seafood.", "status": "contradicted", "evidence": "The source does not mention Seafood as a category."}], "n_claims": 10}
+{"id": "12229", "unsupported": [], "n_claims": 3}
+{"id": "12067", "unsupported": [], "n_claims": 5}
+{"id": "12181", "unsupported": [], "n_claims": 7}
+{"id": "12216", "unsupported": [], "n_claims": 5}
+{"id": "12066", "unsupported": [], "n_claims": 6}
+{"id": "12217", "unsupported": [], "n_claims": 11}
+{"id": "12228", "unsupported": [{"claim": "Using a water pick can be easier and leave your mouth feeling cleaner compared to flossing.", "status": "not_in_source", "evidence": "passage 2 does not provide a definitive comparison of ease or cleanliness between Waterpik and flossing."}], "n_claims": 6}
+{"id": "12133", "unsupported": [], "n_claims": 6}
+{"id": "12132", "unsupported": [{"claim": "Place the fillets on the baking sheet.", "status": "not_in_source", "evidence": "The source does not explicitly state to place the fillets on the baking sheet."}], "n_claims": 7}
+{"id": "12103", "unsupported": [], "n_claims": 10}
+{"id": "12102", "unsupported": [], "n_claims": 10}
+{"id": "12180", "unsupported": [], "n_claims": 10}
+{"id": "12240", "unsupported": [], "n_claims": 8}
+{"id": "12259", "unsupported": [{"claim": "Method 1 of 2 in passage 2 provides the steps to set the default web browser in Windows 7.", "status": "contradicted", "evidence": "passage 2 does not mention Windows 7; it describes steps for setting the default browser in a more general context."}], "n_claims": 1}
+{"id": "12294", "unsupported": [], "n_claims": 2}
+{"id": "12295", "unsupported": [], "n_claims": 2}
+{"id": "12241", "unsupported": [], "n_claims": 5}
+{"id": "12331", "unsupported": [{"claim": "Avoiding physical contact that can be misconstrued as fondling is a sign he may be flirting with you.", "status": "not_in_source", "evidence": "Passage 1 advises to avoid physical contact but does not state it is a sign of flirting."}, {"claim": "Feeling uncomfortable or suggesting to stop flirting is a sign he may be flirting with you.", "status": "not_in_source", "evidence": "Passage 1 states to stop if he seems uncomfortable but does not indicate this is a sign of flirting."}, {"claim": "Constantly staring at you is a sign he may be flirting with you.", "status": "not_in_source", "evidence": "Passage 2 mentions this in relation to a female coworker, not a male."}, {"claim": "Smiling at you for no apparent reason is a sign he may be flirting with you.", "status": "not_in_source", "evidence": "Passage 2 mentions this in relation to a female coworker, not a male."}], "n_claims": 6}
+{"id": "12438", "unsupported": [], "n_claims": 7}
+{"id": "12258", "unsupported": [{"claim": "These steps are applicable to any browser you want to set as default, including Google Chrome or Mozilla Firefox.", "status": "not_in_source", "evidence": "The source does not state that these steps apply to any browser, only mentions Google Chrome and Mozilla Firefox specifically."}], "n_claims": 8}
+{"id": "12433", "unsupported": [], "n_claims": 7}
+{"id": "12343", "unsupported": [{"claim": "In a large pot, combine beer, onions, red pepper flakes, garlic powder, salt, and pepper.", "status": "not_in_source", "evidence": "The source does not mention combining all these ingredients together."}, {"claim": "Remove the bratwurst from the pot and set aside.", "status": "not_in_source", "evidence": "The source does not mention removing the bratwurst from the pot."}], "n_claims": 8}
+{"id": "12342", "unsupported": [], "n_claims": 8}
+{"id": "12439", "unsupported": [], "n_claims": 7}
+{"id": "12330", "unsupported": [{"claim": "If he is always staring at you, it can be a sign that he is flirting with you.", "status": "not_in_source", "evidence": "Passage 2 discusses this in relation to a female coworker."}, {"claim": "If he is smiling at you for no particular reason, it can be a sign that he is flirting with you.", "status": "not_in_source", "evidence": "Passage 2 discusses this in relation to a female coworker."}], "n_claims": 6}
+{"id": "12445", "unsupported": [], "n_claims": 5}
+{"id": "12456", "unsupported": [], "n_claims": 5}
+{"id": "12444", "unsupported": [], "n_claims": 7}
+{"id": "12432", "unsupported": [], "n_claims": 15}
+{"id": "12457", "unsupported": [], "n_claims": 6}
+{"id": "12522", "unsupported": [], "n_claims": 6}
+{"id": "12553", "unsupported": [], "n_claims": 4}
+{"id": "12523", "unsupported": [], "n_claims": 6}
+{"id": "12517", "unsupported": [{"claim": "Each system has its own specific functions, but they also work in conjunction with one another.", "status": "not_in_source", "evidence": "The source does not specify that each system has its own specific functions or that they work in conjunction."}], "n_claims": 5}
+{"id": "12552", "unsupported": [], "n_claims": 6}
+{"id": "12516", "unsupported": [], "n_claims": 5}
+{"id": "12468", "unsupported": [{"claim": "You can also manually manage music settings in iTunes and use OverDrive for Windows to transfer audiobooks from your computer to your iPhone.", "status": "not_in_source", "evidence": "The source does not provide a direct connection between manually managing music settings and using OverDrive for Windows for syncing audiobooks."}, {"claim": "If you'd prefer to import an MP3 audiobook into your iTunes library directly so you can sync it to your device, you can follow these instructions as well.", "status": "not_in_source", "evidence": "The source does not provide specific instructions for importing MP3 audiobooks into iTunes."}], "n_claims": 8}
+{"id": "12469", "unsupported": [{"claim": "After the sync is complete, the audiobooks will be transferred from your iPhone to iTunes.", "status": "not_in_source", "evidence": "The source does not specify that audiobooks will be transferred from iPhone to iTunes, only that they will be synced to the iPhone."}], "n_claims": 8}
+{"id": "12600", "unsupported": [], "n_claims": 5}
+{"id": "12601", "unsupported": [], "n_claims": 10}
+{"id": "12618", "unsupported": [], "n_claims": 13}
+{"id": "12691", "unsupported": [], "n_claims": 6}
+{"id": "12690", "unsupported": [], "n_claims": 14}
+{"id": "12619", "unsupported": [], "n_claims": 13}
+{"id": "12913", "unsupported": [], "n_claims": 2}
+{"id": "13039", "unsupported": [], "n_claims": 2}
+{"id": "12901", "unsupported": [], "n_claims": 4}
+{"id": "12912", "unsupported": [], "n_claims": 5}
+{"id": "12763", "unsupported": [], "n_claims": 3}
+{"id": "12900", "unsupported": [{"claim": "Once the water starts to simmer, turn off the heat, cover the pan, and let it stand for 17 minutes.", "status": "contradicted", "evidence": "passage 1: When the water just starts to simmer, turn off heat, cover pan with a lid, and let stand for 17 minutes."}, {"claim": "Do not uncover the pan during this time.", "status": "not_in_source", "evidence": "The source does not mention this."}], "n_claims": 7}
+{"id": "12703", "unsupported": [], "n_claims": 10}
+{"id": "12702", "unsupported": [], "n_claims": 8}
+{"id": "12762", "unsupported": [], "n_claims": 4}
+{"id": "13038", "unsupported": [{"claim": "Slide the Notifications panel open and tap on it.", "status": "not_in_source", "evidence": "passage 3 mentions sliding the Notifications panel open but does not specify tapping on it."}, {"claim": "Tap 'Storage Factory data reset'.", "status": "not_in_source", "evidence": "passage 3 mentions tapping Storage Factory data reset but does not provide the exact phrasing."}, {"claim": "Tap 'Reset phone'.", "status": "not_in_source", "evidence": "passage 3 mentions tapping Reset phone but does not provide the exact phrasing."}, {"claim": "Tap 'Erase everything'.", "status": "not_in_source", "evidence": "passage 3 mentions tapping Erase everything but does not provide the exact phrasing."}], "n_claims": 9}
+{"id": "13069", "unsupported": [], "n_claims": 4}
+{"id": "13068", "unsupported": [], "n_claims": 6}
+{"id": "12840", "unsupported": [], "n_claims": 15}
+{"id": "12841", "unsupported": [{"claim": "When finished and you pull fabric back it will look like this.", "status": "not_in_source", "evidence": "passage 2 does not provide a visual description."}], "n_claims": 27}
+{"id": "13206", "unsupported": [], "n_claims": 3}
+{"id": "13207", "unsupported": [], "n_claims": 3}
+{"id": "13104", "unsupported": [], "n_claims": 9}
+{"id": "13134", "unsupported": [], "n_claims": 4}
+{"id": "13128", "unsupported": [], "n_claims": 8}
+{"id": "13152", "unsupported": [{"claim": "This could be due to the feeling of a loving embrace, leading to good relationships and emotional intimacy.", "status": "not_in_source", "evidence": "The source does not explicitly connect the warm feeling to the loving embrace or state that it leads to good relationships."}], "n_claims": 6}
+{"id": "13129", "unsupported": [], "n_claims": 10}
+{"id": "13153", "unsupported": [], "n_claims": 6}
+{"id": "13158", "unsupported": [], "n_claims": 9}
+{"id": "13159", "unsupported": [{"claim": "Preheat the oven to 450°F.", "status": "contradicted", "evidence": "passage 2 states to preheat to 450°F, while passage 1 states to preheat to 375°F."}, {"claim": "Season the roast with only a small amount of salt but lots of fresh ground black pepper.", "status": "not_in_source", "evidence": "passage 1 does not mention seasoning with salt and pepper."}, {"claim": "The passages do not provide information on the size or weight of the roast, so cooking times may vary.", "status": "not_in_source", "evidence": "The passages do not mention size or weight."}], "n_claims": 13}
+{"id": "13135", "unsupported": [{"claim": "For Windows 10, type power options in the search box on the taskbar and select Power Options.", "status": "not_in_source", "evidence": "Passage 2 mentions how to make the PC sleep but does not provide steps to change sleep time."}, {"claim": "For Windows 8.1, move your mouse to the lower left-hand corner and right-click the Start button.", "status": "not_in_source", "evidence": "Passage 3 does not provide information on changing sleep time."}], "n_claims": 11}
+{"id": "13105", "unsupported": [{"claim": "You can make a bar graph for your research by following these steps.", "status": "not_in_source", "evidence": "The specific steps to make a bar graph are not detailed in the passages."}, {"claim": "Determine the title of your graph and the range of values it needs to cover.", "status": "not_in_source", "evidence": "The passages do not specify determining the title or range of values."}, {"claim": "Draw a horizontal line for the x-axis and a vertical line for the y-axis.", "status": "not_in_source", "evidence": "The passages do not mention drawing axes."}, {"claim": "Label the x-axis with the categories or groups you are comparing.", "status": "not_in_source", "evidence": "The passages do not mention labeling the axes."}, {"claim": "Label the y-axis with the appropriate scale that represents the values or measurements.", "status": "not_in_source", "evidence": "The passages do not mention labeling the axes."}, {"claim": "Use different colors or patterns to distinguish between different categories or groups.", "status": "not_in_source", "evidence": "The passages do not mention using colors or patterns."}, {"claim": "Add a legend if necessary to explain the colors or patterns used.", "status": "not_in_source", "evidence": "The passages do not mention adding a legend."}, {"claim": "Title the graph and include any additional information or captions that provide context for your research.", "status": "not_in_source", "evidence": "The passages do not mention titling the graph or adding captions."}], "n_claims": 12}
+{"id": "13261", "unsupported": [], "n_claims": 3}
+{"id": "13339", "unsupported": [], "n_claims": 6}
+{"id": "13291", "unsupported": [], "n_claims": 4}
+{"id": "13231", "unsupported": [], "n_claims": 7}
+{"id": "13260", "unsupported": [], "n_claims": 7}
+{"id": "13338", "unsupported": [], "n_claims": 9}
+{"id": "13230", "unsupported": [], "n_claims": 13}
+{"id": "13363", "unsupported": [{"claim": "Gently scrub the glass again with the stemware brush.", "status": "not_in_source", "evidence": "The source does not mention scrubbing again after using baking soda."}, {"claim": "Rinse the glass once more with hot water.", "status": "not_in_source", "evidence": "The source does not mention this step after using baking soda."}, {"claim": "Make sure to dry them completely to avoid any stains or spots.", "status": "not_in_source", "evidence": "The source does not mention drying completely to avoid stains or spots."}], "n_claims": 10}
+{"id": "13309", "unsupported": [], "n_claims": 8}
+{"id": "13290", "unsupported": [], "n_claims": 8}
+{"id": "13308", "unsupported": [], "n_claims": 8}
+{"id": "13362", "unsupported": [], "n_claims": 10}
+{"id": "13374", "unsupported": [], "n_claims": 6}
+{"id": "13375", "unsupported": [], "n_claims": 4}
+{"id": "13560", "unsupported": [], "n_claims": 5}
+{"id": "13489", "unsupported": [], "n_claims": 3}
+{"id": "13530", "unsupported": [], "n_claims": 5}
+{"id": "13531", "unsupported": [], "n_claims": 6}
+{"id": "13441", "unsupported": [], "n_claims": 4}
+{"id": "13440", "unsupported": [], "n_claims": 7}
+{"id": "13465", "unsupported": [], "n_claims": 8}
+{"id": "13464", "unsupported": [{"claim": "The most precipitation occurs in January.", "status": "not_in_source", "evidence": "The most monthly precipitation in Sausalito occurs in January with 0 inches."}], "n_claims": 10}
+{"id": "13488", "unsupported": [], "n_claims": 7}
+{"id": "13429", "unsupported": [{"claim": "Install a new flapper valve and chain.", "status": "not_in_source", "evidence": "The passages do not mention installing a new flapper valve and chain."}], "n_claims": 11}
+{"id": "13428", "unsupported": [], "n_claims": 15}
+{"id": "13561", "unsupported": [], "n_claims": 5}
+{"id": "13741", "unsupported": [], "n_claims": 6}
+{"id": "13740", "unsupported": [], "n_claims": 8}
+{"id": "13717", "unsupported": [], "n_claims": 8}
+{"id": "13716", "unsupported": [], "n_claims": 9}
+{"id": "13938", "unsupported": [], "n_claims": 4}
+{"id": "13915", "unsupported": [], "n_claims": 7}
+{"id": "14005", "unsupported": [], "n_claims": 4}
+{"id": "14053", "unsupported": [{"claim": "Preheat the oven to 325 degrees F.", "status": "contradicted", "evidence": "passage 2 states to preheat to 325 degrees F, but passage 3 states to preheat to 350 degrees F."}], "n_claims": 7}
+{"id": "13909", "unsupported": [{"claim": "Visual merchandising is the practice of using visual elements to attract and engage consumers in a retail store.", "status": "not_in_source", "evidence": "The source does not define visual merchandising in this way."}], "n_claims": 6}
+{"id": "13939", "unsupported": [], "n_claims": 7}
+{"id": "14094", "unsupported": [], "n_claims": 12}
+{"id": "13908", "unsupported": [{"claim": "It involves the presentation of the store and its merchandise in a way that aligns with the retailer's goals and marketing strategy.", "status": "not_in_source", "evidence": "The source does not explicitly state this."}], "n_claims": 5}
+{"id": "13914", "unsupported": [], "n_claims": 5}
+{"id": "14004", "unsupported": [], "n_claims": 4}
+{"id": "14095", "unsupported": [], "n_claims": 7}
+{"id": "14052", "unsupported": [{"claim": "Put it back in the oven for about 1.5 to 3 hours depending on its size, or about 20-30 minutes per pound.", "status": "contradicted", "evidence": "passage 1: Put in the oven for 1.5 - 3 hours (according to size of roast). / passage 3: cook the pork loin for about 20-30 minutes per pound."}], "n_claims": 8}
+{"id": "14130", "unsupported": [{"claim": "Examples of potential energy include elastic potential energy.", "status": "not_in_source", "evidence": "The source does not provide specific examples of elastic potential energy."}], "n_claims": 5}
+{"id": "14281", "unsupported": [], "n_claims": 2}
+{"id": "14209", "unsupported": [], "n_claims": 3}
+{"id": "14293", "unsupported": [{"claim": "A higher carbon footprint contributes to climate change and global warming.", "status": "not_in_source", "evidence": "The passages do not mention climate change or global warming."}], "n_claims": 5}
+{"id": "14208", "unsupported": [], "n_claims": 4}
+{"id": "14280", "unsupported": [], "n_claims": 3}
+{"id": "14197", "unsupported": [], "n_claims": 4}
+{"id": "14131", "unsupported": [{"claim": "Examples of potential energy include a car parked on a hill.", "status": "not_in_source", "evidence": "The source does not mention a car parked on a hill as an example of potential energy."}, {"claim": "Examples of potential energy include a ball at the top of a ramp.", "status": "not_in_source", "evidence": "The source does not mention a ball at the top of a ramp as an example of potential energy."}], "n_claims": 6}
+{"id": "14287", "unsupported": [], "n_claims": 5}
+{"id": "14322", "unsupported": [{"claim": "Patterned rollers can work well for both painting and skincare applications.", "status": "not_in_source", "evidence": "The passages do not explicitly state that patterned rollers work well for both applications."}], "n_claims": 11}
+{"id": "14292", "unsupported": [], "n_claims": 7}
+{"id": "14286", "unsupported": [], "n_claims": 7}
+{"id": "14196", "unsupported": [], "n_claims": 7}
+{"id": "14467", "unsupported": [], "n_claims": 5}
+{"id": "14395", "unsupported": [], "n_claims": 3}
+{"id": "14353", "unsupported": [], "n_claims": 6}
+{"id": "14502", "unsupported": [], "n_claims": 7}
+{"id": "14394", "unsupported": [{"claim": "The decrease in body weight does not come from fat loss in stools, but rather from the elimination of undigested food and waste.", "status": "not_in_source", "evidence": "The source does not specify that the weight loss is due to the elimination of undigested food and waste."}], "n_claims": 5}
+{"id": "14323", "unsupported": [{"claim": "It is important to choose the right roller for specific areas.", "status": "not_in_source", "evidence": "passage 2 discusses the Dermaroller but does not mention choosing the right roller for specific areas."}, {"claim": "Patterned rollers have been found to stimulate the skin and provide a healthy glow.", "status": "contradicted", "evidence": "passage 2 discusses the Dermaroller, not patterned paint rollers."}], "n_claims": 5}
+{"id": "14466", "unsupported": [], "n_claims": 8}
+{"id": "14365", "unsupported": [], "n_claims": 4}
+{"id": "14352", "unsupported": [], "n_claims": 6}
+{"id": "14377", "unsupported": [], "n_claims": 8}
+{"id": "14364", "unsupported": [], "n_claims": 8}
+{"id": "14376", "unsupported": [], "n_claims": 12}
+{"id": "14509", "unsupported": [], "n_claims": 3}
+{"id": "14701", "unsupported": [], "n_claims": 5}
+{"id": "14508", "unsupported": [], "n_claims": 5}
+{"id": "14689", "unsupported": [], "n_claims": 4}
+{"id": "14748", "unsupported": [], "n_claims": 7}
+{"id": "14503", "unsupported": [], "n_claims": 4}
+{"id": "14700", "unsupported": [], "n_claims": 6}
+{"id": "14743", "unsupported": [], "n_claims": 7}
+{"id": "14742", "unsupported": [], "n_claims": 13}
+{"id": "14712", "unsupported": [], "n_claims": 5}
+{"id": "14688", "unsupported": [{"claim": "Apply the stain, distress the wood, then apply another layer of stain.", "status": "not_in_source", "evidence": "The source does not specify applying another layer of stain after distressing."}], "n_claims": 8}
+{"id": "14749", "unsupported": [], "n_claims": 8}
+{"id": "14713", "unsupported": [], "n_claims": 15}
+{"id": "14803", "unsupported": [], "n_claims": 1}
+{"id": "14857", "unsupported": [], "n_claims": 3}
+{"id": "14802", "unsupported": [], "n_claims": 5}
+{"id": "14815", "unsupported": [], "n_claims": 4}
+{"id": "14760", "unsupported": [], "n_claims": 7}
+{"id": "14814", "unsupported": [], "n_claims": 6}
+{"id": "14856", "unsupported": [], "n_claims": 5}
+{"id": "14845", "unsupported": [], "n_claims": 5}
+{"id": "14773", "unsupported": [], "n_claims": 3}
+{"id": "14772", "unsupported": [], "n_claims": 6}
+{"id": "14844", "unsupported": [{"claim": "You can then store the panko crumbs in an airtight container at room temperature.", "status": "not_in_source", "evidence": "The source does not mention storing the panko crumbs."}], "n_claims": 8}
+{"id": "14761", "unsupported": [], "n_claims": 9}
+{"id": "15175", "unsupported": [{"claim": "This allows for new growth and regeneration of the forest.", "status": "not_in_source", "evidence": "The source does not explicitly state that this allows for new growth and regeneration of the forest."}], "n_claims": 3}
+{"id": "15127", "unsupported": [], "n_claims": 7}
+{"id": "14995", "unsupported": [], "n_claims": 4}
+{"id": "14994", "unsupported": [], "n_claims": 5}
+{"id": "15102", "unsupported": [], "n_claims": 7}
+{"id": "14886", "unsupported": [], "n_claims": 3}
+{"id": "15103", "unsupported": [], "n_claims": 5}
+{"id": "15006", "unsupported": [], "n_claims": 9}
+{"id": "15007", "unsupported": [], "n_claims": 5}
+{"id": "15174", "unsupported": [], "n_claims": 7}
+{"id": "15126", "unsupported": [], "n_claims": 8}
+{"id": "14887", "unsupported": [], "n_claims": 5}
+{"id": "15192", "unsupported": [], "n_claims": 4}
+{"id": "15271", "unsupported": [], "n_claims": 4}
+{"id": "15457", "unsupported": [], "n_claims": 6}
+{"id": "15193", "unsupported": [{"claim": "A judgment creditor can place a lien on property even if the owner's name is not on the deed or title.", "status": "not_in_source", "evidence": "Passage 1 discusses a specific situation but does not generalize about placing liens."}, {"claim": "The process for filing a lien on a semi is detailed in the passages.", "status": "not_in_source", "evidence": "The passages do not specifically mention filing a lien on a semi."}], "n_claims": 5}
+{"id": "15199", "unsupported": [], "n_claims": 4}
+{"id": "15456", "unsupported": [], "n_claims": 8}
+{"id": "15270", "unsupported": [], "n_claims": 6}
+{"id": "15342", "unsupported": [], "n_claims": 7}
+{"id": "15204", "unsupported": [{"claim": "This was seen as an infringement on their rights as there was no colonial representation in Parliament.", "status": "not_in_source", "evidence": "The source does not explicitly state this reasoning."}, {"claim": "The slogan 'No Taxation without Representation' became popular.", "status": "not_in_source", "evidence": "The source does not mention the popularity of the slogan."}], "n_claims": 6}
+{"id": "15343", "unsupported": [], "n_claims": 7}
+{"id": "15198", "unsupported": [], "n_claims": 8}
+{"id": "15205", "unsupported": [], "n_claims": 8}
+{"id": "15625", "unsupported": [], "n_claims": 2}
+{"id": "15624", "unsupported": [], "n_claims": 4}
+{"id": "15553", "unsupported": [], "n_claims": 4}
+{"id": "15481", "unsupported": [], "n_claims": 4}
+{"id": "15463", "unsupported": [], "n_claims": 3}
+{"id": "15480", "unsupported": [], "n_claims": 4}
+{"id": "15673", "unsupported": [], "n_claims": 5}
+{"id": "15672", "unsupported": [], "n_claims": 8}
+{"id": "15649", "unsupported": [{"claim": "The specific details of the contributions may vary depending on the pension scheme being used.", "status": "not_in_source", "evidence": "The source does not specify that details may vary depending on the pension scheme."}], "n_claims": 6}
+{"id": "15552", "unsupported": [], "n_claims": 9}
+{"id": "15648", "unsupported": [], "n_claims": 6}
+{"id": "15684", "unsupported": [], "n_claims": 5}
+{"id": "15462", "unsupported": [], "n_claims": 5}
+{"id": "15732", "unsupported": [], "n_claims": 4}
+{"id": "15733", "unsupported": [], "n_claims": 2}
+{"id": "15751", "unsupported": [], "n_claims": 3}
+{"id": "15774", "unsupported": [], "n_claims": 5}
+{"id": "15709", "unsupported": [], "n_claims": 4}
+{"id": "15714", "unsupported": [], "n_claims": 8}
+{"id": "15750", "unsupported": [], "n_claims": 5}
+{"id": "15727", "unsupported": [{"claim": "The specific details and mechanics of a raffle can vary.", "status": "not_in_source", "evidence": "The passages do not state that details and mechanics can vary."}], "n_claims": 5}
+{"id": "15708", "unsupported": [{"claim": "Porterhouse steaks contain more of the tenderloin or fillet than sirloin steaks.", "status": "not_in_source", "evidence": "The source does not compare the tenderloin content of porterhouse steaks to sirloin steaks."}], "n_claims": 7}
+{"id": "15685", "unsupported": [{"claim": "The tropical rainforest floor provides a humid climate.", "status": "not_in_source", "evidence": "The passages do not specifically state that the floor itself provides a humid climate; they describe the overall climate of the rainforest."}], "n_claims": 4}
+{"id": "15726", "unsupported": [], "n_claims": 6}
+{"id": "15715", "unsupported": [{"claim": "The passages do not provide a comprehensive history of the word 'Gemini'.", "status": "not_in_source", "evidence": "The passages provide information about the word 'Gemini' but do not explicitly state that they do not provide a comprehensive history."}], "n_claims": 15}
+{"id": "15966", "unsupported": [], "n_claims": 1}
+{"id": "15781", "unsupported": [], "n_claims": 5}
+{"id": "15924", "unsupported": [], "n_claims": 2}
+{"id": "15925", "unsupported": [], "n_claims": 2}
+{"id": "15775", "unsupported": [], "n_claims": 5}
+{"id": "15931", "unsupported": [], "n_claims": 7}
+{"id": "15967", "unsupported": [], "n_claims": 2}
+{"id": "15787", "unsupported": [], "n_claims": 10}
+{"id": "15900", "unsupported": [], "n_claims": 7}
+{"id": "15780", "unsupported": [], "n_claims": 8}
+{"id": "15786", "unsupported": [], "n_claims": 11}
+{"id": "15930", "unsupported": [{"claim": "This principle is critiqued for its inability to account for cultural variations and the socio-economic inequalities in the world.", "status": "not_in_source", "evidence": "The passages do not explicitly state this critique."}], "n_claims": 7}
+{"id": "15901", "unsupported": [], "n_claims": 6}
+{"id": "16357", "unsupported": [], "n_claims": 1}
+{"id": "16153", "unsupported": [], "n_claims": 1}
+{"id": "16147", "unsupported": [], "n_claims": 2}
+{"id": "16152", "unsupported": [], "n_claims": 1}
+{"id": "16056", "unsupported": [], "n_claims": 3}
+{"id": "16356", "unsupported": [{"claim": "The distributions reported on Form 1099-PATR are included in Form 1040.", "status": "not_in_source", "evidence": "The passages do not specify that the distributions are included in Form 1040."}], "n_claims": 3}
+{"id": "16057", "unsupported": [{"claim": "It does not provide information on other skill moves.", "status": "not_in_source", "evidence": "The passages do not specify that other skill moves are absent; they mention a complete guide and tutorials."}], "n_claims": 3}
+{"id": "16116", "unsupported": [], "n_claims": 5}
+{"id": "16117", "unsupported": [], "n_claims": 6}
+{"id": "16146", "unsupported": [], "n_claims": 6}
+{"id": "16417", "unsupported": [], "n_claims": 7}
+{"id": "16416", "unsupported": [], "n_claims": 4}
+{"id": "16465", "unsupported": [], "n_claims": 1}
+{"id": "16507", "unsupported": [{"claim": "Exercising every day alone may not be sufficient for achieving a toned body if body fat percentage is high.", "status": "not_in_source", "evidence": "The passages do not explicitly state this."}], "n_claims": 3}
+{"id": "16663", "unsupported": [], "n_claims": 4}
+{"id": "16506", "unsupported": [], "n_claims": 3}
+{"id": "16561", "unsupported": [{"claim": "The schedule can be modified as your business expands.", "status": "not_in_source", "evidence": "The source does not mention modifying the schedule as the business expands."}], "n_claims": 7}
+{"id": "16464", "unsupported": [], "n_claims": 4}
+{"id": "16633", "unsupported": [], "n_claims": 9}
+{"id": "16662", "unsupported": [{"claim": "IT technology has significantly changed the workplace in several ways.", "status": "not_in_source", "evidence": "The passages do not quantify or specify the number of ways technology has changed the workplace."}], "n_claims": 8}
+{"id": "16686", "unsupported": [], "n_claims": 3}
+{"id": "16632", "unsupported": [], "n_claims": 8}
+{"id": "16560", "unsupported": [], "n_claims": 9}
+{"id": "16452", "unsupported": [], "n_claims": 9}
+{"id": "16453", "unsupported": [], "n_claims": 9}
+{"id": "16687", "unsupported": [], "n_claims": 3}
+{"id": "16891", "unsupported": [], "n_claims": 4}
+{"id": "16890", "unsupported": [], "n_claims": 7}
+{"id": "16794", "unsupported": [], "n_claims": 7}
+{"id": "16849", "unsupported": [], "n_claims": 6}
+{"id": "16795", "unsupported": [], "n_claims": 6}
+{"id": "16879", "unsupported": [], "n_claims": 7}
+{"id": "16771", "unsupported": [], "n_claims": 7}
+{"id": "16848", "unsupported": [{"claim": "The main difference between red blood cells (RBCs) and white blood cells (WBCs) is their functions.", "status": "not_in_source", "evidence": "The source does not explicitly state that the main difference is their functions."}], "n_claims": 7}
+{"id": "16770", "unsupported": [], "n_claims": 4}
+{"id": "16896", "unsupported": [], "n_claims": 12}
+{"id": "16878", "unsupported": [], "n_claims": 11}
+{"id": "17059", "unsupported": [], "n_claims": 5}
+{"id": "16902", "unsupported": [], "n_claims": 5}
+{"id": "16903", "unsupported": [], "n_claims": 4}
+{"id": "17101", "unsupported": [{"claim": "The Cloud VoIP service can provide options for free VoIP service and phone numbers.", "status": "not_in_source", "evidence": "passage 3 does not specify that the Cloud VoIP service offers free options."}], "n_claims": 6}
+{"id": "17112", "unsupported": [], "n_claims": 4}
+{"id": "16933", "unsupported": [], "n_claims": 6}
+{"id": "17058", "unsupported": [], "n_claims": 8}
+{"id": "16932", "unsupported": [], "n_claims": 7}
+{"id": "17053", "unsupported": [], "n_claims": 5}
+{"id": "17100", "unsupported": [], "n_claims": 7}
+{"id": "17052", "unsupported": [], "n_claims": 8}
+{"id": "16897", "unsupported": [], "n_claims": 8}
+{"id": "17395", "unsupported": [], "n_claims": 3}
+{"id": "17196", "unsupported": [], "n_claims": 2}
+{"id": "17197", "unsupported": [], "n_claims": 3}
+{"id": "17280", "unsupported": [], "n_claims": 5}
+{"id": "17281", "unsupported": [], "n_claims": 6}
+{"id": "17251", "unsupported": [], "n_claims": 6}
+{"id": "17113", "unsupported": [], "n_claims": 9}
+{"id": "17250", "unsupported": [], "n_claims": 8}
+{"id": "17233", "unsupported": [], "n_claims": 6}
+{"id": "17394", "unsupported": [], "n_claims": 5}
+{"id": "17514", "unsupported": [], "n_claims": 8}
+{"id": "17232", "unsupported": [], "n_claims": 10}
+{"id": "17755", "unsupported": [], "n_claims": 3}
+{"id": "17568", "unsupported": [], "n_claims": 5}
+{"id": "17569", "unsupported": [], "n_claims": 6}
+{"id": "17754", "unsupported": [], "n_claims": 7}
+{"id": "17515", "unsupported": [], "n_claims": 7}
+{"id": "17562", "unsupported": [], "n_claims": 11}
+{"id": "17563", "unsupported": [], "n_claims": 18}

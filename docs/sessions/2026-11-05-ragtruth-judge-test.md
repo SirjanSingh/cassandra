@@ -33,7 +33,30 @@ gpt-4o-mini; 94 of 250 rationales matched the mini run word for word, which expo
 - New: `poc/ragtruth/run_judge.py`, `README.md`, `verdicts*.jsonl`, `results*.json`.
 - `.gitignore`: `poc/ragtruth/data/` (the dataset is 35 MB).
 
+## Follow-up: claim-by-claim checker (`cassandra/faithfulness.py`)
+
+- **Why:** the whole-answer judge misses single wrong details. 72 of the 88 test errors are
+  data→text, mostly yes/no attribute claims ("no WiFi" when the field is null) and wrong hours.
+- **What:**
+  - `value_check`: deterministic, no LLM. Times and numbers in the answer must occur in the
+    source. Fixed a bug where "9:00 PM" was also read as 09:00.
+  - `claim_check`: an LLM splits the answer into atomic claims and checks each one.
+    Null data counts as unknown; advice and opinion are never failures.
+  - Neither is wired into the pipeline or `scan` yet.
+- **Method:** developed on the train split (300 answers). One tuning round (advice and
+  paraphrase are not failures), then frozen and run once on the 900 test answers.
+- **Test result (gpt-4o-mini):** caught 38 of 88 (**43%**, the old judge caught 9%), with
+  14.9% false alarms. 24% of flags are real (the old judge: 17%). That makes it a review
+  queue, not an auto-blocker.
+- **Files:** `cassandra/faithfulness.py`, `tests/test_faithfulness.py` (8 tests; the suite is
+  124 passed), `poc/ragtruth/run_claims.py`, `claims_*.jsonl` + `_results.json`, and the
+  README's section 3.
+
 ## Open items
+
+- Try gpt-4o, or a second pass that re-checks only flagged claims, to cut false alarms.
+  Tune on train only.
+- Wire `claim_check` into `cassandra scan --judge` for turns whose tool results are logged.
 
 - If the judge is to be pitched for RAG bots, try a claim-by-claim judge prompt, tuned on
   RAGTruth's train split and scored on test.
