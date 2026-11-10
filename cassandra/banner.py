@@ -18,7 +18,7 @@ _ART = r"""
  \____\__,_|___/___/\__,_|_| |_|\__,_|_|  \__,_|
 """
 
-_TAGLINE = "the meta-agent that watches other agents"
+_TAGLINE = "checks your bot's answers against its own data"
 
 
 def get_version() -> str:

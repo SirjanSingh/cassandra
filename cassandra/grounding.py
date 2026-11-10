@@ -1,20 +1,18 @@
-"""Deterministic Grounding Verifier (EVAL_PLAN.md L1) — the primary pass/fail oracle.
+"""Layer 1, the tool-call rule. Pure: no LLM, no network, no environment.
 
-Pure and side-effect-free: no LLM, no network, no env. Given an agent answer, the
-structured tool ledger from the trace (L0, `phoenix_mcp.normalize_span`), and a
-small declarative `GroundingSpec`, derive the failure class BY RULE and cite the
-exact tool call that does (or doesn't) support each concrete claim.
+Given an answer, the turn's tool calls and a small per-bot `GroundingSpec`, decide BY RULE
+whether each concrete fact the answer states ("a price", "a delivery date") is backed by a
+successful call to the tool that owns that fact, and cite the call. When the spec can't
+resolve a turn the rule ABSTAINS rather than guesses.
 
-The spec is the per-agent unit of configuration and what keeps Cassandra
-agent-agnostic: ShopBot's spec is bundled (`SHOPBOT_SPEC`); a third-party operator
-writes their own the same way they point `BASELINE_PROMPT_FILE` at their prompt.
-When the spec can't resolve a case the checker ABSTAINS (never guesses) so the
-LLM judge (L2) can take over.
+What it can't see: a successful call for the wrong entity or date still counts as backing.
+That is what the value and claim layers (faithfulness.py) are for.
 """
 
 from __future__ import annotations
 
 import re
+from pathlib import Path
 
 from pydantic import BaseModel, Field
 
@@ -165,37 +163,6 @@ def check_grounding(answer: str, ledger: list, spec: GroundingSpec) -> Grounding
     )
 
 
-# --- bundled demo spec (ShopBot, patient/tools.py) ---------------------------
-
-SHOPBOT_SPEC = GroundingSpec(
-    lookups=[
-        LookupRule(tool="get_refund_policy", claims=["refund_policy"]),
-        LookupRule(tool="lookup_order", fields={"carrier", "eta"}),
-    ],
-    decline_markers=[
-        "couldn't find",
-        "could not find",
-        "unavailable",
-        "can't provide",
-        "cannot provide",
-        "contact support",
-        "don't have",
-        "do not have",
-        "unable to",
-        "not available",
-        "no information",
-    ],
-    claim_extractors={
-        # "30-day returns", "14 days", "2 weeks", "1 month" — refund-window claims
-        "refund_policy": r"(?i)\b\d+\s*-?\s*(?:business\s+)?(?:day|week|month)s?\b",
-        # known carriers (case-sensitive: "ups" the noun must not match)
-        "carrier": r"\b(?:UPS|FedEx|DHL|USPS|Royal Mail|DPD|GLS|Hermes|Evri|TNT|Aramex)\b",
-        # ISO dates or "June 20(th)" style delivery dates
-        "eta": (
-            r"\b\d{4}-\d{2}-\d{2}\b"
-            r"|(?i:\b(?:jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|jun(?:e)?|"
-            r"jul(?:y)?|aug(?:ust)?|sep(?:tember)?|oct(?:ober)?|nov(?:ember)?|dec(?:ember)?)"
-            r"\s+\d{1,2}(?:st|nd|rd|th)?\b)"
-        ),
-    },
-)
+def load_spec(path: str | Path) -> GroundingSpec:
+    """Read a spec JSON file (see examples/spec.json). Raises ValueError if malformed."""
+    return GroundingSpec.model_validate_json(Path(path).read_text(encoding="utf-8"))

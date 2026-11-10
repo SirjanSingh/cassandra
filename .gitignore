@@ -35,3 +35,10 @@ Thumbs.db
 # Auto-generated incident postmortems
 reports/
 poc/ragtruth/data/
+
+# Left on disk from the old pipeline branch (feature/nli-and-hindi); never commit here
+node_modules/
+web/
+patient/
+dashboard/
+reports/

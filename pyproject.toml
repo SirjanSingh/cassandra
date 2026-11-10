@@ -1,11 +1,11 @@
 [project]
 name = "cassandra-ai"
-version = "0.3.0"
-description = "Cassandra - the meta-agent that supervises other LLM agents through Phoenix observability"
+version = "0.4.0"
+description = "Checks your AI bot's answers against the data it was given, and flags what the data doesn't back"
 readme = "README.md"
 requires-python = ">=3.11"
 license = { file = "LICENSE" }
-keywords = ["llm", "agents", "observability", "phoenix", "arize", "evaluation", "prompt-regression", "meta-agent"]
+keywords = ["llm", "chatbot", "agents", "rag", "hallucination", "faithfulness", "evaluation", "guardrails"]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
@@ -15,12 +15,23 @@ classifiers = [
     "Topic :: Software Development :: Quality Assurance",
     "Topic :: Scientific/Engineering :: Artificial Intelligence",
 ]
-# Light core: enough for the `cassandra` CLI and the offline `cassandra scan` (rule-only).
-# Everything the live pipeline needs is the `full` extra: pip install "cassandra-ai[full]".
+# Core = the offline checks (tool-call rule, numbers & times) and the CLI. No network.
 dependencies = [
     "pydantic>=2.9.0",
     "pydantic-settings>=2.6.0",
-    "python-dotenv>=1.0.0",           # config.py loads .env
+]
+
+[project.optional-dependencies]
+llm = ["openai>=1.50.0"]                                  # the claim-by-claim check
+serve = ["fastapi>=0.115.0", "uvicorn>=0.32.0"]           # `cassandra serve` HTTP API
+full = ["cassandra-ai[llm,serve]"]
+dev = [
+    "cassandra-ai[full]",
+    "httpx>=0.27.0",                                      # FastAPI TestClient
+    "pytest>=8.3.0",
+    "pytest-asyncio>=0.24.0",
+    "ruff>=0.7.0",
+    "mypy>=1.13.0",
 ]
 
 [project.urls]
@@ -28,46 +39,7 @@ Homepage = "https://github.com/SirjanSingh/cassandra"
 Repository = "https://github.com/SirjanSingh/cassandra"
 
 [project.scripts]
-# Unified CLI: banner + `dashboard` / `run` / `scan` / `gate` / `pr` / `mcp` subcommands.
 cassandra = "cassandra.cli:main"
-# Cassandra's own MCP server — publishes the supervision tools over stdio so any
-# agent/IDE (Claude Desktop, Cursor) can call them.
-cassandra-mcp = "cassandra.mcp_server:main"
-# CI prompt regression gate — fails the build when a prompt edit drops the pass rate.
-cassandra-gate = "cassandra.gate:main"
-
-[project.optional-dependencies]
-# The full supervision pipeline, dashboard, MCP server, CI gate, and `scan --judge`.
-full = [
-    # Reasoning core + orchestration (mandatory stack)
-    "google-genai>=0.3.0",            # Gemini 3 client
-    "google-adk>=0.1.0",              # Agent Builder / ADK (LoopAgent, SequentialAgent)
-    # Partner MCP (required integration)
-    "mcp>=1.2.0",                     # Model Context Protocol client for @arizeai/phoenix-mcp
-    # LLM backends (llm.py precedence: OpenAI/OpenRouter key -> else Vertex Gemini)
-    "openai>=1.50.0",
-    # The Patient instrumentation
-    "openinference-instrumentation>=0.1.0",
-    # Cassandra's own self-tracing into the cassandra-meta project (instrumentation.py)
-    "openinference-instrumentation-openai>=0.1.0",
-    "opentelemetry-sdk>=1.27.0",
-    "opentelemetry-exporter-otlp>=1.27.0",
-    # Dashboard
-    "fastapi>=0.115.0",
-    "uvicorn[standard]>=0.32.0",
-    "sse-starlette>=2.1.0",
-    # State + infra
-    "google-cloud-firestore>=2.19.0",
-    "google-cloud-secret-manager>=2.20.0",
-    "httpx>=0.27.0",
-]
-dev = [
-    "cassandra-ai[full]",
-    "pytest>=8.3.0",
-    "pytest-asyncio>=0.24.0",
-    "ruff>=0.7.0",
-    "mypy>=1.13.0",
-]
 
 [tool.ruff]
 line-length = 100
@@ -82,17 +54,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
-packages = ["patient", "cassandra", "dashboard"]
+packages = ["cassandra"]
 
-# Without an explicit allowlist, hatchling's sdist vacuums the whole tree (node_modules,
-# .claude/, .vscode/, internal planning docs). Ship only the source + packaging metadata.
 [tool.hatch.build.targets.sdist]
-include = [
-    "/cassandra",
-    "/patient",
-    "/dashboard",
-    "/README.md",
-    "/LICENSE",
-    "/pyproject.toml",
-    "/.env.example",
-]
+include = ["/cassandra", "/README.md", "/LICENSE", "/pyproject.toml", "/.env.example"]

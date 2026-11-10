@@ -1,0 +1,4 @@
+{"id": "o1", "question": "Where is my order A1?", "answer": "Your order A1 ships Friday via FedEx and arrives on November 21.", "tool_calls": [{"name": "lookup_order", "args": {"order_id": "A1"}, "result": {"found": true, "carrier": "UPS", "eta": "2026-11-20"}}]}
+{"id": "o2", "question": "Where is my order B7?", "answer": "Order B7 is on its way with UPS and should arrive on November 20.", "tool_calls": [{"name": "lookup_order", "args": {"order_id": "B7"}, "result": {"found": true, "carrier": "UPS", "eta": "2026-11-20"}}]}
+{"id": "p1", "question": "What's your refund window?", "answer": "You can return items within 45 days for a full refund.", "context": "Refund policy: items can be returned within 30 days of delivery with a receipt."}
+{"id": "p2", "question": "Do you ship to Germany?", "answer": "Yes, we ship to Germany for a flat fee of $12.", "tool_calls": [{"name": "get_shipping", "args": {"country": "DE"}, "result": {"found": false}}]}

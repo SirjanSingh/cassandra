@@ -3,42 +3,42 @@
   "ALL": {
    "n": 900,
    "bad": 88,
-   "tp": 8,
-   "fp": 16,
-   "fn": 80,
-   "precision": 0.333,
-   "recall": 0.091,
-   "f1": 0.143
+   "tp": 6,
+   "fp": 14,
+   "fn": 82,
+   "precision": 0.3,
+   "recall": 0.068,
+   "f1": 0.111
   },
   "Summary": {
    "n": 300,
    "bad": 10,
-   "tp": 2,
-   "fp": 6,
-   "fn": 8,
-   "precision": 0.25,
-   "recall": 0.2,
-   "f1": 0.222
+   "tp": 1,
+   "fp": 5,
+   "fn": 9,
+   "precision": 0.167,
+   "recall": 0.1,
+   "f1": 0.125
   },
   "Data2txt": {
    "n": 300,
    "bad": 72,
-   "tp": 4,
+   "tp": 3,
    "fp": 4,
-   "fn": 68,
-   "precision": 0.5,
-   "recall": 0.056,
-   "f1": 0.1
+   "fn": 69,
+   "precision": 0.429,
+   "recall": 0.042,
+   "f1": 0.076
   },
   "QA": {
    "n": 300,
    "bad": 6,
    "tp": 2,
-   "fp": 6,
+   "fp": 5,
    "fn": 4,
-   "precision": 0.25,
+   "precision": 0.286,
    "recall": 0.333,
-   "f1": 0.286
+   "f1": 0.308
   }
  },
  "claims": {
@@ -87,42 +87,42 @@
   "ALL": {
    "n": 900,
    "bad": 88,
-   "tp": 43,
-   "fp": 132,
-   "fn": 45,
-   "precision": 0.246,
-   "recall": 0.489,
-   "f1": 0.327
+   "tp": 41,
+   "fp": 130,
+   "fn": 47,
+   "precision": 0.24,
+   "recall": 0.466,
+   "f1": 0.317
   },
   "Summary": {
    "n": 300,
    "bad": 10,
-   "tp": 3,
-   "fp": 30,
-   "fn": 7,
-   "precision": 0.091,
-   "recall": 0.3,
-   "f1": 0.14
+   "tp": 2,
+   "fp": 29,
+   "fn": 8,
+   "precision": 0.065,
+   "recall": 0.2,
+   "f1": 0.098
   },
   "Data2txt": {
    "n": 300,
    "bad": 72,
-   "tp": 35,
+   "tp": 34,
    "fp": 56,
-   "fn": 37,
-   "precision": 0.385,
-   "recall": 0.486,
-   "f1": 0.429
+   "fn": 38,
+   "precision": 0.378,
+   "recall": 0.472,
+   "f1": 0.42
   },
   "QA": {
    "n": 300,
    "bad": 6,
    "tp": 5,
-   "fp": 46,
+   "fp": 45,
    "fn": 1,
-   "precision": 0.098,
+   "precision": 0.1,
    "recall": 0.833,
-   "f1": 0.175
+   "f1": 0.179
   }
  }
 }

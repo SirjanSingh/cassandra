@@ -1,0 +1,30 @@
+{
+  "lookups": [
+    {
+      "tool": "lookup_order",
+      "fields": [
+        "carrier",
+        "eta"
+      ],
+      "success_key": "found"
+    },
+    {
+      "tool": "get_shipping",
+      "claims": [
+        "shipping_fee"
+      ],
+      "success_key": "found"
+    }
+  ],
+  "decline_markers": [
+    "couldn't find",
+    "could not find",
+    "don't have",
+    "unable to"
+  ],
+  "claim_extractors": {
+    "carrier": "\\b(?:UPS|FedEx|DHL|USPS|DPD)\\b",
+    "eta": "(?i:\\b(?:january|february|march|april|may|june|july|august|september|october|november|december)\\s+\\d{1,2}\\b)",
+    "shipping_fee": "\\$\\d+"
+  }
+}

@@ -8,14 +8,48 @@ exact tool call — or abstains when the spec can't resolve the case.
 from __future__ import annotations
 
 from cassandra.grounding import (
-    SHOPBOT_SPEC,
     GroundingSpec,
     LookupRule,
     check_grounding,
 )
 from cassandra.models import FailureClass
 
-# --- realistic ShopBot ledgers (shape: patient/agent.py tool_log entries) ----
+# A support bot's spec (refund policy + order lookup), used as the rule's test fixture.
+
+SHOPBOT_SPEC = GroundingSpec(
+    lookups=[
+        LookupRule(tool="get_refund_policy", claims=["refund_policy"]),
+        LookupRule(tool="lookup_order", fields={"carrier", "eta"}),
+    ],
+    decline_markers=[
+        "couldn't find",
+        "could not find",
+        "unavailable",
+        "can't provide",
+        "cannot provide",
+        "contact support",
+        "don't have",
+        "do not have",
+        "unable to",
+        "not available",
+        "no information",
+    ],
+    claim_extractors={
+        # "30-day returns", "14 days", "2 weeks", "1 month" — refund-window claims
+        "refund_policy": r"(?i)\b\d+\s*-?\s*(?:business\s+)?(?:day|week|month)s?\b",
+        # known carriers (case-sensitive: "ups" the noun must not match)
+        "carrier": r"\b(?:UPS|FedEx|DHL|USPS|Royal Mail|DPD|GLS|Hermes|Evri|TNT|Aramex)\b",
+        # ISO dates or "June 20(th)" style delivery dates
+        "eta": (
+            r"\b\d{4}-\d{2}-\d{2}\b"
+            r"|(?i:\b(?:jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|jun(?:e)?|"
+            r"jul(?:y)?|aug(?:ust)?|sep(?:tember)?|oct(?:ober)?|nov(?:ember)?|dec(?:ember)?)"
+            r"\s+\d{1,2}(?:st|nd|rd|th)?\b)"
+        ),
+    },
+)
+
+# --- realistic ShopBot ledgers (tool_calls entries: name / args / result) ----
 
 POLICY_MISS_DE = [
     {

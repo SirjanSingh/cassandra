@@ -1,267 +1,85 @@
-"""Shared domain models that thread through the supervision pipeline.
-
-The `Incident` object is the single piece of state passed Watcher -> Patcher
-(ARCHITECTURE.md S2). Each sub-agent enriches it and passes it on.
-"""
+"""Data shapes shared by every layer: one bot turn in, a verdict with findings out."""
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
 from enum import Enum
+from typing import Any, Literal
 
 from pydantic import BaseModel, Field
 
 
-def _now() -> datetime:
-    return datetime.now(timezone.utc)
-
-
 class FailureClass(str, Enum):
-    HALLUCINATION = "hallucination"
-    PROMPT_DRIFT = "prompt_drift"
-    TOOL_FAILURE = "tool_failure"
+    """Verdict classes of the deterministic tool-call rule (grounding.py)."""
+
+    HALLUCINATION = "hallucination"  # stated a fact with no successful tool call behind it
+    TOOL_FAILURE = "tool_failure"    # stated a field the tool returned empty
     OK = "ok"
 
 
-class SpanRecord(BaseModel):
-    """A normalized view of a Phoenix span tree (root LLM span + child tool spans).
+class Turn(BaseModel):
+    """One question → answer exchange of the bot being checked.
 
-    SPIKE-RECONCILE: field mapping depends on the exact Phoenix MCP span schema;
-    `phoenix_mcp.normalize_span` is the only place that needs to change.
+    The *source* is everything the bot was given to answer from: the results of its tool
+    calls and/or retrieved documents (`context`). Cassandra checks the answer against it.
     """
 
-    span_id: str
-    trace_id: str
-    project: str
-    started_at: datetime
-    input_text: str = ""
-    output_text: str = ""
-    session_id: str = "demo"
-    tool_calls: list[dict] = Field(default_factory=list)
-    raw: dict = Field(default_factory=dict)
+    id: str = ""
+    question: str = ""
+    answer: str
+    tool_calls: list[dict[str, Any]] = Field(default_factory=list)
+    context: str | list[Any] | dict[str, Any] | None = None
 
+    def has_source(self) -> bool:
+        return bool(self.tool_calls) or bool(self.context)
 
-class Verdict(BaseModel):
-    """Diagnostician output (FR-D1, FR-D2)."""
+    def source(self) -> object:
+        """What the bot was given, in the shape the checkers read.
 
-    failure_class: FailureClass
-    confidence: float = Field(ge=0.0, le=1.0)
-    rationale: str
-    expected_behavior: str = ""
-
-    @property
-    def is_failure(self) -> bool:
-        return self.failure_class is not FailureClass.OK
-
-
-class RootCause(BaseModel):
-    """Structured causal analysis of a failure (Killer Addition: root-cause analysis).
-
-    Goes beyond "what failed" to "why" - the causal chain a Phoenix judge wants.
-    """
-
-    summary: str
-    culprit: str  # the span/tool/prompt element that triggered the failure
-    causal_chain: list[str]  # ordered steps from trigger to bad output
-    contributing_factors: list[str] = Field(default_factory=list)
-    fix_strategy: str  # what kind of change prevents recurrence (feeds the Patcher)
-
-
-class DatasetExample(BaseModel):
-    """One synthesized adversarial probe (FR-S1)."""
-
-    input_text: str
-    expected_answer: str
-    acceptance_criterion: str
-
-
-class ExperimentResult(BaseModel):
-    """Evaluator output (FR-E4)."""
-
-    experiment_id: str
-    baseline_pass_rate: float
-    candidate_pass_rate: float | None = None
-
-    @property
-    def delta(self) -> float | None:
-        if self.candidate_pass_rate is None:
-            return None
-        return round(self.candidate_pass_rate - self.baseline_pass_rate, 4)
-
-
-class ReplayResult(BaseModel):
-    """Live trace replay: the ORIGINAL failing input re-run on the patched prompt."""
-
-    original_input: str
-    before_output: str  # the recorded hallucination
-    after_output: str  # the patched agent's answer to the same input
-    fixed: bool  # judge verdict: did the patch actually fix this exact case?
-    judge_rationale: str = ""
-
-
-class RedTeamResult(BaseModel):
-    """Adversarial testing: synthesized attacks fired at the live Patient."""
-
-    attacks_run: int
-    before_pass: int  # passes under the current (fragile) prompt
-    after_pass: int  # passes under the candidate prompt
-    examples: list[dict] = Field(default_factory=list)
-
-
-class Severity(str, Enum):
-    CRITICAL = "critical"
-    HIGH = "high"
-    MEDIUM = "medium"
-    LOW = "low"
-
-
-def compute_severity(verdict: "Verdict") -> Severity:
-    """Triage an incident from its failure class + confidence (FR-D / impact)."""
-    if not verdict.is_failure:
-        return Severity.LOW
-    c = verdict.confidence
-    if c >= 0.85:
-        return Severity.CRITICAL
-    if c >= 0.7:
-        return Severity.HIGH
-    if c >= 0.5:
-        return Severity.MEDIUM
-    return Severity.LOW
-
-
-class EfficiencyReport(BaseModel):
-    """Cost/latency of the candidate prompt vs the baseline (business impact).
-
-    Tokens/latency are averaged per evaluated case under each prompt variant.
-    """
-
-    baseline_avg_tokens: float = 0.0
-    candidate_avg_tokens: float = 0.0
-    baseline_avg_latency_ms: float = 0.0
-    candidate_avg_latency_ms: float = 0.0
-
-    @staticmethod
-    def _pct(base: float, cand: float) -> float | None:
-        if not base:
-            return None
-        return round((cand - base) / base, 4)
-
-    @property
-    def token_delta_pct(self) -> float | None:
-        return self._pct(self.baseline_avg_tokens, self.candidate_avg_tokens)
-
-    @property
-    def latency_delta_pct(self) -> float | None:
-        return self._pct(self.baseline_avg_latency_ms, self.candidate_avg_latency_ms)
-
-
-class ScorecardCase(BaseModel):
-    """One graded case in Cassandra's self-evaluation."""
-
-    message: str
-    expected: str
-    predicted: str
-    confidence: float
-    correct: bool
-
-
-class Scorecard(BaseModel):
-    """Cassandra grading its OWN diagnostic accuracy against labeled ground truth.
-
-    This is the introspection / self-improvement signal the Arize track rewards:
-    the meta-agent measuring how well it supervises, on its own observability data.
-    """
-
-    total: int
-    correct: int
-    per_class: dict[str, dict] = Field(default_factory=dict)  # label -> {total, correct}
-    cases: list[ScorecardCase] = Field(default_factory=list)
-    evaluated_at: datetime = Field(default_factory=_now)
-
-    @property
-    def accuracy(self) -> float:
-        return round(self.correct / self.total, 4) if self.total else 0.0
-
-
-class JuryReport(BaseModel):
-    """Outcome of a multi-judge jury (cassandra/jury.py).
-
-    When jury_size > 1 the LLM-as-judge is convened as a PANEL: K independent
-    inferences (spread over temperature so they don't collapse to one sample) are
-    aggregated by majority vote. `agreement` is the fraction of jurors who backed
-    the winning verdict — a calibration signal we fold into confidence. Not an LLM
-    response schema (safe to evolve), unlike `Verdict`.
-    """
-
-    size: int  # jurors who actually returned a vote
-    requested_size: int = 0  # jurors requested; > size means some errored (degraded panel)
-    agreement: float  # fraction of RESPONDING jurors agreeing with the winning verdict [0,1]
-    votes: list[str] = Field(default_factory=list)  # each juror's vote label
-    dissent: list[str] = Field(default_factory=list)  # minority verdict rationales
-
-    @property
-    def unanimous(self) -> bool:
-        return self.agreement >= 1.0
-
-    @property
-    def degraded(self) -> bool:
-        """True when jurors errored out, so `agreement` is over fewer votes than asked.
-
-        A degraded panel must NOT be read as trustworthy just because the survivors
-        agreed — 1 of 3 responding at 100% agreement is weaker than 3 of 3.
+        A lone context is passed through unchanged (a document stays a document);
+        tool results and context together become one JSON-able object.
         """
-        return self.requested_size > self.size
+        if not self.tool_calls:
+            return self.context or ""
+        calls = [{"tool": c.get("name"), "args": c.get("args"), "result": c.get("result")}
+                 for c in self.tool_calls]
+        return {"tool_calls": calls, "context": self.context} if self.context else calls
 
 
-class Stage(str, Enum):
-    WATCHED = "watched"
-    DIAGNOSED = "diagnosed"
-    ROOT_CAUSED = "root_caused"
-    SYNTHESIZED = "synthesized"
-    EVALUATED = "evaluated"
-    PATCHED = "patched"
-    REPLAYED = "replayed"
-    RED_TEAMED = "red_teamed"
+Layer = Literal["rule", "value", "claim"]
+FindingKind = Literal[
+    "no_tool_call",        # rule: a fact type that needs a tool, but no successful call
+    "tool_returned_empty",  # rule: the tool returned that field empty
+    "value_not_in_data",   # value: a number / time that appears nowhere in the source
+    "contradicted",        # claim: the source says something different
+    "not_in_source",       # claim: the source doesn't say it
+]
 
 
-class Incident(BaseModel):
-    """Threads through the whole pipeline. Identity = offending span_id (FR-L3 dedupe)."""
+class Finding(BaseModel):
+    """One statement in the answer that the source does not back."""
 
-    incident_id: str
-    span: SpanRecord
-    created_at: datetime = Field(default_factory=_now)
-    stage: Stage = Stage.WATCHED
-
-    verdict: Verdict | None = None
-    jury: JuryReport | None = None  # set when the diagnosis was decided by a panel
-    severity: Severity | None = None
-    root_cause: RootCause | None = None
-    efficiency: EfficiencyReport | None = None
-    annotation_id: str | None = None
-    dataset_id: str | None = None
-    dataset_examples: list[DatasetExample] = Field(default_factory=list)
-    experiment: ExperimentResult | None = None
-    # The supervised agent's CURRENT prompt, resolved once per incident
-    # (cassandra/baseline.py) so Evaluator and Patcher diff against the same text.
-    baseline_prompt: str | None = None
-    candidate_prompt: str | None = None
-    candidate_prompt_version: str | None = None
-    prompt_diff: str | None = None
-    replay: ReplayResult | None = None
-    redteam: RedTeamResult | None = None
-
-    @classmethod
-    def from_span(cls, span: SpanRecord) -> "Incident":
-        return cls(incident_id=f"inc-{span.span_id}", span=span)
-
-
-class PipelineEvent(BaseModel):
-    """Streamed to the dashboard SSE feed (FR-DB1, FR-L2)."""
-
-    incident_id: str
-    stage: Stage
-    at: datetime = Field(default_factory=_now)
-    title: str
+    layer: Layer
+    kind: FindingKind
+    claim: str
     detail: str = ""
-    phoenix_url: str | None = None
-    payload: dict = Field(default_factory=dict)
+
+
+Verdict = Literal["flagged", "ok", "declined", "unchecked"]
+
+
+class TurnResult(BaseModel):
+    turn: Turn
+    verdict: Verdict
+    findings: list[Finding] = Field(default_factory=list)
+    layers: list[Layer] = Field(default_factory=list)  # which checks actually ran
+    note: str = ""  # why a turn is unchecked / declined
+
+
+class Report(BaseModel):
+    source: str
+    layers: list[Layer]
+    model: str | None = None
+    results: list[TurnResult]
+
+    def count(self, verdict: Verdict) -> int:
+        return sum(r.verdict == verdict for r in self.results)

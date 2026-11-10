@@ -1,202 +1,189 @@
-"""The `cassandra` console script — banner + subcommand dispatch.
+"""The `cassandra` command.
 
-argparse (stdlib, matching gate.py's style). Imports are done lazily *inside* each
-subcommand so that `cassandra` / `cassandra --help` stay instant and don't drag in uvicorn,
-the pipeline, or the MCP stack unless the chosen subcommand needs them.
+    cassandra demo                       see a report on a bundled sample in seconds
+    cassandra scan logs.jsonl [--llm]    check your bot's exported chat logs
+    cassandra serve                      the checks as an HTTP API, for live use
+
+Heavy imports happen inside each command so `cassandra --help` stays instant.
 """
 
 from __future__ import annotations
 
 import argparse
 import sys
+from pathlib import Path
 
 _COMMANDS = """\
 commands:
-  dashboard    run the dashboard + SSE cockpit (default port 8085)
-  run          drive one full end-to-end supervision cycle
-  scan         check exported chat logs for answers no tool backed (no Phoenix needed)
-  gate         CI prompt-regression gate (fails when a prompt edit drops the pass rate)
-  pr           open the proven prompt fix for an incident as a GitHub pull request
-  mcp          run Cassandra's MCP server over stdio (for Claude Desktop / Cursor)
+  demo     scan a bundled sample travel bot's logs and write an HTML report (no setup)
+  scan     check your bot's exported chat logs against the data it was given
+  serve    run the checks as an HTTP API so your bot can check answers live
 
-Run `cassandra <command> --help` for command-specific options.
+Run `cassandra <command> --help` for options.
 """
-
-_SUBCOMMANDS = {"dashboard", "run", "scan", "gate", "pr", "mcp"}
 
 
 def _make_stdout_safe() -> None:
-    """Stop non-ASCII output from crashing the console on Windows.
-
-    Windows terminals default to cp1252, so printing UTF-8 content we generate
-    (emoji in a PR body, unicode in an agent's reply) raises UnicodeEncodeError and
-    kills the command. Re-encode as UTF-8 and degrade unencodable characters instead
-    of raising. Never called for `mcp` — that path speaks JSON-RPC on stdout.
-    """
+    """Windows consoles default to cp1252; never crash on a non-ASCII bot answer."""
     for stream in (sys.stdout, sys.stderr):
         try:
             stream.reconfigure(encoding="utf-8", errors="replace")  # type: ignore[union-attr]
-        except (AttributeError, ValueError):  # not a reconfigurable TextIOWrapper
+        except (AttributeError, ValueError):
             pass
 
 
-def _scan(args: argparse.Namespace) -> int:
-    """`cassandra scan`: returns the process exit code (2 = bad input, 0 otherwise)."""
+def _parser() -> argparse.ArgumentParser:
+    p = argparse.ArgumentParser(prog="cassandra",
+                                description="Check a bot's answers against its own data.")
+    sub = p.add_subparsers(dest="command")
+
+    d = sub.add_parser("demo", help="scan a bundled sample and write an HTML report")
+    d.add_argument("--out", default="cassandra_demo_report.html")
+    d.add_argument("--llm", action="store_true",
+                   help="also run the claim-by-claim check (calls your configured LLM)")
+
+    s = sub.add_parser("scan", help="check exported chat logs (JSONL, one turn per line)")
+    s.add_argument("logs", help="JSONL export; see README for the line format")
+    s.add_argument("--spec", default=None,
+                   help="optional tool-call spec JSON: which facts must come from which tool")
+    s.add_argument("--llm", action="store_true",
+                   help="run the claim-by-claim check: sends each answer and its data to "
+                        "your configured LLM endpoint (catches ~5x more)")
+    s.add_argument("--out", default="cassandra_report.html",
+                   help="report path; .html (default) or .md")
+    s.add_argument("--json", default=None, help="also write full per-answer results as JSON")
+    s.add_argument("--top", type=int, default=50, help="flagged answers shown in the report")
+    s.add_argument("--fail-over", type=float, default=None, metavar="PCT",
+                   help="exit 1 if more than PCT%% of answers are flagged (for CI)")
+
+    v = sub.add_parser("serve", help="HTTP API: POST /v1/check")
+    v.add_argument("--host", default="127.0.0.1")
+    v.add_argument("--port", type=int, default=8090)
+    v.add_argument("--spec", default=None, help="tool-call spec applied to every request")
+    return p
+
+
+def _write_report(report, out: str, top: int, json_out: str | None) -> None:
+    from . import report as rep
+
+    text = (rep.render_markdown(report, top=top) if out.lower().endswith(".md")
+            else rep.render_html(report, top=top))
+    Path(out).write_text(text, encoding="utf-8")
+    if json_out:
+        Path(json_out).write_text(rep.render_json(report), encoding="utf-8")
+
+
+def _run_scan(turns, spec, *, use_llm: bool, source: str, out: str, top: int,
+              json_out: str | None):
     import asyncio
-    import json
-    from pathlib import Path
 
-    from cassandra.config import get_settings
-    from cassandra.grounding import GroundingSpec
-    from cassandra import scan as scan_mod
+    from . import llm
+    from .engine import check_many
+    from .config import get_settings
+    from .models import Layer, Report
+    from .report import summary_line
 
-    spec_path = args.spec or get_settings().grounding_spec_file
-    if not spec_path:
-        # Never fall back to the bundled ShopBot spec: it would misgrade every other agent.
-        print("scan needs this agent's grounding spec: pass --spec spec.json "
-              "(or set GROUNDING_SPEC_FILE). See docs/SCAN.md.", file=sys.stderr)
-        return 2
-    try:
-        spec = GroundingSpec.model_validate_json(Path(spec_path).read_text(encoding="utf-8"))
-        turns = scan_mod.load_turns(args.logs)
-    except (OSError, ValueError) as e:
-        print(f"scan: {e}", file=sys.stderr)
-        return 2
+    s = get_settings()
+    if use_llm:
+        llm._client()  # fail fast with the setup hint, before any work
+        print(f"Claim check on: sending {len(turns)} answers and their data to "
+              f"{llm.describe()}", file=sys.stderr)
 
-    results = asyncio.run(scan_mod.scan(turns, spec, judge=args.judge))
-    mode = "rule + LLM judge on undecided turns" if args.judge else "rule only, no LLM"
-    report = scan_mod.ScanReport(source=Path(args.logs).name, mode=mode, results=results)
-    Path(args.out).write_text(scan_mod.render_markdown(report, top=args.top), encoding="utf-8")
-    if args.json:
-        Path(args.json).write_text(
-            json.dumps([r.model_dump(mode="json") for r in results], indent=1, ensure_ascii=False),
-            encoding="utf-8",
-        )
-    bad, total = report.count("unsupported"), len(results)
-    print(f"{bad} of {total} answers stated a fact no tool backed "
-          f"({report.count('undecided')} not checkable). Report: {args.out}")
-    return 0
+    def progress(done: int, total: int) -> None:
+        if use_llm and (done % 10 == 0 or done == total):
+            print(f"  checked {done}/{total}", file=sys.stderr)
+
+    results = asyncio.run(check_many(turns, spec, use_llm=use_llm,
+                                     concurrency=s.concurrency, on_done=progress))
+    layers: list[Layer] = []
+    if spec is not None:
+        layers.append("rule")
+    if any(t.has_source() for t in turns):
+        layers.append("value")
+        if use_llm:
+            layers.append("claim")
+    report = Report(source=source, layers=layers, results=results,
+                    model=llm.describe() if use_llm else None)
+    _write_report(report, out, top, json_out)
+    print(f"{summary_line(report)}\nReport: {out}")
+    return report
 
 
 def main(argv: list[str] | None = None) -> None:
-    """Entry point. A light install (`pip install cassandra-ai`) only carries what the CLI
-    and the offline `scan` need; any command that reaches for the pipeline's stack gets a
-    one-line fix instead of a traceback."""
+    from .llm import LLMUnavailable
+
     try:
-        _main(argv)
+        sys.exit(_main(sys.argv[1:] if argv is None else argv))
+    except LLMUnavailable as e:
+        print(str(e), file=sys.stderr)
+        sys.exit(2)
     except ModuleNotFoundError as e:
         root = (e.name or "").split(".")[0]
-        if not root or root in {"cassandra", "patient", "dashboard"}:
-            raise  # our own code is broken: show the real traceback
-        print(f"This command needs the full install (missing package: {root}):\n"
-              '  pip install "cassandra-ai[full]"', file=sys.stderr)
-        sys.exit(1)
+        if root in {"fastapi", "uvicorn"}:
+            print('`cassandra serve` needs: pip install "cassandra-ai[serve]"', file=sys.stderr)
+            sys.exit(2)
+        raise
 
 
-def _main(argv: list[str] | None = None) -> None:
-    argv = sys.argv[1:] if argv is None else argv
+def _main(argv: list[str]) -> int:
+    _make_stdout_safe()
+    parser = _parser()
+    if not argv or argv[0] not in {"demo", "scan", "serve"}:
+        from .banner import print_banner
 
-    if not argv or argv[0] != "mcp":  # mcp owns stdout for JSON-RPC — leave it alone
-        _make_stdout_safe()
-
-    parser = argparse.ArgumentParser(
-        prog="cassandra",
-        description="Cassandra - the meta-agent that watches other agents.",
-        add_help=True,
-    )
-    sub = parser.add_subparsers(dest="command")
-
-    p_dash = sub.add_parser("dashboard", help="run the dashboard + SSE cockpit")
-    p_dash.add_argument("--port", type=int, default=None, help="port (default: settings)")
-    p_dash.add_argument("--host", default="127.0.0.1", help="bind host (default: 127.0.0.1)")
-
-    sub.add_parser("run", help="drive one full end-to-end supervision cycle")
-    p_scan = sub.add_parser("scan", help="check exported chat logs for unsupported answers")
-    p_scan.add_argument("logs", help="JSONL export, one turn per line (see docs/SCAN.md)")
-    p_scan.add_argument("--spec", default=None,
-                        help="grounding spec JSON for this agent (default: GROUNDING_SPEC_FILE)")
-    p_scan.add_argument("--out", default="scan_report.md", help="markdown report path")
-    p_scan.add_argument("--json", default=None, help="also write per-turn results as JSON")
-    p_scan.add_argument("--top", type=int, default=10, help="examples shown in the report")
-    p_scan.add_argument("--judge", action="store_true",
-                        help="send turns the rule can't decide to the LLM judge (calls the LLM)")
-    sub.add_parser("gate", help="CI prompt-regression gate (passes args through)", add_help=False)
-    p_pr = sub.add_parser("pr", help="open the proven prompt fix as a GitHub PR")
-    p_pr.add_argument("incident_id", help="incident id (reads reports/<id>.json)")
-    p_pr.add_argument("--prompt-file", default=None,
-                      help="agent's system-prompt file to patch (default: BASELINE_PROMPT_FILE)")
-    p_pr.add_argument("--base", default="main", help="base branch for the PR (default: main)")
-    p_pr.add_argument("--branch", default=None, help="override the PR branch name")
-    p_pr.add_argument("--dry-run", action="store_true",
-                      help="print the PR that would be opened; change nothing")
-    p_pr.add_argument("--push", action="store_true",
-                      help="push the branch and run `gh pr create` (outward-facing)")
-    sub.add_parser("mcp", help="run Cassandra's MCP server over stdio")
-
-    # No subcommand (or -h/--help / unknown token) → banner + command list.
-    # Never touches the heavy stack.
-    if not argv or argv[0] not in _SUBCOMMANDS:
-        from cassandra.banner import print_banner
         print_banner()
         parser.print_help()
         print("\n" + _COMMANDS)
-        return
+        return 0
+    args = parser.parse_args(argv)
 
-    command = argv[0]
-    rest = argv[1:]
+    if args.command == "demo":
+        from importlib.resources import files
 
-    if command == "mcp":
-        # stdio JSON-RPC: emit NOTHING on stdout before the handshake — no banner.
-        from cassandra.mcp_server import main as mcp_main
-        mcp_main()
-        return
+        from .grounding import load_spec
+        from .scan import load_turns
 
-    if command == "gate":
-        # Pass every remaining arg straight through to gate.main; don't redefine its flags.
-        from cassandra.banner import print_banner
-        print_banner()
-        from cassandra.gate import main as gate_main
-        gate_main(rest)
-        return
+        sample = files("cassandra") / "samples"
+        turns = load_turns(str(sample / "travel_bot_logs.jsonl"))
+        sample_spec = load_spec(str(sample / "travel_bot_spec.json"))
+        print(f"Demo: {len(turns)} real answers from a sample travel bot (gpt-4o-mini with "
+              "live currency and weather tools).", file=sys.stderr)
+        _run_scan(turns, sample_spec, use_llm=args.llm, source="sample travel bot",
+                  out=args.out, top=50, json_out=None)
+        return 0
 
-    if command == "dashboard":
-        args = p_dash.parse_args(rest)
-        from cassandra.banner import print_banner
-        print_banner()
-        from cassandra.config import get_settings
-        port = args.port if args.port is not None else get_settings().dashboard_port
-        import uvicorn
-        uvicorn.run("dashboard.main:app", host=args.host, port=port)
-        return
+    if args.command == "scan":
+        from .grounding import load_spec
+        from .scan import load_turns
 
-    if command == "run":
-        from cassandra.banner import print_banner
-        print_banner()
-        from cassandra.run_once import main as run_main
-        run_main()
-        return
+        try:
+            spec = load_spec(args.spec) if args.spec else None
+            turns = load_turns(args.logs)
+        except (OSError, ValueError) as e:
+            print(f"scan: {e}", file=sys.stderr)
+            return 2
+        if not turns:
+            print("scan: the log file has no turns", file=sys.stderr)
+            return 2
+        report = _run_scan(turns, spec, use_llm=args.llm, source=Path(args.logs).name,
+                           out=args.out, top=args.top, json_out=args.json)
+        if args.fail_over is not None:
+            share = 100 * report.count("flagged") / len(report.results)
+            if share > args.fail_over:
+                print(f"FAIL: {share:.1f}% flagged is over the {args.fail_over}% limit",
+                      file=sys.stderr)
+                return 1
+        return 0
 
-    if command == "scan":
-        args = p_scan.parse_args(rest)
-        sys.exit(_scan(args))
+    # serve
+    import uvicorn
 
-    if command == "pr":
-        args = p_pr.parse_args(rest)
-        from cassandra.banner import print_banner
-        print_banner()
-        from cassandra import pr as pr_mod
-        inc = pr_mod.load_incident(args.incident_id)
-        res = pr_mod.open_pr(
-            inc,
-            prompt_file=args.prompt_file,
-            base=args.base,
-            branch=args.branch,
-            dry_run=args.dry_run,
-            push=args.push,
-        )
-        print(f"\n{res.title}\n  branch: {res.branch}")
-        print(res.detail)
-        return
+    from .grounding import load_spec
+    from .server import create_app
+
+    spec = load_spec(args.spec) if args.spec else None
+    uvicorn.run(create_app(spec), host=args.host, port=args.port)
+    return 0
 
 
 if __name__ == "__main__":

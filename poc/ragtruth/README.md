@@ -6,7 +6,7 @@ Cassandra's LLM judge catch it when graded against labels written by *other peop
 **Data:** [RAGTruth](https://github.com/ParticleMedia/RAGTruth) (ACL 2024), ~18k answers from
 six LLMs on three RAG tasks, with every span the source doesn't support marked by human
 annotators. The data isn't committed. Download the two files into `data/`; the commands are
-in the docstring of `run_judge.py`.
+in the docstring of `run_claims.py`.
 
 ## 1. How often models go wrong *with* the right documents (all 17,790 answers)
 
@@ -72,9 +72,12 @@ Two new checks, built after looking at the judge's misses:
 | Detector (gpt-4o-mini) | Caught (of 88 bad) | False alarms (of 812 good) | Flags that are real |
 |---|---|---|---|
 | Old whole-answer judge | 8 (9%) | 39 (4.8%) | 17% |
-| `value_check` only | 8 (9%) | 16 (2.0%) | 33% |
+| `value_check` only | 6 (7%) | 14 (1.7%) | 30% |
 | **`claim_check`** | **38 (43%)** | 121 (14.9%) | **24%** |
-| either | 43 (49%) | 132 (16.3%) | 25% |
+| either | 41 (47%) | 130 (16.0%) | 24% |
+
+`value_check` rows are after the 2026-11-10 fixes (dates, rounding, numbers echoed from the
+question); before them it was 8 caught / 16 false alarms. `claim_check` is unchanged.
 
 Data → text, where 72 of the 88 errors are: `claim_check` caught 32 of 72 (44%), with 23%
 false alarms.
@@ -97,9 +100,11 @@ false alarms.
 
 ## Reproduce
 
+Section 2's whole-answer judge (`run_judge.py`, `Diagnostician`) was removed with the old
+pipeline on the `focus/answer-check` branch; its saved verdicts (`verdicts*.jsonl`,
+`results*.json`) stay here as the baseline. The script lives on `feature/nli-and-hindi`.
+
 ```bash
-python -m poc.ragtruth.run_judge                                   # 900, configured model
-python -m poc.ragtruth.run_judge --sample 250 --judge-model gpt-4o --out verdicts_gpt4o_sample.jsonl
 python -m poc.ragtruth.run_claims --split train --per-task 50 --out claims_train_v2.jsonl   # tuning
 python -m poc.ragtruth.run_claims --split test --out claims_test.jsonl                      # final
 ```

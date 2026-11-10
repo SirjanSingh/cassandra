@@ -1,4 +1,4 @@
-"""`cassandra scan`: offline log scanning with the grounding rule (LLM mocked)."""
+"""Log loading, the 3-layer check engine, and reports. LLM always mocked."""
 
 from __future__ import annotations
 
@@ -6,9 +6,13 @@ import json
 
 import pytest
 
-from cassandra import cli, scan
+from cassandra import engine as check_mod
+from cassandra.engine import check_many, check_offline, check_turn
+from cassandra.faithfulness import Claim, ClaimReport
 from cassandra.grounding import GroundingSpec, LookupRule
-from cassandra.models import FailureClass, Verdict
+from cassandra.models import Report, Turn
+from cassandra.report import render_html, render_json, render_markdown
+from cassandra.scan import load_turns
 
 SPEC = GroundingSpec(
     lookups=[LookupRule(tool="get_fee", claims=["money"])],
@@ -19,128 +23,120 @@ FOUND = {"name": "get_fee", "args": {}, "result": {"found": True, "fee": 45}}
 MISSING = {"name": "get_fee", "args": {}, "result": {"found": False}}
 
 
-def _write(tmp_path, rows):
-    p = tmp_path / "logs.jsonl"
-    p.write_text("\n".join(json.dumps(r) for r in rows) + "\n", encoding="utf-8")
-    return p
+def _fake_claims(*unsupported: str):
+    async def fake(question, answer, source):
+        return ClaimReport(claims=[Claim(claim=c, status="contradicted", evidence="src says x")
+                                   for c in unsupported])
+    return fake
 
 
-def test_load_turns_accepts_aliases_and_skips_blank_lines(tmp_path):
+# --- loading ---------------------------------------------------------------
+
+def test_load_accepts_aliases_and_context(tmp_path):
     p = tmp_path / "logs.jsonl"
-    p.write_text(
-        json.dumps({"input": "q1", "reply": "a1"}) + "\n\n"
-        + json.dumps({"id": "x", "message": "q2", "output": "a2", "tools": [FOUND]}) + "\n",
-        encoding="utf-8",
-    )
-    turns = scan.load_turns(p)
-    assert [(t.id, t.question, t.answer) for t in turns] == [("1", "q1", "a1"), ("x", "q2", "a2")]
-    assert turns[1].tool_calls == [FOUND]
+    p.write_text("\n".join([
+        json.dumps({"id": "a", "input": "q", "reply": "r", "tools": [FOUND]}),
+        json.dumps({"user": "q2", "output": "r2", "documents": ["doc one"]}),
+        "",
+    ]), encoding="utf-8")
+    a, b = load_turns(p)
+    assert (a.id, a.question, a.answer, len(a.tool_calls)) == ("a", "q", "r", 1)
+    assert b.id == "2" and b.context == ["doc one"] and b.has_source()
 
 
 @pytest.mark.parametrize("line,msg", [
-    ("{not json", "line 1: not valid JSON"),
-    (json.dumps({"question": "q"}), "line 1: no answer field"),
-    (json.dumps({"answer": "a", "tool_calls": {}}), "line 1: tool_calls must be a list"),
+    ("not json", "line 1: not valid JSON"),
+    ('{"question": "q"}', "line 1: no answer field"),
+    ('{"answer": "a", "tool_calls": {}}', "line 1: tool_calls must be a list"),
+    ("[1, 2]", "line 1: expected a JSON object"),
 ])
-def test_load_turns_rejects_bad_lines(tmp_path, line, msg):
-    p = tmp_path / "logs.jsonl"
-    p.write_text(line + "\n", encoding="utf-8")
+def test_load_names_the_bad_line(tmp_path, line, msg):
+    p = tmp_path / "bad.jsonl"
+    p.write_text(line, encoding="utf-8")
     with pytest.raises(ValueError, match=msg):
-        scan.load_turns(p)
+        load_turns(p)
 
 
-@pytest.mark.parametrize("answer,calls,status", [
-    ("The wire fee is $25.", [MISSING], "unsupported"),
-    ("The wire fee is $45.", [FOUND], "ok"),
-    ("Sorry, I couldn't find the fee.", [MISSING], "declined"),
-    ("Fees vary by account type.", [], "undecided"),
-])
-def test_check_turn_statuses(answer, calls, status):
-    r = scan.check_turn(scan.Turn(id="t", answer=answer, tool_calls=calls), SPEC)
-    assert r.status == status and r.layer == "rule"
+# --- offline layers ----------------------------------------------------------
+
+def test_rule_flags_a_fact_with_no_successful_tool_call():
+    r = check_offline(Turn(answer="The fee is $45.", tool_calls=[MISSING]), SPEC)
+    assert r.verdict == "flagged" and r.findings[0].layer == "rule"
+    assert r.findings[0].kind == "no_tool_call"
 
 
-@pytest.mark.asyncio
-async def test_rule_only_never_calls_the_llm(monkeypatch):
-    async def boom(*a, **k):
-        raise AssertionError("LLM must not be called in rule-only mode")
-
-    monkeypatch.setattr("cassandra.llm.structured", boom)
-    turns = [scan.Turn(id="t", answer="Fees vary.", tool_calls=[])]
-    assert [r.status for r in await scan.scan(turns, SPEC)] == ["undecided"]
+def test_backed_answer_is_ok_and_decline_is_declined():
+    assert check_offline(Turn(answer="The fee is $45.", tool_calls=[FOUND]), SPEC).verdict == "ok"
+    r = check_offline(Turn(answer="Sorry, I couldn't find that.", tool_calls=[MISSING]), SPEC)
+    assert r.verdict == "declined"
 
 
-@pytest.mark.asyncio
-async def test_judge_decides_only_undecided_turns(monkeypatch):
-    seen: list[str] = []
-
-    async def fake_structured(prompt, schema, system="", temperature=0.0):
-        seen.append(prompt)
-        return Verdict(failure_class=FailureClass.HALLUCINATION, confidence=0.9, rationale="made up")
-
-    monkeypatch.setattr("cassandra.diagnostician.llm.structured", fake_structured)
-    turns = [
-        scan.Turn(id="a", answer="The wire fee is $45.", tool_calls=[FOUND]),
-        scan.Turn(id="b", answer="Fees vary by account.", tool_calls=[]),
-    ]
-    results = await scan.scan(turns, SPEC, judge=True)
-    assert [(r.status, r.layer) for r in results] == [("ok", "rule"), ("unsupported", "llm")]
-    assert len(seen) == 1 and "Fees vary" in seen[0]
+def test_value_layer_catches_a_wrong_number_without_a_spec():
+    r = check_offline(Turn(answer="The fee is 54 dollars.", tool_calls=[FOUND]))
+    assert r.verdict == "flagged" and r.findings[0].layer == "value"
+    assert r.findings[0].claim == "54"
 
 
-def test_render_markdown_headline_and_examples():
-    turns = [
-        scan.Turn(id="a", question="wire fee?", answer="It is $25.", tool_calls=[MISSING]),
-        scan.Turn(id="b", question="fee?", answer="It is $45.", tool_calls=[FOUND]),
-        scan.Turn(id="c", answer="Fees vary.", tool_calls=[]),
-    ]
-    report = scan.ScanReport(source="logs.jsonl", mode="rule only, no LLM",
-                             results=[scan.check_turn(t, SPEC) for t in turns])
-    md = scan.render_markdown(report)
-    assert "**1 of 3 answers (33%) stated a specific fact that no tool call backed.**" in md
-    assert "### 1. `a` — wire fee?" in md and "- Claim: `$25`" in md
-    assert "## Not checkable" in md and "`c`" in md
+def test_numbers_from_the_question_dates_and_rounding_are_not_flagged():
+    t = Turn(question="Rate for 600 GBP on 2016-06-24?",
+             answer="On June 24, 600 pounds was about 797.3 dollars at 1.3288.",
+             tool_calls=[{"name": "fx", "args": {"date": "2016-06-24"},
+                          "result": {"rate": 1.32883, "converted": 797.28}}])
+    assert check_offline(t).verdict == "ok"
 
 
-def test_cli_scan_writes_report(tmp_path, capsys):
-    logs = _write(tmp_path, [{"question": "fee?", "answer": "It is $25.", "tool_calls": [MISSING]}])
-    spec = tmp_path / "spec.json"
-    spec.write_text(SPEC.model_dump_json(), encoding="utf-8")
-    out, js = tmp_path / "r.md", tmp_path / "r.json"
-    with pytest.raises(SystemExit) as e:
-        cli.main(["scan", str(logs), "--spec", str(spec), "--out", str(out), "--json", str(js)])
-    assert e.value.code == 0
-    assert "1 of 1 answers stated a fact no tool backed" in capsys.readouterr().out
-    assert "Unsupported fact | 1" in out.read_text(encoding="utf-8")
-    assert json.loads(js.read_text(encoding="utf-8"))[0]["status"] == "unsupported"
+def test_no_source_means_unchecked_not_ok():
+    r = check_offline(Turn(answer="It costs $45."))
+    assert r.verdict == "unchecked" and "nothing to check" in r.note
 
 
-def test_cli_points_light_installs_at_the_full_extra(monkeypatch, capsys):
-    """A command needing the pipeline stack, run on a light install, prints the fix."""
-    def missing():
-        raise ModuleNotFoundError("No module named 'openai'", name="openai")
+# --- claim layer -------------------------------------------------------------
 
-    monkeypatch.setattr("cassandra.run_once.main", missing)
-    with pytest.raises(SystemExit) as e:
-        cli.main(["run"])
-    assert e.value.code == 1
-    assert 'pip install "cassandra-ai[full]"' in capsys.readouterr().err
+async def test_claim_layer_adds_findings(monkeypatch):
+    monkeypatch.setattr(check_mod, "claim_check", _fake_claims("Ships via FedEx"))
+    r = await check_turn(Turn(answer="Ships via FedEx.", context="Carrier: UPS"))
+    assert r.verdict == "flagged" and r.layers == ["value", "claim"]
+    assert (r.findings[0].layer, r.findings[0].kind) == ("claim", "contradicted")
 
 
-def test_cli_does_not_mask_missing_internal_modules(monkeypatch):
-    def broken():
-        raise ModuleNotFoundError("No module named 'cassandra.nope'", name="cassandra.nope")
+async def test_claim_layer_skipped_without_source_or_when_declined(monkeypatch):
+    async def boom(*a):
+        raise AssertionError("LLM must not be called")
+    monkeypatch.setattr(check_mod, "claim_check", boom)
+    assert (await check_turn(Turn(answer="It is $45."))).verdict == "unchecked"
+    declined = Turn(answer="Sorry, I couldn't find that.", tool_calls=[MISSING])
+    assert (await check_turn(declined, SPEC)).verdict == "declined"
+    assert (await check_turn(Turn(answer="ok", context="x"), use_llm=False)).layers == ["value"]
 
-    monkeypatch.setattr("cassandra.run_once.main", broken)
-    with pytest.raises(ModuleNotFoundError):
-        cli.main(["run"])
+
+async def test_check_many_keeps_order_and_reports_progress(monkeypatch):
+    monkeypatch.setattr(check_mod, "claim_check", _fake_claims())
+    seen = []
+    turns = [Turn(id=str(i), answer="fine", context="fine") for i in range(5)]
+    out = await check_many(turns, concurrency=2, on_done=lambda d, n: seen.append((d, n)))
+    assert [r.turn.id for r in out] == ["0", "1", "2", "3", "4"]
+    assert seen[-1] == (5, 5)
 
 
-def test_cli_scan_requires_a_spec(tmp_path, monkeypatch, capsys):
-    monkeypatch.setattr("cassandra.config.get_settings",
-                        lambda: type("S", (), {"grounding_spec_file": None})())
-    logs = _write(tmp_path, [{"answer": "a"}])
-    with pytest.raises(SystemExit) as e:
-        cli.main(["scan", str(logs)])
-    assert e.value.code == 2
-    assert "grounding spec" in capsys.readouterr().err
+# --- reports -----------------------------------------------------------------
+
+def _report(layers=("value",)) -> Report:
+    bad = check_offline(Turn(id="t<1>", question="Fee?", answer="It is 54 <b>dollars</b>.",
+                             tool_calls=[FOUND]))
+    ok = check_offline(Turn(id="t2", answer="It is 45.", tool_calls=[FOUND]))
+    return Report(source="logs.jsonl", layers=list(layers), results=[bad, ok])
+
+
+def test_html_report_is_escaped_and_self_contained():
+    out = render_html(_report())
+    assert "<b>dollars</b>" not in out and "&lt;b&gt;dollars&lt;/b&gt;" in out
+    assert "1 of 2 answers (50%)" in out and "Not in the data" in out
+    assert "rerun with --llm" in out  # offline report says what it skipped
+    assert "<script" not in out and "http://" not in out
+
+
+def test_markdown_and_json_reports():
+    md = render_markdown(_report(layers=("value", "claim")))
+    assert md.startswith("# Cassandra answer check") and "--llm" not in md
+    data = json.loads(render_json(_report()))
+    assert data["results"][0]["verdict"] == "flagged"

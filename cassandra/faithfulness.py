@@ -29,6 +29,8 @@ _NUM = r"\d+(?:[.,]\d+)*"
 _TIME_12 = re.compile(r"\b(\d{1,2})(?::(\d{2}))?\s*([ap])\.?\s*m\b", re.I)
 _TIME_24 = re.compile(r"\b([01]?\d|2[0-3]):([0-5]\d?)\b")
 _NUMBER = re.compile(rf"(?<![\w.\-]){_NUM}(?![\w])")  # skips "COVID-19"-style tokens
+# the source side is read permissively: "2016-06-24" -> 2016, 6, 24
+_ANY_NUMBER = re.compile(_NUM)
 # Spelled numbers that should never be checked: counts of days, list ordinals, etc.
 _SMALL_OK = {str(i) for i in range(0, 8)}
 
@@ -63,7 +65,20 @@ def _norm_num(s: str) -> str:
     s = s.replace(",", "")
     if "." in s:
         s = s.rstrip("0").rstrip(".")
-    return s
+    head, dot, tail = s.partition(".")
+    return (head.lstrip("0") or "0") + dot + tail
+
+
+def _rounds_to(n: str, src_floats: list[float]) -> bool:
+    """Is `n` some source number rounded or cut to n's own precision (0.83064 -> 0.8306)?"""
+    try:
+        target = float(n)
+    except ValueError:
+        return False
+    places = len(n.partition(".")[2])
+    step = 10 ** -places
+    return any(abs(round(f, places) - target) < step / 2
+               or abs(int(f / step) * step - target) < step / 2 for f in src_floats)
 
 
 class ValueIssue(BaseModel):
@@ -71,13 +86,14 @@ class ValueIssue(BaseModel):
     kind: Literal["time", "number"]
 
 
-def value_check(answer: str, source: object) -> list[ValueIssue]:
-    """Numbers and clock times in `answer` that appear nowhere in `source`.
+def value_check(answer: str, source: object, question: str = "") -> list[ValueIssue]:
+    """Numbers and clock times in `answer` that appear nowhere in `source` (or `question`).
 
     Deliberately conservative: small integers (0–7, e.g. "7 days a week") are never
-    checked, and a number counts as supported if it occurs anywhere in the source.
+    checked; a number counts as supported if it occurs anywhere in the source or the
+    user's question, or if it is a source number rounded to the answer's precision.
     """
-    src = _flatten(source)
+    src = _flatten(source) + "\n" + question
     issues: list[ValueIssue] = []
 
     src_times = _times_24(src) | {t for _, t in _times_12(src)}
@@ -94,12 +110,19 @@ def value_check(answer: str, source: object) -> list[ValueIssue]:
             if (int(m.group(1)), int(m.group(2))) not in src_times:
                 issues.append(ValueIssue(value=m.group(0), kind="time"))
 
-    src_nums = {_norm_num(m.group(0)) for m in _NUMBER.finditer(src)}
+    raw_src = [m.group(0) for m in _ANY_NUMBER.finditer(src)]
+    src_nums = {_norm_num(x) for x in raw_src}
+    src_floats = []
+    for x in raw_src:
+        try:
+            src_floats.append(float(x.replace(",", "")))
+        except ValueError:
+            pass
     for m in _NUMBER.finditer(answer):
         if any(a <= m.start() < b for a, b in spans):
             continue  # already handled as part of a clock time
         n = _norm_num(m.group(0))
-        if n in _SMALL_OK or n in src_nums:
+        if n in _SMALL_OK or n in src_nums or _rounds_to(n, src_floats):
             continue
         issues.append(ValueIssue(value=m.group(0), kind="number"))
     return issues

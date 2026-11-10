@@ -1,7 +1,10 @@
 """Score cassandra/faithfulness.py (value check + claim-by-claim judge) on RAGTruth.
 
-Same data and metrics as run_judge.py. Tune on `--split train`; report on `--split test`
-only once the prompt is frozen.
+Download the two RAGTruth files into poc/ragtruth/data/ first:
+  https://raw.githubusercontent.com/ParticleMedia/RAGTruth/main/dataset/response.jsonl
+  https://raw.githubusercontent.com/ParticleMedia/RAGTruth/main/dataset/source_info.jsonl
+
+Tune on `--split train`; report on `--split test` only once the prompt is frozen.
 
     python -m poc.ragtruth.run_claims --split train --per-task 50 --out claims_train.jsonl
     python -m poc.ragtruth.run_claims --split test --out claims_test.jsonl
@@ -18,8 +21,39 @@ import collections
 import json
 import random
 
+from pathlib import Path
+
 from cassandra.faithfulness import claim_check, value_check
-from poc.ragtruth.run_judge import HERE, _load, _metrics
+
+HERE = Path(__file__).parent
+DATA = HERE / "data"  # response.jsonl + source_info.jsonl from github.com/ParticleMedia/RAGTruth
+
+
+def _load(models: list[str], split: str) -> list[dict]:
+    sources = {}
+    for line in (DATA / "source_info.jsonl").open(encoding="utf-8"):
+        s = json.loads(line)
+        sources[s["source_id"]] = s
+    rows = []
+    for line in (DATA / "response.jsonl").open(encoding="utf-8"):
+        r = json.loads(line)
+        if r["split"] == split and r["model"] in models:
+            s = sources[r["source_id"]]
+            rows.append({"id": r["id"], "model": r["model"], "task": s["task_type"],
+                         "truth": bool(r["labels"]), "prompt": s["prompt"],
+                         "source": s["source_info"], "response": r["response"]})
+    return rows
+
+
+def _metrics(rows: list[dict]) -> dict:
+    tp = sum(r["truth"] and r["flag"] for r in rows)
+    fp = sum((not r["truth"]) and r["flag"] for r in rows)
+    fn = sum(r["truth"] and not r["flag"] for r in rows)
+    p = tp / (tp + fp) if tp + fp else 0.0
+    rc = tp / (tp + fn) if tp + fn else 0.0
+    return {"n": len(rows), "bad": tp + fn, "tp": tp, "fp": fp, "fn": fn,
+            "precision": round(p, 3), "recall": round(rc, 3),
+            "f1": round(2 * p * rc / (p + rc), 3) if p + rc else 0.0}
 
 
 def _sample(rows: list[dict], per_task: int) -> list[dict]:

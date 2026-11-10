@@ -1,5 +1,10 @@
 # TravelPal: proof of concept on an honest, real agent
 
+> **On the `focus/answer-check` branch** the scripts that drove this study (`collect.py`,
+> `score.py`, `fix_loop.py`) were removed with the old pipeline they used. The bot
+> (`agent.py`), questions, recorded runs, hand labels and results stay as evidence. The scripts
+> live on the `feature/nli-and-hindi` branch. The held-out runs ship as `cassandra demo`'s sample.
+
 **Question:** does Cassandra catch the bad answers of an agent nobody rigged?
 
 ShopBot (`patient/`) is a demo. Its prompt tells it to never admit ignorance, and its tools fail on cue.
