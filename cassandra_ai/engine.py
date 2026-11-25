@@ -23,6 +23,11 @@ from .faithfulness import claim_check, value_check
 from .grounding import GroundingSpec, _extract_claims, check_grounding
 from .models import FailureClass, Finding, FindingKind, Layer, Turn, TurnResult
 
+_RULE_KINDS: dict[FailureClass | None, FindingKind] = {
+    FailureClass.TOOL_FAILURE: "tool_returned_empty",
+    FailureClass.CONTRADICTED: "contradicted",
+}
+
 
 def check_offline(turn: Turn, spec: GroundingSpec | None = None) -> TurnResult:
     """Rule + value layers only. Pure: no LLM, no network."""
@@ -34,8 +39,7 @@ def check_offline(turn: Turn, spec: GroundingSpec | None = None) -> TurnResult:
         layers.append("rule")
         v = check_grounding(turn.answer, turn.tool_calls, spec)
         if not v.abstain and v.failure_class is not FailureClass.OK:
-            empty = v.failure_class is FailureClass.TOOL_FAILURE
-            kind: FindingKind = "tool_returned_empty" if empty else "no_tool_call"
+            kind: FindingKind = _RULE_KINDS.get(v.failure_class, "no_tool_call")
             findings.append(Finding(layer="rule", kind=kind, claim=v.claim, detail=v.rationale))
         elif v.failure_class is FailureClass.OK and not _extract_claims(turn.answer, spec):
             declined = True

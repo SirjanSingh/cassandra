@@ -13,6 +13,7 @@ class FailureClass(str, Enum):
 
     HALLUCINATION = "hallucination"  # stated a fact with no successful tool call behind it
     TOOL_FAILURE = "tool_failure"    # stated a field the tool returned empty
+    CONTRADICTED = "contradicted"    # stated a field value the tool returned differently
     OK = "ok"
 
 
@@ -50,7 +51,7 @@ FindingKind = Literal[
     "no_tool_call",        # rule: a fact type that needs a tool, but no successful call
     "tool_returned_empty",  # rule: the tool returned that field empty
     "value_not_in_data",   # value: a number / time that appears nowhere in the source
-    "contradicted",        # claim: the source says something different
+    "contradicted",        # rule or claim: the source says something different
     "not_in_source",       # claim: the source doesn't say it
 ]
 
