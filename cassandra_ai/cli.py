@@ -96,6 +96,8 @@ def _run_scan(turns, spec, *, use_llm: bool, source: str, out: str, top: int,
     results = asyncio.run(check_many(turns, spec, use_llm=use_llm,
                                      concurrency=s.concurrency, on_done=progress))
     layers: list[Layer] = []
+    if any(t.tool_calls for t in turns):
+        layers.append("action")
     if spec is not None:
         layers.append("rule")
     if any(t.has_source() for t in turns):

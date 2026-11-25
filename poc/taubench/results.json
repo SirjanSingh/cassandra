@@ -1,0 +1,45 @@
+{
+ "summary": {
+  "trajectories": 1980,
+  "turns_checked": 22179,
+  "failed": 797,
+  "base_rate": 0.4025,
+  "flagged_failed": 1,
+  "flagged_passed": 0,
+  "precision": 1.0,
+  "recall": 0.0013,
+  "per_file": {
+   "gpt-4o-airline": {
+    "flagged_failed": 0,
+    "flagged_passed": 0
+   },
+   "gpt-4o-retail": {
+    "flagged_failed": 1,
+    "flagged_passed": 0
+   },
+   "sonnet-35-new-airline": {
+    "flagged_failed": 0,
+    "flagged_passed": 0
+   },
+   "sonnet-35-new-retail": {
+    "flagged_failed": 0,
+    "flagged_passed": 0
+   }
+  }
+ },
+ "flagged": [
+  {
+   "file": "gpt-4o-retail",
+   "failed": true,
+   "turns": 8,
+   "flagged": true,
+   "hits": [
+    [
+     "gpt-4o-retail/41/0#7",
+     "has been successfully processed",
+     "exchange_delivered_order_items failed ('Error: non-delivered order cannot be exchanged'), yet the answer says the action was done."
+    ]
+   ]
+  }
+ ]
+}

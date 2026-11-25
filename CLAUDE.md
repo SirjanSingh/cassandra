@@ -40,13 +40,15 @@ python -m poc.ragtruth.run_claims --split train|test --out ...   # accuracy benc
 
 ## Architecture (see docs/ARCHITECTURE.md)
 
-`Turn` → `engine.check_turn` → three layers, cheapest first → `TurnResult` (verdict + findings):
+`Turn` → `engine.check_turn` → layers, cheapest first → `TurnResult` (verdict + findings):
+0. **action** (`actions.py`): a tool call failed, yet the answer says the action is done. Pure,
+   no spec. Measured on tau-bench: `python -m poc.taubench.run_action_check data/tau`.
 1. **rule** (`grounding.py`): per-bot spec; a fact type with no successful tool call, or a
    field value that differs from the returned one. Pure.
 2. **value** (`faithfulness.value_check`): numbers and times must occur in the source. Pure.
 3. **claim** (`faithfulness.claim_check`): LLM, claim by claim. The only network call.
 
-Ways in: `scan.py` (JSONL), `cassandra_ai.check()` (SDK), `server.py` (HTTP). Way out: `report.py`.
+Ways in: `scan.py` (JSONL turns, or whole chat conversations via `importers.py`), `cassandra_ai.check()` (SDK), `server.py` (HTTP). Way out: `report.py`.
 
 ## Rules
 

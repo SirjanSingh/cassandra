@@ -1,7 +1,9 @@
 """The checking engine: one bot turn in, a verdict with findings out.
 
-Three layers, cheapest first. Each runs only when it has what it needs:
+Layers, cheapest first. Each runs only when it has what it needs:
 
+0. **action** (needs logged tool calls; free, offline, no spec): a tool call failed and
+   was not retried successfully, yet the answer says the action was done.
 1. **rule** (needs a `GroundingSpec`; free, offline): the answer states a fact type the
    spec says must come from a tool ("a price", "a delivery date"), and no successful call
    to that tool happened in the turn.
@@ -19,6 +21,7 @@ from __future__ import annotations
 import asyncio
 from collections.abc import Awaitable, Callable
 
+from .actions import action_check
 from .faithfulness import claim_check, value_check
 from .grounding import GroundingSpec, _extract_claims, check_grounding
 from .models import FailureClass, Finding, FindingKind, Layer, Turn, TurnResult
@@ -34,6 +37,14 @@ def check_offline(turn: Turn, spec: GroundingSpec | None = None) -> TurnResult:
     findings: list[Finding] = []
     layers: list[Layer] = []
     declined = False
+
+    if turn.tool_calls:
+        layers.append("action")
+        for act in action_check(turn.answer, turn.tool_calls):
+            findings.append(Finding(
+                layer="action", kind="claimed_done_after_error", claim=act.claim,
+                detail=f"{act.tool} failed ({act.error[:160]!r}), yet the answer says "
+                       "the action was done."))
 
     if spec is not None:
         layers.append("rule")

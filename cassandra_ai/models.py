@@ -46,8 +46,9 @@ class Turn(BaseModel):
         return {"tool_calls": calls, "context": self.context} if self.context else calls
 
 
-Layer = Literal["rule", "value", "claim"]
+Layer = Literal["action", "rule", "value", "claim"]
 FindingKind = Literal[
+    "claimed_done_after_error",  # action: a tool call failed, the answer says it's done
     "no_tool_call",        # rule: a fact type that needs a tool, but no successful call
     "tool_returned_empty",  # rule: the tool returned that field empty
     "value_not_in_data",   # value: a number / time that appears nowhere in the source
