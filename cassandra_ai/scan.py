@@ -6,6 +6,11 @@
 
 Aliases accepted: question = input / user / message; answer = output / reply / response;
 tool_calls = tools; context = documents / retrieved / sources.
+
+A line can also be a whole conversation in OpenAI chat format,
+`{"id": "c1", "messages": [{"role": "user", ...}, {"role": "assistant", ...}, ...]}`
+(`traj` and `conversation` work too); it becomes one turn per assistant reply (see
+importers.py). A `.json` file holding a list of such objects is read the same way.
 """
 
 from __future__ import annotations
@@ -13,6 +18,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+from .importers import conversation_messages, turns_from_messages
 from .models import Turn
 
 _QUESTION_KEYS = ("question", "input", "user", "message")
@@ -42,20 +48,45 @@ def parse_row(row: dict, n: int | str = "") -> Turn:
                 answer=answer, tool_calls=calls, context=context)
 
 
-def load_turns(path: str | Path) -> list[Turn]:
-    """Parse a JSONL export. Raises ValueError naming the bad line."""
-    turns: list[Turn] = []
-    for n, line in enumerate(Path(path).read_text(encoding="utf-8").splitlines(), 1):
+def _rows(path: Path) -> list[tuple[int | str, object]]:
+    text = path.read_text(encoding="utf-8")
+    rows: list[tuple[int | str, object]] = []
+    for n, line in enumerate(text.splitlines(), 1):
         if not line.strip():
             continue
         try:
-            row = json.loads(line)
+            rows.append((n, json.loads(line)))
         except json.JSONDecodeError as e:
+            if not rows and text.lstrip().startswith(("[", "{")):
+                return _json_rows(text)  # one JSON document, pretty-printed
             raise ValueError(f"line {n}: not valid JSON ({e.msg})") from e
+    return rows
+
+
+def _json_rows(text: str) -> list[tuple[int | str, object]]:
+    try:
+        data = json.loads(text)
+    except json.JSONDecodeError as e:
+        raise ValueError(f"not valid JSON or JSONL ({e.msg} at line {e.lineno})") from e
+    if not isinstance(data, list):
+        data = [data]
+    return [(f"item {i}", row) for i, row in enumerate(data, 1)]
+
+
+def load_turns(path: str | Path) -> list[Turn]:
+    """Parse a JSONL export (or a JSON list). Raises ValueError naming the bad line."""
+    turns: list[Turn] = []
+    for n, row in _rows(Path(path)):
+        where = f"line {n}" if isinstance(n, int) else str(n)
         if not isinstance(row, dict):
-            raise ValueError(f"line {n}: expected a JSON object")
+            raise ValueError(f"{where}: expected a JSON object")
+        messages = conversation_messages(row)
+        if messages is not None:
+            conv_id = str(row.get("id", row.get("task_id", n)))
+            turns.extend(turns_from_messages(messages, conv_id))
+            continue
         try:
             turns.append(parse_row(row, n))
         except ValueError as e:
-            raise ValueError(f"line {n}: {e}") from e
+            raise ValueError(f"{where}: {e}") from e
     return turns
