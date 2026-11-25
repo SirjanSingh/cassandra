@@ -20,7 +20,7 @@ with findings. Everything else is a way in or a way out.
 | File | Responsibility | Depends on |
 |---|---|---|
 | `models.py` | Data shapes: `Turn` (in), `Finding`, `TurnResult`, `Report` (out). `Turn.source()` decides what the answer is checked against. | pydantic |
-| `grounding.py` | **Rule layer.** Per-bot `GroundingSpec`: which fact types (regex) must be backed by a successful call to which tool. Abstains when unsure. | models |
+| `grounding.py` | **Rule layer.** Per-bot `GroundingSpec`: which fact types (regex) must be backed by a successful call to which tool. For `fields` the stated value is also compared with the returned one (text, number, month and day) and flagged `contradicted` when no comparable result agrees. Abstains when unsure. | models |
 | `faithfulness.py` | **Value layer** (`value_check`: numbers and times must occur in the source, allowing dates, rounding and numbers from the question) and **claim layer** (`claim_check`: LLM splits the answer into atomic claims and labels each `supported / contradicted / not_in_source / opinion`). | llm |
 | `engine.py` | Runs the layers on one turn (`check_turn`, `check_offline`) or many with bounded concurrency (`check_many`) and turns findings into a verdict: `flagged / ok / declined / unchecked`. | the three layers |
 | `llm.py` | The only LLM call site. OpenAI SDK against any OpenAI-compatible base URL. The request shape is what produced the benchmark numbers; change it, re-run the benchmark. | openai (optional) |
