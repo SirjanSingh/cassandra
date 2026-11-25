@@ -6,13 +6,13 @@ import json
 
 import pytest
 
-from cassandra import engine as check_mod
-from cassandra.engine import check_many, check_offline, check_turn
-from cassandra.faithfulness import Claim, ClaimReport
-from cassandra.grounding import GroundingSpec, LookupRule
-from cassandra.models import Report, Turn
-from cassandra.report import render_html, render_json, render_markdown
-from cassandra.scan import load_turns
+from cassandra_ai import engine as check_mod
+from cassandra_ai.engine import check_many, check_offline, check_turn
+from cassandra_ai.faithfulness import Claim, ClaimReport
+from cassandra_ai.grounding import GroundingSpec, LookupRule
+from cassandra_ai.models import Report, Turn
+from cassandra_ai.report import render_html, render_json, render_markdown
+from cassandra_ai.scan import load_turns
 
 SPEC = GroundingSpec(
     lookups=[LookupRule(tool="get_fee", claims=["money"])],

@@ -34,8 +34,8 @@ def check_offline(turn: Turn, spec: GroundingSpec | None = None) -> TurnResult:
         layers.append("rule")
         v = check_grounding(turn.answer, turn.tool_calls, spec)
         if not v.abstain and v.failure_class is not FailureClass.OK:
-            kind: FindingKind = ("tool_returned_empty" if v.failure_class is FailureClass.TOOL_FAILURE
-                    else "no_tool_call")
+            empty = v.failure_class is FailureClass.TOOL_FAILURE
+            kind: FindingKind = "tool_returned_empty" if empty else "no_tool_call"
             findings.append(Finding(layer="rule", kind=kind, claim=v.claim, detail=v.rationale))
         elif v.failure_class is FailureClass.OK and not _extract_claims(turn.answer, spec):
             declined = True

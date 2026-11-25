@@ -29,7 +29,7 @@ pipeline pieces without a customer asking.
 pip install -e ".[dev]"
 pytest                     # offline; the LLM is always mocked
 ruff check .               # line length 100
-mypy cassandra
+mypy cassandra_ai
 
 cassandra demo             # bundled sample, offline
 cassandra scan logs.jsonl [--spec spec.json] [--llm] [--out r.html|r.md] [--json r.json] [--fail-over PCT]
@@ -44,7 +44,7 @@ python -m poc.ragtruth.run_claims --split train|test --out ...   # accuracy benc
 2. **value** (`faithfulness.value_check`): numbers and times must occur in the source. Pure.
 3. **claim** (`faithfulness.claim_check`): LLM, claim by claim. The only network call.
 
-Ways in: `scan.py` (JSONL), `cassandra.check()` (SDK), `server.py` (HTTP). Way out: `report.py`.
+Ways in: `scan.py` (JSONL), `cassandra_ai.check()` (SDK), `server.py` (HTTP). Way out: `report.py`.
 
 ## Rules
 

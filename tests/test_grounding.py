@@ -7,12 +7,12 @@ exact tool call — or abstains when the spec can't resolve the case.
 
 from __future__ import annotations
 
-from cassandra.grounding import (
+from cassandra_ai.grounding import (
     GroundingSpec,
     LookupRule,
     check_grounding,
 )
-from cassandra.models import FailureClass
+from cassandra_ai.models import FailureClass
 
 # A support bot's spec (refund policy + order lookup), used as the rule's test fixture.
 

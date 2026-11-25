@@ -16,7 +16,7 @@ from pathlib import Path
 
 from pydantic import BaseModel, Field
 
-from cassandra.models import FailureClass
+from cassandra_ai.models import FailureClass
 
 
 class LookupRule(BaseModel):

@@ -1,6 +1,6 @@
 [project]
 name = "cassandra-ai"
-version = "0.4.0"
+dynamic = ["version"]
 description = "Checks your AI bot's answers against the data it was given, and flags what the data doesn't back"
 readme = "README.md"
 requires-python = ">=3.11"
@@ -17,21 +17,21 @@ classifiers = [
 ]
 # Core = the offline checks (tool-call rule, numbers & times) and the CLI. No network.
 dependencies = [
-    "pydantic>=2.9.0",
-    "pydantic-settings>=2.6.0",
+    "pydantic>=2.9.0,<3",
+    "pydantic-settings>=2.6.0,<3",
 ]
 
 [project.optional-dependencies]
-llm = ["openai>=1.50.0"]                                  # the claim-by-claim check
-serve = ["fastapi>=0.115.0", "uvicorn>=0.32.0"]           # `cassandra serve` HTTP API
+llm = ["openai>=1.50.0,<4"]                              # the claim-by-claim check
+serve = ["fastapi>=0.115.0,<1", "uvicorn>=0.32.0,<1"]     # `cassandra serve` HTTP API
 full = ["cassandra-ai[llm,serve]"]
 dev = [
     "cassandra-ai[full]",
-    "httpx>=0.27.0",                                      # FastAPI TestClient
-    "pytest>=8.3.0",
-    "pytest-asyncio>=0.24.0",
-    "ruff>=0.7.0",
-    "mypy>=1.13.0",
+    "httpx>=0.27.0,<1",                                     # FastAPI TestClient
+    "pytest>=8.3.0,<10",
+    "pytest-asyncio>=0.24.0,<2",
+    "ruff==0.17.6",
+    "mypy==2.4.1",
 ]
 
 [project.urls]
@@ -39,22 +39,30 @@ Homepage = "https://github.com/SirjanSingh/cassandra"
 Repository = "https://github.com/SirjanSingh/cassandra"
 
 [project.scripts]
-cassandra = "cassandra.cli:main"
+cassandra = "cassandra_ai.cli:main"
 
 [tool.ruff]
 line-length = 100
 target-version = "py311"
 
+[tool.ruff.lint]
+# Pinned rule set: newer ruff releases enable more rules by default, which made "clean"
+# depend on the installed version. ruff itself is pinned in [dev].
+select = ["E", "F", "W", "I"]
+
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
 testpaths = ["tests"]
+
+[tool.hatch.version]
+path = "cassandra_ai/__init__.py"
 
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
-packages = ["cassandra"]
+packages = ["cassandra_ai"]
 
 [tool.hatch.build.targets.sdist]
-include = ["/cassandra", "/README.md", "/LICENSE", "/pyproject.toml", "/.env.example"]
+include = ["/cassandra_ai", "/README.md", "/LICENSE", "/pyproject.toml", "/.env.example"]

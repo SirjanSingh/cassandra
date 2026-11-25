@@ -5,9 +5,9 @@ with findings. Everything else is a way in or a way out.
 
 ```
                   ┌──────────── ways in ─────────────┐
-  exported logs ──► scan.load_turns ─┐
-  Python code   ──► cassandra.check ─┼──► Turn ──► engine ──► TurnResult ──┬─► report.py (HTML / MD / JSON)
-  HTTP request  ──► server /v1/check ┘                                     └─► API response / your code
+  exported logs ──► scan.load_turns ────┐
+  Python code   ──► cassandra_ai.check ─┼──► Turn ──► engine ──► TurnResult ──┬─► report.py (HTML / MD / JSON)
+  HTTP request  ──► server /v1/check ───┘                                     └─► API response / your code
 
   engine (engine.py), cheapest layer first:
      1. rule   grounding.py     needs a GroundingSpec      free, offline
@@ -15,7 +15,7 @@ with findings. Everything else is a way in or a way out.
      3. claim  faithfulness.py  needs source + LLM         1 call → llm.py → any OpenAI-compatible API
 ```
 
-## Modules (`cassandra/`)
+## Modules (`cassandra_ai/`)
 
 | File | Responsibility | Depends on |
 |---|---|---|
@@ -53,7 +53,7 @@ with findings. Everything else is a way in or a way out.
 | Mode | How | Data leaves the machine? |
 |---|---|---|
 | Batch audit | `cassandra scan logs.jsonl [--llm]` on a laptop | Only with `--llm`, to the configured endpoint |
-| In-process | `await cassandra.check(...)` inside the bot | Only the claim check's LLM call |
+| In-process | `await cassandra_ai.check(...)` inside the bot | Only the claim check's LLM call |
 | Sidecar | `cassandra serve` next to the bot; the bot POSTs each answer | Same; point `OPENAI_BASE_URL` at a local model for none at all |
 | CI gate | `cassandra scan test_logs.jsonl --fail-over 5` | Same as batch |
 

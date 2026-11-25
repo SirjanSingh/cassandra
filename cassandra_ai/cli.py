@@ -78,8 +78,8 @@ def _run_scan(turns, spec, *, use_llm: bool, source: str, out: str, top: int,
     import asyncio
 
     from . import llm
-    from .engine import check_many
     from .config import get_settings
+    from .engine import check_many
     from .models import Layer, Report
     from .report import summary_line
 
@@ -143,7 +143,7 @@ def _main(argv: list[str]) -> int:
         from .grounding import load_spec
         from .scan import load_turns
 
-        sample = files("cassandra") / "samples"
+        sample = files("cassandra_ai") / "samples"
         turns = load_turns(str(sample / "travel_bot_logs.jsonl"))
         sample_spec = load_spec(str(sample / "travel_bot_spec.json"))
         print(f"Demo: {len(turns)} real answers from a sample travel bot (gpt-4o-mini with "

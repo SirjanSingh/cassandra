@@ -2,7 +2,7 @@
 
     import asyncio, cassandra
 
-    result = asyncio.run(cassandra.check(
+    result = asyncio.run(cassandra_ai.check(
         answer="Your order ships Friday via FedEx.",
         question="When does my order arrive?",
         tool_calls=[{"name": "lookup_order", "args": {"id": "A1"},

@@ -54,8 +54,8 @@ The output is a self-contained HTML report (or `--out report.md`) you can forwar
 **2. In your code** (live, per answer):
 
 ```python
-import cassandra
-result = await cassandra.check(answer, question=q, tool_calls=calls, context=docs)
+import cassandra_ai
+result = await cassandra_ai.check(answer, question=q, tool_calls=calls, context=docs)
 if result.verdict == "flagged":
     route_to_human(result.findings)
 ```
