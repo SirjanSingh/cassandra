@@ -69,7 +69,27 @@ in [poc/travelpal/README.md](../poc/travelpal/README.md). Its 50 held-out answer
 - The bot never invented a tool result when a tool failed (0 of 22). The failures were
   quieter.
 
-## 3. Numbers we do *not* have yet
+## 3. tau-bench: "said done after a tool failed" (no LLM; reward is not our label)
+
+1,980 published GPT-4o and Claude 3.5 Sonnet trajectories, 22,179 turns. Details in
+[poc/taubench/](../poc/taubench/README.md).
+
+| Check | Turns flagged | Hand-checked as a real false "done" |
+|---|---|---|
+| The Nov 5 probe's rule (any completion phrase after an error) | 49 | 1 clear, 1 unclear |
+| Shipped action check (no hedges, no admission of a problem) | 1 | 1 |
+
+*What to say:* "On public agent logs, strong models almost never claim success after a
+tool error: about 1 in 2,000 conversations. Cassandra flags it for free when it happens."
+
+*Caveats:*
+- The probe's "80% precision" (Nov 5) compared flags with task failure, not with lying.
+  Nearly all of those answers admitted the error. Don't quote 80%.
+- The shipped rules were written after reading these 49 answers; 1 of 1 is not a
+  precision figure.
+- One labeller.
+
+## 4. Numbers we do *not* have yet
 
 - Precision or recall on any **real customer's** logs. This is what Phase 2 of the roadmap
   produces.

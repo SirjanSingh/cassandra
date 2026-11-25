@@ -81,7 +81,7 @@ def test_scan_llm_without_a_key_explains_setup(tmp_path, capsys):
 
 async def test_sdk_check_runs_offline_without_a_key():
     r = await cassandra_ai.check("It is 54.", tool_calls=[{"name": "f", "result": {"fee": 45}}])
-    assert r.verdict == "flagged" and r.layers == ["value"]
+    assert r.verdict == "flagged" and r.layers == ["action", "value"]
 
 
 # --- HTTP API ------------------------------------------------------------------

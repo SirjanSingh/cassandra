@@ -8,9 +8,10 @@ from datetime import date
 
 from .models import Finding, Report, TurnResult, Verdict
 
-_LAYER_NAMES = {"rule": "tool-call rule", "value": "number & time check",
+_LAYER_NAMES = {"action": "action check", "rule": "tool-call rule", "value": "number & time check",
                 "claim": "claim-by-claim check"}
 _KIND_TEXT = {
+    "claimed_done_after_error": "Said done, but the tool failed",
     "no_tool_call": "No tool call backs this",
     "tool_returned_empty": "Tool returned this empty",
     "value_not_in_data": "Not in the data",

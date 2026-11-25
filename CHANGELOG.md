@@ -22,6 +22,13 @@ supervision pipeline, MCP server, dashboard and CI prompt gate are gone; they re
 
 ### Added
 
+- **Action check** (no spec, no LLM): flags an answer that says an action is done when a tool
+  call in the same turn failed and wasn't retried successfully. On 1,980 public tau-bench
+  trajectories it flagged 1 turn, a real false "done" (`poc/taubench/`).
+- **`cassandra scan` reads whole chat conversations**: rows with `messages` (OpenAI chat
+  format, also `traj` / `conversation`), and `.json` files holding a list of them. Each
+  assistant reply becomes a turn with the tool calls and results since the previous one.
+
 - Three-layer check engine (tool-call rule, numbers and times, claim by claim), Python SDK,
   `POST /v1/check` HTTP API, and HTML / Markdown / JSON reports.
 - The tool-call rule compares stated field values with the returned ones: "FedEx" when the

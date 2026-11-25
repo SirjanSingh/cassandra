@@ -17,10 +17,11 @@ cassandra demo          # a report on 50 real answers from a sample bot, no setu
 
 ## What it checks
 
-Three layers, cheapest first. Each runs only when it has what it needs.
+Four layers, cheapest first. Each runs only when it has what it needs.
 
 | Layer | Catches | Cost |
 |---|---|---|
+| **Action check** | The bot says an action is done ("your order has been cancelled") although the tool call for it failed in the same turn | Free, offline, no spec. Rare on strong models (1 in ~2,000 public conversations), but always worth a look |
 | **Tool-call rule** | A fact type that must come from a tool (a price, a date) stated with no successful call to that tool, or a field value that differs from what the tool returned ("FedEx" when it returned UPS) | Free, offline. Needs a small spec |
 | **Numbers & times** | A number or time in the answer that appears nowhere in the bot's data | Free, offline |
 | **Claim by claim** | The answer split into single facts, each checked against the data: contradictions and invented details | One LLM call per answer (roughly $0.5–1 per 1,000 answers on gpt-4o-mini) |
@@ -48,6 +49,10 @@ One JSON object per line. `tool_calls` and/or `context` are what the bot was giv
  "tool_calls": [{"name": "lookup_order", "args": {"id": "A1"}, "result": {"carrier": "UPS"}}],
  "context": "optional: retrieved documents, as text, a list, or JSON"}
 ```
+
+Already logging whole chat conversations in OpenAI format? Skip the conversion: a line
+like `{"id": "c1", "messages": [...]}` (or a `.json` file with a list of them) becomes one
+turn per assistant reply, with the tool calls and results that came before it.
 
 The output is a self-contained HTML report (or `--out report.md`) you can forward to anyone.
 
