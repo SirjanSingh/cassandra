@@ -17,8 +17,8 @@ from typing import Any
 from pydantic import BaseModel, Field
 
 from . import __version__
-from .engine import check_turn
 from .config import get_settings
+from .engine import check_turn
 from .grounding import GroundingSpec, load_spec
 from .llm import LLMUnavailable
 from .models import Finding, Layer, Turn, Verdict

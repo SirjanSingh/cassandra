@@ -161,7 +161,10 @@ async def run_agent(message: str, system: str | None = None) -> dict:
                 args = json.loads(tc.function.arguments or "{}")
                 fn = _DISPATCH.get(tc.function.name)
                 try:
-                    result = await fn(http, **args) if fn else {"found": False, "error": "no such tool"}
+                    if fn:
+                        result = await fn(http, **args)
+                    else:
+                        result = {"found": False, "error": "no such tool"}
                 except TypeError as e:
                     result = {"found": False, "error": f"bad arguments: {e}"}
                 ledger.append({"name": tc.function.name, "args": args, "result": result})

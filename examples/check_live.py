@@ -6,11 +6,11 @@
 
 import asyncio
 
-import cassandra
+import cassandra_ai
 
 
 async def main() -> None:
-    result = await cassandra.check(
+    result = await cassandra_ai.check(
         answer="Your order ships Friday via FedEx.",
         question="Where is my order?",
         tool_calls=[{"name": "lookup_order", "args": {"order_id": "A1"},

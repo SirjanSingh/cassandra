@@ -1,4 +1,4 @@
-"""Score cassandra/faithfulness.py (value check + claim-by-claim judge) on RAGTruth.
+"""Score cassandra_ai/faithfulness.py (value check + claim-by-claim judge) on RAGTruth.
 
 Download the two RAGTruth files into poc/ragtruth/data/ first:
   https://raw.githubusercontent.com/ParticleMedia/RAGTruth/main/dataset/response.jsonl
@@ -20,10 +20,9 @@ import asyncio
 import collections
 import json
 import random
-
 from pathlib import Path
 
-from cassandra.faithfulness import claim_check, value_check
+from cassandra_ai.faithfulness import claim_check, value_check
 
 HERE = Path(__file__).parent
 DATA = HERE / "data"  # response.jsonl + source_info.jsonl from github.com/ParticleMedia/RAGTruth
@@ -131,9 +130,9 @@ if __name__ == "__main__":
     ap.add_argument("--concurrency", type=int, default=8)
     ap.add_argument("--out", required=True)
     ap.add_argument("--judge-model", default=None,
-                    help="override OPENAI_MODEL (the shell env can't: config loads .env with override)")
+                    help="checker model for this run (overrides CASSANDRA_MODEL)")
     a = ap.parse_args()
     if a.judge_model:
-        from cassandra.config import get_settings
+        from cassandra_ai.config import get_settings
         get_settings().openai_model = a.judge_model
     asyncio.run(main(a))

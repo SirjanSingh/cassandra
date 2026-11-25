@@ -21,7 +21,7 @@ Three layers, cheapest first. Each runs only when it has what it needs.
 
 | Layer | Catches | Cost |
 |---|---|---|
-| **Tool-call rule** | A fact type that must come from a tool (a price, a date) stated with no successful call to that tool | Free, offline. Needs a small spec |
+| **Tool-call rule** | A fact type that must come from a tool (a price, a date) stated with no successful call to that tool, or a field value that differs from what the tool returned ("FedEx" when it returned UPS) | Free, offline. Needs a small spec |
 | **Numbers & times** | A number or time in the answer that appears nowhere in the bot's data | Free, offline |
 | **Claim by claim** | The answer split into single facts, each checked against the data: contradictions and invented details | One LLM call per answer (roughly $0.5–1 per 1,000 answers on gpt-4o-mini) |
 
@@ -54,8 +54,8 @@ The output is a self-contained HTML report (or `--out report.md`) you can forwar
 **2. In your code** (live, per answer):
 
 ```python
-import cassandra
-result = await cassandra.check(answer, question=q, tool_calls=calls, context=docs)
+import cassandra_ai   # the import name; `cassandra` belongs to the Apache Cassandra driver
+result = await cassandra_ai.check(answer, question=q, tool_calls=calls, context=docs)
 if result.verdict == "flagged":
     route_to_human(result.findings)
 ```

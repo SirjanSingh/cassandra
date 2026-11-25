@@ -7,12 +7,12 @@ exact tool call — or abstains when the spec can't resolve the case.
 
 from __future__ import annotations
 
-from cassandra.grounding import (
+from cassandra_ai.grounding import (
     GroundingSpec,
     LookupRule,
     check_grounding,
 )
-from cassandra.models import FailureClass
+from cassandra_ai.models import FailureClass
 
 # A support bot's spec (refund policy + order lookup), used as the rule's test fixture.
 
@@ -218,3 +218,69 @@ def test_custom_spec_third_party_agent():
     verdict = check_grounding("It is 25 degrees in Oslo today.", ledger, spec)
     assert verdict.failure_class is FailureClass.HALLUCINATION
     assert verdict.tool == "get_weather"
+
+
+# --- field values: a stated value must agree with the returned one ------------
+
+ORDER_UPS = [
+    {
+        "name": "lookup_order",
+        "args": {"order_id": "A1"},
+        "result": {"found": True, "carrier": "UPS", "eta": "2026-11-20"},
+    }
+]
+
+
+def test_field_value_that_differs_is_contradicted_and_cites_the_call():
+    v = check_grounding("It ships via FedEx.", ORDER_UPS, SHOPBOT_SPEC)
+    assert v.failure_class is FailureClass.CONTRADICTED
+    assert v.field == "carrier" and v.claim == "FedEx"
+    assert v.cited_call == ORDER_UPS[0]
+    assert "'UPS'" in v.rationale
+
+
+def test_field_value_that_agrees_is_ok():
+    v = check_grounding("It ships via UPS, arriving November 20th.", ORDER_UPS, SHOPBOT_SPEC)
+    assert v.failure_class is FailureClass.OK
+
+
+def test_named_date_is_compared_with_an_iso_date():
+    v = check_grounding("It arrives on Nov 21.", ORDER_UPS, SHOPBOT_SPEC)
+    assert v.failure_class is FailureClass.CONTRADICTED and v.field == "eta"
+    assert check_grounding("It arrives on 2026-11-20.", ORDER_UPS,
+                           SHOPBOT_SPEC).failure_class is FailureClass.OK
+
+
+def test_every_match_is_checked_not_only_the_first():
+    v = check_grounding("UPS picked it up and FedEx delivers it.", ORDER_UPS, SHOPBOT_SPEC)
+    assert v.failure_class is FailureClass.CONTRADICTED and v.claim == "FedEx"
+
+
+def test_any_successful_result_that_agrees_is_enough():
+    ledger = [*ORDER_UPS, {"name": "lookup_order", "args": {"order_id": "B2"},
+                           "result": {"found": True, "carrier": "DHL", "eta": None}}]
+    assert check_grounding("Sent with DHL.", ledger, SHOPBOT_SPEC).failure_class is FailureClass.OK
+
+
+def test_values_that_cannot_be_compared_count_as_backed():
+    ledger = [{"name": "lookup_order", "args": {},
+               "result": {"found": True, "carrier": {"code": 7}, "eta": "soon"}}]
+    v = check_grounding("Via FedEx, arriving June 3.", ledger, SHOPBOT_SPEC)
+    assert v.failure_class is FailureClass.OK
+
+
+def test_value_matching_can_be_switched_off_per_rule():
+    spec = SHOPBOT_SPEC.model_copy(deep=True)
+    spec.lookups[1].match_values = False
+    assert check_grounding("It ships via FedEx.", ORDER_UPS, spec).failure_class is FailureClass.OK
+
+
+def test_numbers_compare_with_rounding_tolerance():
+    spec = GroundingSpec(
+        lookups=[LookupRule(tool="quote", fields={"fee"})],
+        claim_extractors={"fee": r"\$\d[\d,]*(?:\.\d+)?"},
+    )
+    ledger = [{"name": "quote", "args": {}, "result": {"found": True, "fee": 1249.996}}]
+    assert check_grounding("The fee is $1,250.", ledger, spec).failure_class is FailureClass.OK
+    assert check_grounding("The fee is $1,350.", ledger,
+                           spec).failure_class is FailureClass.CONTRADICTED

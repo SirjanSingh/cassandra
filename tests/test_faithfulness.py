@@ -1,10 +1,10 @@
-"""cassandra/faithfulness.py — value check (no LLM) and claim-by-claim judge (LLM mocked)."""
+"""cassandra_ai/faithfulness.py — value check (no LLM) and claim-by-claim judge (LLM mocked)."""
 
 from __future__ import annotations
 
 import pytest
 
-from cassandra.faithfulness import Claim, ClaimReport, claim_check, value_check
+from cassandra_ai.faithfulness import Claim, ClaimReport, claim_check, value_check
 
 HOURS = {"name": "Patxi's", "business_stars": 4.0,
          "hours": {"Monday": "12:0-21:0", "Friday": "12:0-23:0"}}
@@ -56,7 +56,7 @@ async def test_claim_check_passes_source_and_reports_unsupported(monkeypatch):
             Claim(claim="Rated 4.5", status="contradicted"),
         ])
 
-    monkeypatch.setattr("cassandra.faithfulness.llm.structured", fake_structured)
+    monkeypatch.setattr("cassandra_ai.faithfulness.llm.structured", fake_structured)
     rep = await claim_check("Describe it", "answer text", HOURS)
     assert [c.claim for c in rep.unsupported] == ["No music", "Rated 4.5"]
     assert '"business_stars": 4.0' in seen["prompt"] and "answer text" in seen["prompt"]

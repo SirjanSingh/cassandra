@@ -28,8 +28,9 @@ pipeline pieces without a customer asking.
 ```bash
 pip install -e ".[dev]"
 pytest                     # offline; the LLM is always mocked
-ruff check .               # line length 100
-mypy cassandra
+ruff check .               # pinned ruff + pinned rule set (E, F, W, I), line length 100
+mypy cassandra_ai scripts
+python scripts/smoke_install.py --full   # build the wheel, test it in a clean venv (needs PyPI)
 
 cassandra demo             # bundled sample, offline
 cassandra scan logs.jsonl [--spec spec.json] [--llm] [--out r.html|r.md] [--json r.json] [--fail-over PCT]
@@ -40,11 +41,12 @@ python -m poc.ragtruth.run_claims --split train|test --out ...   # accuracy benc
 ## Architecture (see docs/ARCHITECTURE.md)
 
 `Turn` → `engine.check_turn` → three layers, cheapest first → `TurnResult` (verdict + findings):
-1. **rule** (`grounding.py`): per-bot spec; a fact type with no successful tool call. Pure.
+1. **rule** (`grounding.py`): per-bot spec; a fact type with no successful tool call, or a
+   field value that differs from the returned one. Pure.
 2. **value** (`faithfulness.value_check`): numbers and times must occur in the source. Pure.
 3. **claim** (`faithfulness.claim_check`): LLM, claim by claim. The only network call.
 
-Ways in: `scan.py` (JSONL), `cassandra.check()` (SDK), `server.py` (HTTP). Way out: `report.py`.
+Ways in: `scan.py` (JSONL), `cassandra_ai.check()` (SDK), `server.py` (HTTP). Way out: `report.py`.
 
 ## Rules
 
@@ -58,3 +60,7 @@ Ways in: `scan.py` (JSONL), `cassandra.check()` (SDK), `server.py` (HTTP). Way o
 - **Core install = pydantic only.** `openai` (`[llm]`) and `fastapi`/`uvicorn` (`[serve]`)
   are optional; import them lazily.
 - **Never claim a number that isn't in `docs/EVIDENCE.md`.**
+- **Packaging:** the import package is `cassandra_ai` (never `cassandra`: that is
+  cassandra-driver's). The wheel ships only `cassandra_ai/`. Every dependency has an upper
+  bound and `__version__` in `cassandra_ai/__init__.py` is the only version source;
+  `tests/test_packaging.py` enforces all three. Release steps are in `CHANGELOG.md`.

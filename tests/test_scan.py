@@ -6,13 +6,13 @@ import json
 
 import pytest
 
-from cassandra import engine as check_mod
-from cassandra.engine import check_many, check_offline, check_turn
-from cassandra.faithfulness import Claim, ClaimReport
-from cassandra.grounding import GroundingSpec, LookupRule
-from cassandra.models import Report, Turn
-from cassandra.report import render_html, render_json, render_markdown
-from cassandra.scan import load_turns
+from cassandra_ai import engine as check_mod
+from cassandra_ai.engine import check_many, check_offline, check_turn
+from cassandra_ai.faithfulness import Claim, ClaimReport
+from cassandra_ai.grounding import GroundingSpec, LookupRule
+from cassandra_ai.models import Report, Turn
+from cassandra_ai.report import render_html, render_json, render_markdown
+from cassandra_ai.scan import load_turns
 
 SPEC = GroundingSpec(
     lookups=[LookupRule(tool="get_fee", claims=["money"])],
@@ -140,3 +140,16 @@ def test_markdown_and_json_reports():
     assert md.startswith("# Cassandra answer check") and "--llm" not in md
     data = json.loads(render_json(_report()))
     assert data["results"][0]["verdict"] == "flagged"
+
+
+def test_rule_contradiction_becomes_a_contradicted_finding():
+    from pathlib import Path
+
+    from cassandra_ai.grounding import load_spec
+
+    spec = load_spec(Path(__file__).resolve().parents[1] / "examples" / "spec.json")
+    turn = Turn(answer="It ships via FedEx.", tool_calls=[
+        {"name": "lookup_order", "args": {}, "result": {"found": True, "carrier": "UPS"}}])
+    result = check_offline(turn, spec)
+    assert result.verdict == "flagged"
+    assert [(f.layer, f.kind) for f in result.findings] == [("rule", "contradicted")]

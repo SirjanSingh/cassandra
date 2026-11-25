@@ -6,11 +6,11 @@ import json
 
 import pytest
 
-import cassandra
-from cassandra import engine as check_mod
-from cassandra import cli
-from cassandra.config import reload_settings
-from cassandra.faithfulness import Claim, ClaimReport
+import cassandra_ai
+from cassandra_ai import cli
+from cassandra_ai import engine as check_mod
+from cassandra_ai.config import reload_settings
+from cassandra_ai.faithfulness import Claim, ClaimReport
 
 
 @pytest.fixture(autouse=True)
@@ -80,7 +80,7 @@ def test_scan_llm_without_a_key_explains_setup(tmp_path, capsys):
 
 
 async def test_sdk_check_runs_offline_without_a_key():
-    r = await cassandra.check("It is 54.", tool_calls=[{"name": "f", "result": {"fee": 45}}])
+    r = await cassandra_ai.check("It is 54.", tool_calls=[{"name": "f", "result": {"fee": 45}}])
     assert r.verdict == "flagged" and r.layers == ["value"]
 
 
@@ -89,7 +89,7 @@ async def test_sdk_check_runs_offline_without_a_key():
 def _client(monkeypatch, key=None):
     from fastapi.testclient import TestClient
 
-    from cassandra.server import create_app
+    from cassandra_ai.server import create_app
 
     if key:
         monkeypatch.setenv("CASSANDRA_API_KEY", key)
